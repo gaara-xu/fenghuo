@@ -1,0 +1,15 @@
+node_modules/
+dist-web/
+dist-server/
+.env
+.env.*
+!.env.example
+.deploy/
+backups/
+exports/
+*.pem
+*.key
+*.log
+.DS_Store
+coverage/
+.runtime/

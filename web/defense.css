@@ -1,0 +1,6 @@
+.defense-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 22px; margin: 60px 0 35px; }
+.defense-grid article { text-align: center; padding: 32px 20px; border: 1px solid #5f4c30; background: linear-gradient(150deg,#282117,#121411); }
+.defense-grid h2 { font-weight: 400; letter-spacing: 4px; color: #dfbf7a; }
+.defense-grid p { color: #887b67; font-family: system-ui; font-size: 12px; }
+.defense-grid button { margin: 16px 5px 0; padding: 9px 18px; border: 1px solid #6a5434; background: #1b1b16; color: #cdb68a; }
+.fort-icon { margin: auto; width: 110px; height: 90px; display: grid; place-items: center; clip-path: polygon(0 20%,20% 20%,20% 0,40% 0,40% 20%,60% 20%,60% 0,80% 0,80% 20%,100% 20%,90% 100%,10% 100%); background: linear-gradient(#765231,#2a2018); color: #e5c98a; font-size: 40px; }

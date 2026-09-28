@@ -1,0 +1,4 @@
+/* 游戏数字框：手工输入与已有快捷按钮保留，不显示浏览器原生上下箭头。 */
+input[type=number]{appearance:textfield;-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}

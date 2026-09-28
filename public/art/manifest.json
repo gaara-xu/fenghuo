@@ -1,0 +1,114 @@
+{
+  "generator": "image_gen",
+  "style": "原创仿旧页游风格，并非官方资源",
+  "assets": [
+    {
+      "key": "zhang_han",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-3cbc2e7e-cb7f-4cf4-a9ea-ffd39774b397.png",
+      "prompt": "Original square portrait of Qin general Zhang Han, black Qin armor and red plume, semi-realistic hand-painted nostalgic Chinese strategy game style, no text, border or watermark.",
+      "path": "public/art/zhang_han.png"
+    },
+    {
+      "key": "rexue",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-c9aacc9e-dd4e-4177-957f-b3bb03129a5a.png",
+      "prompt": "Use case: stylized-concept. Asset: square standalone skill icon for a 2012-era Chinese Warring States strategy browser game. Skill 热血: a crimson war spear thrust upward through red battle aura, hot sparks, heroic fighting spirit. Hand-painted semi-realistic fantasy game inventory art, dark textured background, rich bronze, dramatic glowing highlights, strong simple silhouette readable at 64px. One centered symbol fills square with safe margin, no border, no letters, no text, no watermark. Original artwork evoking nostalgic Chinese browser games.",
+      "path": "public/art/rexue.png"
+    },
+    {
+      "key": "jingzhun",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-f8d644dd-1028-4185-aee0-73accde37458.png",
+      "prompt": "Use case: stylized-concept. Asset: square standalone skill icon for a 2012-era Chinese Warring States strategy browser game. Skill 精准: an ancient Chinese bronze arrowhead perfectly aligned inside a luminous golden targeting ring, dark emerald haze. Hand-painted semi-realistic fantasy game inventory art, dark textured background, rich bronze, dramatic glowing highlights, strong simple silhouette readable at 64px. One centered symbol fills square with safe margin, no border, no letters, no text, no watermark. Original artwork evoking nostalgic Chinese browser games.",
+      "path": "public/art/jingzhun.png"
+    },
+    {
+      "key": "fushi",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-57771086-30d0-4ebf-8d03-2baccb817d82.png",
+      "prompt": "Use case: stylized-concept. Asset: square standalone skill icon for a 2012-era Chinese Warring States strategy browser game. Skill 腐蚀: a bronze shield corroding and dissolving under eerie jade green poison mist, pitted metal. Hand-painted semi-realistic fantasy game inventory art, dark textured background, rich bronze, dramatic glowing highlights, strong simple silhouette readable at 64px. One centered symbol fills square with safe margin, no border, no letters, no text, no watermark. Original artwork evoking nostalgic Chinese browser games.",
+      "path": "public/art/fushi.png"
+    },
+    {
+      "key": "kuangre",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-cfcfd64b-3258-4bc4-a715-75f1e3db18fd.png",
+      "prompt": "Use case: stylized-concept. Asset: square standalone skill icon for a 2012-era Chinese Warring States strategy browser game. Skill 狂热: two crossed bronze war blades engulfed by fiery orange battle energy, fierce roaring tiger spirit. Hand-painted semi-realistic fantasy game inventory art, dark textured background, rich bronze, dramatic glowing highlights, strong simple silhouette readable at 64px. One centered symbol fills square with safe margin, no border, no letters, no text, no watermark. Original artwork evoking nostalgic Chinese browser games.",
+      "path": "public/art/kuangre.png"
+    },
+    {
+      "key": "chuanci",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-e89c08ea-ee56-4e1f-956e-c54ca27a5f26.png",
+      "prompt": "Use case: stylized-concept. Asset: square skill icon for a 2012-era Chinese Warring States strategy browser game. Skill 穿刺: a single gleaming bronze arrow penetrating an ancient breastplate, pale icy blue impact burst. Hand-painted semi-realistic fantasy inventory art, charcoal background, rich bronze, dramatic glowing highlights, simple centered silhouette readable at 64px. No border, no text, no watermark.",
+      "path": "public/art/chuanci.png"
+    },
+    {
+      "key": "jiaoxie",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-e0bb7ed4-5b70-4a7d-a1b9-096e73eb1eb1.png",
+      "prompt": "Use case: stylized-concept. Asset: square skill icon for a 2012-era Chinese Warring States strategy browser game. Skill 缴械: a bronze sword knocked from an armored hand, shattered weapon grip and purple energy ring. Hand-painted semi-realistic fantasy inventory art, charcoal background, rich bronze, dramatic glowing highlights, simple centered silhouette readable at 64px. No border, no text, no watermark.",
+      "path": "public/art/jiaoxie.png"
+    },
+    {
+      "key": "xueyuan",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-88908a21-fe9a-4006-a56d-ea2e461e6af4.png",
+      "prompt": "Use case: stylized-concept. Asset: square skill icon for a 2012-era Chinese Warring States strategy browser game. Skill 学院: an opened ancient Chinese bamboo scroll on a wooden desk, golden luminous strategy diagrams without legible writing, warm candlelight. Hand-painted semi-realistic fantasy inventory art, charcoal background, rich bronze, dramatic glowing highlights, simple centered silhouette readable at 64px. No border, no text, no watermark.",
+      "path": "public/art/xueyuan.png"
+    },
+    {
+      "key": "qin_shihuang",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-567a916d-95c0-49e1-949f-01fa0c8fa662.png",
+      "prompt": "Use case: historical-scene. Asset: individual square hero portrait for a Chinese Warring States browser strategy game. Qin Shi Huang, imposing mature Chinese emperor, black ceremonial robe embroidered with gold dragons, flat imperial crown and hanging beads, severe composed expression. Old 2012-era hand-painted semi-realistic game art, richly textured charcoal bronze muted colors, dramatic warm side lighting, readable expressive face. Centered head and shoulders with full head inside frame, square canvas, safe margins. No text, no letters, no border, no watermark. Original game illustration.",
+      "path": "public/art/qin_shihuang.png"
+    },
+    {
+      "key": "wu_wang_helv",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-6336dc97-3d7b-4f8d-8275-baf790741b1a.png",
+      "prompt": "Use case: historical-scene. Asset: individual square hero portrait for a Chinese Warring States browser strategy game. King Helu of Wu, lean stern middle-aged Chinese king with narrow beard, dark blue and bronze armor, Wu-style high ornate bronze crown, misty lake background. Old 2012-era hand-painted semi-realistic game art, richly textured charcoal bronze muted colors, dramatic warm side lighting, readable expressive face. Centered head and shoulders with full head inside frame, square canvas, safe margins. No text, no letters, no border, no watermark. Original game illustration.",
+      "path": "public/art/wu_wang_helv.png"
+    },
+    {
+      "key": "yue_wang_goujian",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-888361bb-c5ca-44cc-89fe-bbbd73335110.png",
+      "prompt": "Use case: historical-scene. Asset: individual square hero portrait for a Chinese Warring States browser strategy game. King Goujian of Yue, weathered resilient Chinese ruler, tied black hair and short beard, green and bronze ceremonial war armor, holding ancient bronze sword near shoulder. Old 2012-era hand-painted semi-realistic game art, richly textured charcoal bronze muted colors, dramatic warm side lighting, readable expressive face. Centered head and shoulders with full head inside frame, square canvas, safe margins. No text, no letters, no border, no watermark. Original game illustration.",
+      "path": "public/art/yue_wang_goujian.png"
+    },
+    {
+      "key": "zhuangzi",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-e657fe09-89ed-464d-8b52-80d90ebd3b39.png",
+      "prompt": "Use case: historical-scene. Asset: individual square hero portrait for a Chinese Warring States browser strategy game. Zhuangzi, gentle wise elderly Chinese philosopher, gray flowing beard, simple cream and pale teal robes, wooden hairpin, tranquil bamboo and butterfly in mist. Old 2012-era hand-painted semi-realistic game art, richly textured charcoal bronze muted colors, dramatic warm side lighting, readable expressive face. Centered head and shoulders with full head inside frame, square canvas, safe margins. No text, no letters, no border, no watermark. Original game illustration.",
+      "path": "public/art/zhuangzi.png"
+    },
+    {
+      "key": "song_xianggong",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-1f605707-3f4e-46db-94c2-8832f0c74969.png",
+      "prompt": "Use case: historical-scene. Asset: individual square hero portrait for a Chinese Warring States browser strategy game. Duke Xiang of Song, dignified middle-aged Chinese aristocratic ruler, red and dark brown robes, tall ceremonial cap, trimmed beard, restrained golden palace backdrop. Old 2012-era hand-painted semi-realistic game art, richly textured charcoal bronze muted colors, dramatic warm side lighting, readable expressive face. Centered head and shoulders with full head inside frame, square canvas, safe margins. No text, no letters, no border, no watermark. Original game illustration.",
+      "path": "public/art/song_xianggong.png"
+    },
+    {
+      "key": "youxia",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-3e1e7f0f-c8e2-4916-8d45-1099a42b4063.png",
+      "prompt": "Use case: historical-scene. Asset: individual square hero portrait for a Chinese Warring States browser strategy game. young Chinese male wandering swordsman, tied long black hair, charcoal leather clothing, simple bronze sword at his shoulder, sharp fearless eyes. Old 2012-era hand-painted semi-realistic game art, richly textured charcoal bronze muted colors, dramatic warm side lighting, readable expressive face. Centered head and shoulders with full head inside frame, square canvas, safe margins. No text, no letters, no border, no watermark. Original game illustration.",
+      "path": "public/art/youxia.png"
+    },
+    {
+      "key": "ru_sheng",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-1fbcbbaa-e857-4133-8821-25c8652ab6ca.png",
+      "prompt": "Use case: historical-scene. Asset: individual square hero portrait for a Chinese Warring States browser strategy game. young Chinese male scholar, neat black topknot and soft cloth hat, cream and muted blue scholar robes, carrying a closed bamboo scroll, thoughtful expression. Old 2012-era hand-painted semi-realistic game art, richly textured charcoal bronze muted colors, dramatic warm side lighting, readable expressive face. Centered head and shoulders with full head inside frame, square canvas, safe margins. No text, no letters, no border, no watermark. Original game illustration.",
+      "path": "public/art/ru_sheng.png"
+    },
+    {
+      "key": "meng_tian",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-8e0cee48-8cf1-40da-ba88-4c17573b474d.png",
+      "prompt": "Use case: historical-scene. Asset: individual square hero portrait for a Chinese Warring States browser strategy game. Meng Tian, imposing robust Chinese Qin military general, black lamellar armor, red plume and bronze officer helmet, square jaw, rugged mustache, northern border landscape. Old 2012-era hand-painted semi-realistic game art, richly textured charcoal bronze muted colors, dramatic warm side lighting, readable expressive face. Centered head and shoulders with full head inside frame, square canvas, safe margins. No text, no letters, no border, no watermark. Original game illustration.",
+      "path": "public/art/meng_tian.png"
+    },
+    {
+      "key": "wang_ben",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-bfd72102-37a3-461b-bfdb-ba9e926af9e5.png",
+      "prompt": "Use case: historical-scene. Asset: individual square hero portrait for a Chinese Warring States browser strategy game. Wang Ben, lean Chinese Qin archer general with keen eyes, dark iron and silver lamellar armor, swept helmet and dark blue mantle, bow at shoulder. Old 2012-era hand-painted semi-realistic game art, richly textured charcoal bronze muted colors, dramatic warm side lighting, readable expressive face. Centered head and shoulders with full head inside frame, square canvas, safe margins. No text, no letters, no border, no watermark. Original game illustration.",
+      "path": "public/art/wang_ben.png"
+    },
+    {
+      "key": "shen_shanshan",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-d0c3d27c-ade8-420a-af8b-b81bf851fe35.png",
+      "prompt": "Use case: historical-scene. Asset: individual square hero portrait for a Chinese Warring States browser strategy game. Shen Shanshan, legendary adult Chinese female warrior, flowing midnight black hair, elaborate golden phoenix hair ornaments, elegant purple and gold lamellar armor with jade accents, brilliant calm eyes, ethereal golden battle aura; dignified supreme six-star warrior, fully clothed. Old 2012-era hand-painted semi-realistic game art, richly textured charcoal bronze muted colors, dramatic warm side lighting, readable expressive face. Centered head and shoulders with full head inside frame, square canvas, safe margins. No text, no letters, no border, no watermark. Original game illustration.",
+      "path": "public/art/shen_shanshan.png"
+    }
+  ]
+}

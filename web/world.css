@@ -1,0 +1,34 @@
+.node.selected b {
+  box-shadow: 0 0 0 5px #e3b65955, 0 0 25px #ffc452;
+}
+.campaign {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 18px 24px;
+  border: 1px solid #655033;
+  background: #181712;
+}
+.campaign > div { margin-right: auto; }
+.campaign h3, .campaign p { margin: 3px 0; }
+.campaign label { width: 190px; }
+.campaign button:not(.primary), .activity button {
+  padding: 9px 16px;
+  background: #181914;
+  border: 1px solid #725934;
+  color: #c9ad77;
+}
+.activity {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+.activity > div { padding: 16px 22px; background: #121411; border: 1px solid #3e372a; }
+.activity h3 { font-weight: 400; color: #d2ad69; border-left: 3px solid #a36c2e; padding-left: 10px; }
+.activity p { font-family: system-ui; font-size: 12px; color: #8e826e; }
+.activity .victory { color: #a8bd78; }
+.activity .defeat { color: #b9776d; }
+.owned-strip { display: flex; gap: 12px; margin-bottom: 25px; }
+.owned-strip > div { min-width: 210px; padding: 14px; border: 1px solid #785c32; background: linear-gradient(135deg,#2c2116,#151512); }
+.owned-strip span, .owned-strip small { display: block; color: #a9874e; font-size: 11px; margin-top: 4px; }

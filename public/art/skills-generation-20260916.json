@@ -1,0 +1,382 @@
+{
+  "generator": "image_gen",
+  "style": "原创怀旧战国页游技能图标，非官方资源",
+  "status": "imported",
+  "note": "经用户授权，仅复制清单内 37 张生成图，保留源文件。合并已有 7 张，为全部 44 个技能制作 64px 小图和 256px 大图。",
+  "assets": [
+    {
+      "key": "guwu",
+      "name": "鼓舞",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-1c577773-71c5-44f8-98e2-95948ef94e0d.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE standalone square skill icon for a nostalgic 2012 Chinese Warring States browser strategy game.\nSkill: 鼓舞 (inspire troops).\nSubject: a large ancient Chinese bronze-rimmed red leather war drum with two striking wooden mallets, radiant golden rhythm shockwaves. One bold central emblem of inspiring battle morale.\nStyle: premium hand-painted semi-realistic inventory art, richly worn bronze textures, charcoal dark vignette background, dramatic gold highlights. Readable at 64px, main silhouette fills 80 percent of square; restrained details and 8 percent safe margins.\nConstraints: single square icon only, not a sheet; no text, letters, numbers, UI, frame, border, logos or watermark; no modern objects. Original artwork evoking old Chinese strategy games.",
+      "plannedLargePath": "public/art/skills/guwu-large.png",
+      "plannedSmallPath": "public/art/skills/guwu-small.png",
+      "imported": true,
+      "sha256": "1fe9bb557be351f33cb00eef42caa406d4e0a7e411183c0984148551e40274e6"
+    },
+    {
+      "key": "naili",
+      "name": "耐力",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-c855d027-7788-40d9-bac1-f09d27649eee.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 耐力.\nSubject: A broad ancient Chinese round bronze shield steadfastly blocking a heavy falling axe; green jade protective glow gathers in concentric rings on the shield. Emphasis on the unbroken shield and stubborn endurance.",
+      "plannedLargePath": "public/art/skills/naili-large.png",
+      "plannedSmallPath": "public/art/skills/naili-small.png",
+      "imported": true,
+      "sha256": "a5b45d448b9a21b740ecaa80bd7b66bff0a94e16438d15aa2943e98a9b072b69"
+    },
+    {
+      "key": "duoshan",
+      "name": "躲闪",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-8cc664a5-4804-44d0-ac32-36f106d9fb11.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 躲闪.\nSubject: A nimble ancient Chinese warrior's pale cyan afterimage sidesteps three bronze arrows rushing diagonally past him. Sweeping turquoise motion trail and clearly deflected trajectory; dynamic silhouette, no injury.",
+      "plannedLargePath": "public/art/skills/duoshan-large.png",
+      "plannedSmallPath": "public/art/skills/duoshan-small.png",
+      "imported": true,
+      "sha256": "407ef9853b64bda6f454f442403c15688fc29cc76b388d08289787fe47ac79c7"
+    },
+    {
+      "key": "tiejia",
+      "name": "铁甲",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-33e84ea7-a79c-4eda-8364-a05bf75c259f.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 铁甲.\nSubject: An imposing ancient Chinese fortress gate clad in thick riveted black iron plates, silver metal edges catching an icy white protective aura. Close framing on armored gate, monumental invulnerable defense.",
+      "plannedLargePath": "public/art/skills/tiejia-large.png",
+      "plannedSmallPath": "public/art/skills/tiejia-small.png",
+      "imported": true,
+      "sha256": "c7aedefb2a5d7bbd99b52f311487365f8a2ca38b7848a9af1186f36f21bd593d"
+    },
+    {
+      "key": "huoyao",
+      "name": "火药",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-41270169-4e88-4e15-9f8c-fdf7e23dc0c8.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 火药.\nSubject: A dark ceramic ancient gunpowder jar with a burning fuse beside fortress battlements, a concentrated orange-red burst of sparks and black smoke protecting the stone wall. No modern bombs.",
+      "plannedLargePath": "public/art/skills/huoyao-large.png",
+      "plannedSmallPath": "public/art/skills/huoyao-small.png",
+      "imported": true,
+      "sha256": "cc70e9228992503090866f06e2e2aabadbdd467eede97e0a30ac8a377c1e2831"
+    },
+    {
+      "key": "tongxin",
+      "name": "同心",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-479de4d1-307f-41d0-83ef-21e7d0f8dab3.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 同心.\nSubject: Three tightly interlocked ancient Chinese bronze fortress shields forming one unified protective wall, gold links connecting their rims and a warm shared amber glow. Clear three-shield silhouette.",
+      "plannedLargePath": "public/art/skills/tongxin-large.png",
+      "plannedSmallPath": "public/art/skills/tongxin-small.png",
+      "imported": true,
+      "sha256": "4e56686a5334f09deb21f758177808c2c53e6ddb9c037b8682fd08738407cb38"
+    },
+    {
+      "key": "yelian",
+      "name": "冶炼",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-1b8aff43-e3b3-4e22-bfc8-f9e246cf7272.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 冶炼.\nSubject: White-hot molten iron pouring from a crucible into the mold of a bronze battle shield; luminous orange metal rivulets and anvil texture, compact strong crafting emblem.",
+      "plannedLargePath": "public/art/skills/yelian-large.png",
+      "plannedSmallPath": "public/art/skills/yelian-small.png",
+      "imported": true,
+      "sha256": "1fcd561faff2642384fdde874ef4aa9c788049482c3e76c3931a7694d95f922c"
+    },
+    {
+      "key": "miwu",
+      "name": "迷雾",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-aaab94ec-eb9c-4217-8801-f566266e183e.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 迷雾.\nSubject: An ancient Chinese recurve bow half swallowed by a thick pale cyan mist vortex, bronze arrows losing their direction within swirling fog. Central bow silhouette stays readable.",
+      "plannedLargePath": "public/art/skills/miwu-large.png",
+      "plannedSmallPath": "public/art/skills/miwu-small.png",
+      "imported": true,
+      "sha256": "6f6b2c331bd072293a50ef5096b58a0567cc146a20055e1567916f3132eb602f"
+    },
+    {
+      "key": "xiejia",
+      "name": "卸甲",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-40669bb7-5192-496a-a274-e54ca9995322.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 卸甲.\nSubject: Iron protective plates being torn away from an ancient Chinese gate, exposed timber behind, bronze studs flying outward with a sharp amber impact. Focus on armor shedding from the gate, not a full battlefield.",
+      "plannedLargePath": "public/art/skills/xiejia-large.png",
+      "plannedSmallPath": "public/art/skills/xiejia-small.png",
+      "imported": true,
+      "sha256": "6d9a20245d32290de3caac4afb8ef0a0d03760671f35a44c96845901e5113ade"
+    },
+    {
+      "key": "lianjin",
+      "name": "炼金",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-3a275ed2-5077-4c81-b308-903adcdffa65.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 炼金.\nSubject: An ancient Chinese bronze alchemical ding cauldron overflowing with vivid emerald fire that eats through a small chunk of fortress masonry. Golden liquid and green flame contrast; single iconic cauldron.",
+      "plannedLargePath": "public/art/skills/lianjin-large.png",
+      "plannedSmallPath": "public/art/skills/lianjin-small.png",
+      "imported": true,
+      "sha256": "b19d9ee58319e5c604e1454321564970f6091e25dd51b6db6351cf933b3910b0"
+    },
+    {
+      "key": "qianggong",
+      "name": "强攻",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-dfbaf5fa-88b4-47af-b7c2-7c5b8814fa3e.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 强攻.\nSubject: A huge iron-capped ancient wooden siege ram smashing into a fortress gate, radiating splinters and golden impact rays; the ram's bronze beast-head fills the foreground, powerful diagonal composition.",
+      "plannedLargePath": "public/art/skills/qianggong-large.png",
+      "plannedSmallPath": "public/art/skills/qianggong-small.png",
+      "imported": true,
+      "sha256": "62fcd839de4e2bdb4a90850d65fe69add6df0f4d86b9a49cf7e797c8152e99f7"
+    },
+    {
+      "key": "miejue",
+      "name": "灭绝",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-e73003d6-6a98-4277-a307-5e8bcd6f8a7b.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 灭绝.\nSubject: Three ancient Chinese defensive watchtowers crumbling together beneath one overwhelming wave of crimson-black fire; bright burning cracks and stark silhouette, no people, no gore. Broad area devastation.",
+      "plannedLargePath": "public/art/skills/miejue-large.png",
+      "plannedSmallPath": "public/art/skills/miejue-small.png",
+      "imported": true,
+      "sha256": "403ed99aa7203cf85fab02e2d62a9c1b840dcf8015467913713a043663e1ea73"
+    },
+    {
+      "key": "xinnian",
+      "name": "信念",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-35f01220-193a-411b-949b-efcaccee235c.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 信念.\nSubject: Close-up of an ancient Chinese general's armored fist firmly raising a straight bronze jian sword upright into a radiant gold sun halo. One bright unwavering blade embodies conviction and heroic attack power.",
+      "plannedLargePath": "public/art/skills/xinnian-large.png",
+      "plannedSmallPath": "public/art/skills/xinnian-small.png",
+      "imported": true,
+      "sha256": "5c4e6fc61cf05f8be55fd50a099c52b1aa1781141b6757ba0f461ce2c484fb0b"
+    },
+    {
+      "key": "lingdaoli",
+      "name": "领导力",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-ed72c597-50c7-40f5-851f-a0cec89a2a8a.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 领导力.\nSubject: An ornate ancient Chinese bronze tiger tally resting proudly in front of a crimson command pennant, crisp regal golden rays uniting them. Tiger-shaped command token is the main foreground symbol, supreme leadership.",
+      "plannedLargePath": "public/art/skills/lingdaoli-large.png",
+      "plannedSmallPath": "public/art/skills/lingdaoli-small.png",
+      "imported": true,
+      "sha256": "c3278e10479c50db5eb9156b84e16b47228d158799b22a7cf993f3255d033226"
+    },
+    {
+      "key": "zhengjiu",
+      "name": "拯救",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-6cd2bd0b-4411-40a5-9437-f0c9f2c3fc49.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 拯救.\nSubject: A luminous jade-and-gold protective shield opens in front of an ancient Chinese general's dark silhouette, soft cyan light sheltering the warrior. Foreground shield dominates the icon, warm hopeful highlights.",
+      "plannedLargePath": "public/art/skills/zhengjiu-large.png",
+      "plannedSmallPath": "public/art/skills/zhengjiu-small.png",
+      "imported": true,
+      "sha256": "d69fcffd5e1396562c1a69ef40a5392f7ca8b8c332b01fd889ef3731c8b30b4c"
+    },
+    {
+      "key": "xiedai",
+      "name": "懈怠",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-07c3c3f4-0f7c-45d8-9499-6fa022ef8dd2.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 懈怠.\nSubject: An ancient Chinese warrior's helmet hangs limply from a lowered spear, its dim bronze surface enveloped by heavy smoky gray-violet haze. Drooping diagonal silhouette communicates weakened vigilance and lowered defense.",
+      "plannedLargePath": "public/art/skills/xiedai-large.png",
+      "plannedSmallPath": "public/art/skills/xiedai-small.png",
+      "imported": true,
+      "sha256": "0ecdbc8fb2cda8787a0ba8cd7a21d323e1af09b34e8eabcb55a46f54b1bcd037"
+    },
+    {
+      "key": "angyang",
+      "name": "昂扬",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-8e6918bb-75dc-4dbe-b1fe-13b2cc148200.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 昂扬.\nSubject: A roaring golden lion-face bronze shield forcefully pushing down an enemy's dark sword, bright yellow aura of fearless resistance. Close view, shield dominates and sword visibly loses momentum.",
+      "plannedLargePath": "public/art/skills/angyang-large.png",
+      "plannedSmallPath": "public/art/skills/angyang-small.png",
+      "imported": true,
+      "sha256": "f39155b59deaaaadd06cd2b09bbb49e271070103e7f4b4b84860f8ad446ab3ee"
+    },
+    {
+      "key": "lijian",
+      "name": "离间",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-b3bdb301-9d52-4543-a795-353723c91db4.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 离间.\nSubject: Two ancient bronze tiger command tallies facing away from each other, separated by a jagged glowing violet fracture. Contrasting purple and bronze; an unmistakable symbol of division and intrigue.",
+      "plannedLargePath": "public/art/skills/lijian-large.png",
+      "plannedSmallPath": "public/art/skills/lijian-small.png",
+      "imported": true,
+      "sha256": "f78a036583f7a82149aa3272113143f239f55601341407fd896eb3761488e0bc"
+    },
+    {
+      "key": "baquan",
+      "name": "霸权",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-4ba16321-85ae-4d78-ba9a-b0aa2c8c4ffd.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 霸权.\nSubject: A monumental polished black jade imperial seal with a coiling dragon handle, hovering above cracked stone under crushing crimson-gold pressure rays. Low angle, formidable authority; blank seal face without writing.",
+      "plannedLargePath": "public/art/skills/baquan-large.png",
+      "plannedSmallPath": "public/art/skills/baquan-small.png",
+      "imported": true,
+      "sha256": "5e2c11b2bb7cc2a8950c2c656ea4b54916ccfbddeb6924329c05a8f7921a98a2"
+    },
+    {
+      "key": "dunzou",
+      "name": "遁走",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-8e14e811-ffcd-4314-bed6-680d1d3abf78.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 遁走.\nSubject: A swift pale warhorse with ancient Chinese tack bursting through a broken circle of iron chains, luminous teal-white wind trails behind it. Clear leaping horse silhouette represents escape, no wings.",
+      "plannedLargePath": "public/art/skills/dunzou-large.png",
+      "plannedSmallPath": "public/art/skills/dunzou-small.png",
+      "imported": true,
+      "sha256": "6946a3515b4c4afeb7d7def43ea5cf71765d5825dc7656311b84051a463e7cd6"
+    },
+    {
+      "key": "fengci",
+      "name": "封赐",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-75a1666c-fc9b-459c-bdd8-fbefd4a99de0.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 封赐.\nSubject: An imperial golden bamboo investiture scroll tied with flowing crimson silk ribbons, a small jade ceremonial ornament, warm majestic light descending onto the scroll. Closed or partly unrolled plain slats, no readable writing.",
+      "plannedLargePath": "public/art/skills/fengci-large.png",
+      "plannedSmallPath": "public/art/skills/fengci-small.png",
+      "imported": true,
+      "sha256": "4569a7e634de29ac00c9cefb119910aee42fb6490e5a5eff5838b46e7f382961"
+    },
+    {
+      "key": "tengjia",
+      "name": "藤甲",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-332d2823-7026-42dc-8c23-60675cf665d7.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 藤甲.\nSubject: Ancient Chinese woven rattan body armor with thick interlaced fibers and bound shoulder plates, emerald protective light curling around its clear torso silhouette. Close-up craftsmanship and earthy green texture, no person.",
+      "plannedLargePath": "public/art/skills/tengjia-large.png",
+      "plannedSmallPath": "public/art/skills/tengjia-small.png",
+      "imported": true,
+      "sha256": "f8ce4d3aaca8005bf96d0cb28e7910d9d385355f97a91f19cd1ba3d00f7590e9"
+    },
+    {
+      "key": "beipan",
+      "name": "背叛",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-e9ef718e-b15f-4190-af2c-0bd2de1718b9.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 背叛.\nSubject: A dark ancient dagger secretly piercing through the back of a torn crimson command flag, purple-red fracture glow and shredded silk. Icon of betrayal, only weapon and flag, no human target or gore.",
+      "plannedLargePath": "public/art/skills/beipan-large.png",
+      "plannedSmallPath": "public/art/skills/beipan-small.png",
+      "imported": true,
+      "sha256": "20fbe777438de5a620aa7951d578ba889154efdfa68e1e208353507c2a677c88"
+    },
+    {
+      "key": "tiebi",
+      "name": "铁壁",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-f47287f7-aef4-4dfb-a38d-f53c2f5e8f7f.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 铁壁.\nSubject: A massive black-iron Chinese crenellated wall deflecting a diagonal rain of glowing bronze arrows, ice-blue defensive sheen on its metal surface. Single compact wall section, strong horizontal barrier silhouette.",
+      "plannedLargePath": "public/art/skills/tiebi-large.png",
+      "plannedSmallPath": "public/art/skills/tiebi-small.png",
+      "imported": true,
+      "sha256": "6a730fc51396ac8ca7b4f99950f2a4392bcf3f8025adc0f2fec0c87f50cfbc37"
+    },
+    {
+      "key": "weifeng",
+      "name": "威风",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-aa13ae3e-c77d-42bd-b6b5-c9c5cbe570a4.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 威风.\nSubject: Majestic ancient Chinese lion-face breastplate displayed upright with a gold command banner swept behind it, pale gold protective wind radiating outward. Proud dominant armor silhouette, no person, no text.",
+      "plannedLargePath": "public/art/skills/weifeng-large.png",
+      "plannedSmallPath": "public/art/skills/weifeng-small.png",
+      "imported": true,
+      "sha256": "e3728476d9bd60540430945d6fc72d0ce2d6fc0d13beef434c205f1db9a6b449"
+    },
+    {
+      "key": "huojianshu",
+      "name": "火箭术",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-9092d250-9838-4e3f-9c42-f35fdc6303d3.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 火箭术.\nSubject: One large ancient bronze-tipped arrow wrapped with burning oilcloth streaking diagonally through the square, vivid orange flame tail, two faint fiery arrows behind. Clearly a historical flaming arrow, not a rocket or firearm.",
+      "plannedLargePath": "public/art/skills/huojianshu-large.png",
+      "plannedSmallPath": "public/art/skills/huojianshu-small.png",
+      "imported": true,
+      "sha256": "b9cb8b407384e7bf6d787208f468467f5a935bb938fc83f3ec79718c0eef8c00"
+    },
+    {
+      "key": "zhongcheng",
+      "name": "忠诚",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-1eefc549-97ca-479b-b3f7-7b44607bbf46.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 忠诚.\nSubject: Close-up of a bronze-armored hand firmly clutching an upright red clan oath banner, crimson fabric streaming proudly, bright warm gold oath-light circling the fist. Resolute loyalty symbol, no lettering on the banner.",
+      "plannedLargePath": "public/art/skills/zhongcheng-large.png",
+      "plannedSmallPath": "public/art/skills/zhongcheng-small.png",
+      "imported": true,
+      "sha256": "b325cab38397796d8ac6500b58785f13e17b6491d8af3932e0741e702258c172"
+    },
+    {
+      "key": "fanjian",
+      "name": "反间",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-bf02d248-2f35-4aef-b253-fc934f460247.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 反间.\nSubject: A narrow ancient bronze dagger concealed inside a rolled bamboo strategy scroll, its point revealed between the slats, sharp violet light and subtle secretive smoke. Close compact emblem of counter-intrigue, blank slats.",
+      "plannedLargePath": "public/art/skills/fanjian-large.png",
+      "plannedSmallPath": "public/art/skills/fanjian-small.png",
+      "imported": true,
+      "sha256": "8c5745a005eb31b6c414dca2335f59639e5e846a70de918baa70c15ccfcf3de5"
+    },
+    {
+      "key": "liuyan",
+      "name": "流言",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-02e89685-6ba9-4549-bdb4-400df9863ae3.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 流言.\nSubject: Loose fragments of ancient silk dispatch scrolls spinning in a gray-violet whisper vortex around a tilted bronze messenger bell. Wispy spectral mouths suggested only as mist shapes; dark secretive atmosphere, no readable script.",
+      "plannedLargePath": "public/art/skills/liuyan-large.png",
+      "plannedSmallPath": "public/art/skills/liuyan-small.png",
+      "imported": true,
+      "sha256": "fbbcbecb8f20a6decd8e100c2bcd4489e0b173e491ec5a29ad040697d1d3578e"
+    },
+    {
+      "key": "zhiliao",
+      "name": "治疗",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-d09c567c-7157-467e-8c11-90720ee38827.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 治疗.\nSubject: A well-worn green ceramic medicinal mortar and pestle containing crushed healing herbs, clean rolled linen bandage beside it, a soft luminous jade-green healing spiral rising from the bowl. Gentle restorative light.",
+      "plannedLargePath": "public/art/skills/zhiliao-large.png",
+      "plannedSmallPath": "public/art/skills/zhiliao-small.png",
+      "imported": true,
+      "sha256": "2ac7614cc973253c8c2c9839593ac6f2aba873816d413bcf1663f45178ac6ecd"
+    },
+    {
+      "key": "yinbi",
+      "name": "隐蔽",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-072f539f-844b-4946-b5fd-3469baad8c27.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 隐蔽.\nSubject: A closed ancient bronze-bound resource chest and grain sacks vanishing beneath a translucent veil of dark emerald mist, faint warehouse roof silhouette behind. Concealment symbol with chest half visible, mysterious muted green light.",
+      "plannedLargePath": "public/art/skills/yinbi-large.png",
+      "plannedSmallPath": "public/art/skills/yinbi-small.png",
+      "imported": true,
+      "sha256": "c6976d8d8309d986a063711e72d83cfe550cff1873917014f50953e4a77d6c31"
+    },
+    {
+      "key": "zhanzheng_guanghuan",
+      "name": "战争光环",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-519c767b-d20f-420d-bf23-089a15790841.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 战争光环.\nSubject: Three ancient Chinese bronze battle shields standing inside one brilliant protective golden ring of light, strong centered circular halo enclosing the group. One cohesive aura, majestic amber glow, no links between shields.",
+      "plannedLargePath": "public/art/skills/zhanzheng_guanghuan-large.png",
+      "plannedSmallPath": "public/art/skills/zhanzheng_guanghuan-small.png",
+      "imported": true,
+      "sha256": "1f44ef5d0988c12587bd0b09b5d1995352dc7fcb0fb1c3a6093ba84a6c2030b3"
+    },
+    {
+      "key": "qiangduo",
+      "name": "强夺",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-0abffabf-77aa-4d94-a8ac-918b48709661.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 强夺.\nSubject: A dark iron-armored hand forcefully seizing a tied grain sack and bright gold ingots from a broken bronze storage lock, sharp orange impact streaks. Compact grasping fist and loot silhouette, no people or injury.",
+      "plannedLargePath": "public/art/skills/qiangduo-large.png",
+      "plannedSmallPath": "public/art/skills/qiangduo-small.png",
+      "imported": true,
+      "sha256": "05e6ecbaac7c37e5c5be09478a23522bc9334e1703861a2bea7f68233f1d5b57"
+    },
+    {
+      "key": "jiliang",
+      "name": "积粮",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-f6617b7a-b78c-405b-996f-ae013927ccc3.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 积粮.\nSubject: A full ancient Chinese granary with a tightly secured bronze-bound wooden door, three large ripe golden wheat ears in the foreground and neatly stacked grain sacks. Warm harvest glow, abundance and secure storage.",
+      "plannedLargePath": "public/art/skills/jiliang-large.png",
+      "plannedSmallPath": "public/art/skills/jiliang-small.png",
+      "imported": true,
+      "sha256": "5f2f7f28deb007452356bec90a25f32a079acb2566afa6cb33be408ce5fad0de"
+    },
+    {
+      "key": "kongju",
+      "name": "恐惧",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-c0bf185c-6f90-43ba-98a4-5f6d9e15dbfb.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 恐惧.\nSubject: A vivid crimson ancient Chinese ghost-face war banner, its fierce stylized bronze demon mask emblem radiating red intimidation shockwaves into darkness. One bold mask-and-banner silhouette; theatrical battle intimidation, no gore.",
+      "plannedLargePath": "public/art/skills/kongju-large.png",
+      "plannedSmallPath": "public/art/skills/kongju-small.png",
+      "imported": true,
+      "sha256": "fba8d3761597a94a7c2b285a6ef691702f17f4464f17c7718daa9a059d947942"
+    },
+    {
+      "key": "lingwu",
+      "name": "领悟",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-f2c6ba78-7c2e-4b40-90ad-9f6818aec3d5.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 领悟.\nSubject: An open ancient bamboo scroll with plain slats, from its center rises a radiant golden lotus-shaped spark of insight inside a soft blue-gold halo. Compact symbol of sudden understanding and wisdom, no legible writing, no modern book.",
+      "plannedLargePath": "public/art/skills/lingwu-large.png",
+      "plannedSmallPath": "public/art/skills/lingwu-small.png",
+      "imported": true,
+      "sha256": "13db0eb9be5cefec3c25d300ff8347f2a759601e182c536f607b015765049300"
+    },
+    {
+      "key": "feijiang",
+      "name": "飞将",
+      "source": "/Users/gaara/.codex/generated_images/01a07b82-0b5a-7e21-bf7e-d9f854af4bfa/exec-4cf8638e-3679-41de-bae8-846ec7b8ec57.png",
+      "prompt": "Use case: stylized-concept.\nAsset type: ONE square standalone skill icon for a nostalgic 2012 Chinese Warring States strategy browser game.\nStyle: original hand-painted semi-realistic fantasy inventory illustration, weathered bronze and dark iron, charcoal vignette background, dramatic concentrated colored glow. Bold simple central silhouette filling 80 percent of square, clear at 64px, 8 percent safe margins. Rich texture but no busy scenery. Not a sheet or collage. No text, letters, numbers, frame, border, logos, watermark, modern objects, UI or caption.\n\nSkill: 飞将.\nSubject: An ancient Chinese mounted general charging forward on a black warhorse, long bronze spear raised diagonally, golden-white speed trails sweeping behind. Heroic compact rider-and-horse silhouette, visible horse head and spearpoint, no wings.",
+      "plannedLargePath": "public/art/skills/feijiang-large.png",
+      "plannedSmallPath": "public/art/skills/feijiang-small.png",
+      "imported": true,
+      "sha256": "2487664753eb1d40791b1b30b8a8098deb28cd84f543734479e8465317d83192"
+    }
+  ],
+  "sizes": {
+    "small": 64,
+    "large": 256
+  }
+}

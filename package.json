@@ -1,0 +1,49 @@
+{
+  "name": "fenghuo-2012",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k -n web,server -c cyan,yellow \"vite --host 0.0.0.0\" \"tsx watch server/index.ts\"",
+    "build": "vite build && tsc -p tsconfig.server.json",
+    "start": "node dist-server/server/index.js",
+    "typecheck": "vue-tsc --noEmit && tsc -p tsconfig.server.json --noEmit",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm run test && npm run build",
+    "db:apply": "tsx scripts/apply-schema.ts",
+    "db:seed": "tsx scripts/apply-seed.ts",
+    "db:update:treasury": "tsx scripts/update-treasury.ts",
+    "db:update": "tsx scripts/update-game.ts && tsx scripts/update-cultivation.ts && tsx scripts/update-official-skills.ts && tsx scripts/update-world.ts && tsx scripts/update-scheduled-tasks.ts && tsx scripts/update-equipment.ts && tsx scripts/update-treasury.ts && tsx scripts/update-military.ts && tsx scripts/update-resources.ts && tsx scripts/update-upkeep.ts && tsx scripts/update-tavern.ts && tsx scripts/update-hero-gems.ts && node --import tsx scripts/update-wild-gems.ts && node --import tsx scripts/update-outpost-gem-rates.ts && node --import tsx scripts/update-equipment-calibration.ts && node --import tsx scripts/update-world-boss.ts && node --import tsx scripts/update-equipment-sets.ts",
+    "db:update:outpost-gems": "node --import tsx scripts/update-outpost-gem-rates.ts",
+    "db:update:world-boss": "node --import tsx scripts/update-world-boss.ts",
+    "db:update:equipment-sets": "node --import tsx scripts/update-equipment-sets.ts",
+    "db:update:equipment-calibration": "node --import tsx scripts/update-equipment-calibration.ts",
+    "db:update:wild-gems": "node --import tsx scripts/update-wild-gems.ts",
+    "db:cleanup:obsolete": "node --import tsx scripts/cleanup-obsolete-items.ts",
+    "db:verify-scope": "tsx scripts/verify-db-scope.ts",
+    "db:update:hero-gems": "tsx scripts/update-hero-gems.ts",
+    "db:update:military": "tsx scripts/update-military.ts",
+    "db:update:resources": "tsx scripts/update-resources.ts",
+    "db:update:upkeep": "tsx scripts/update-upkeep.ts",
+    "db:update:tavern": "node --import tsx scripts/update-treasury.ts && node --import tsx scripts/update-tavern.ts"
+  },
+  "dependencies": {
+    "@fastify/static": "^8.2.0",
+    "dotenv": "^17.2.2",
+    "fastify": "^5.6.1",
+    "mysql2": "^3.14.5",
+    "pixi.js": "^8.13.2",
+    "vue": "^3.5.21",
+    "zod": "^4.1.11"
+  },
+  "devDependencies": {
+    "@types/node": "^24.5.2",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "concurrently": "^9.2.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.7",
+    "vitest": "^3.2.4",
+    "vue-tsc": "^3.0.8"
+  }
+}
