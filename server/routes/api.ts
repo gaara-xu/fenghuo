@@ -21,6 +21,7 @@ import {getTavernRecording,setTavernRecording} from '../game-service.js'
 import {MAX_DROP_QUANTITY} from '../../shared/drop-rules.js'
 import {getWorldBossRules,saveWorldBossRules} from '../world-boss-service.js'
 import {salvageEquipment} from '../salvage-service.js'
+import {getIncomingRaidRules,saveIncomingRaidRules} from '../incoming-raid-service.js'
 
 const sourceStatus = z.enum(['VERIFIED','ESTIMATED','DIY'])
 const artKey=z.string().regex(/^[a-z0-9_-]+$/).max(64).nullish()
@@ -51,6 +52,8 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
   await registerScheduledTasks(app)
   app.get('/api/admin/world-boss',()=>getWorldBossRules())
   app.put('/api/admin/world-boss',r=>saveWorldBossRules(r.body))
+  app.get('/api/admin/incoming-army',()=>getIncomingRaidRules())
+  app.put('/api/admin/incoming-army',r=>saveIncomingRaidRules(r.body))
   await registerMilitary(app)
   await registerResources(app)
   app.get('/api/catalog/heroes',listHeroes)

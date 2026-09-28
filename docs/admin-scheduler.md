@@ -18,6 +18,7 @@ Vite 和生产服务均支持直接访问、刷新 `/admin` 和 `/admin/`；静�
 | --- | --- | --- |
 | 刷新据点 | `/api/admin/tasks/refresh-outposts/run` | 每小时 |
 | 刷新野地 | `/api/admin/tasks/refresh-wilds/run` | 每2小时 |
+| 生成一支来袭军队 | `/api/admin/tasks/spawn-incoming-army/run` | 由外部服务自行决定 |
 | 刷新随机城池 | `/api/admin/tasks/refresh-random-cities/run` | 每6小时 |
 | 刷新全部动态目标 | `/api/admin/tasks/refresh-map/run` | 每小时，与前三项择一 |
 | 清理过期记录 | `/api/admin/tasks/cleanup-records/run` | 每天，可选 |
@@ -31,9 +32,15 @@ Vite 和生产服务均支持直接访问、刷新 `/admin` 和 `/admin/`；静�
 curl --fail-with-body --request GET 'http://localhost:5173/api/admin/tasks/refresh-outposts/run'
 ```
 
-本轮开发电脑内网地址在验证时为 `192.168.3.23`：若调度器位于服务器或其他电脑，应调用 `http://192.168.3.23:5173/api/admin/tasks/refresh-outposts/run`。它依赖开发电脑开机、网络地址不变且开发服务运行。
-游戏尚未部署到 `192.168.3.110`，不要把数据库服务器当作已经运行游戏的服务器。
-实际部署后改为 Nginx 的游戏访问根地址，或在游戏服务器本机调用 `http://127.0.0.1:18770` 下的相同API路径。未修改 Nginx。
+在 `192.168.3.110` 完成 Docker 部署后，调度根地址为 `http://192.168.3.110:5173`。开发环境则用运行开发服务的电脑地址；不要把数据库可连接等同于游戏已经部署。本轮只更新代码并推送 Git，不部署 110，也不调用真实的来袭执行地址。
+
+新增来袭接口示例（执行会生成军队）：
+
+```bash
+curl --fail-with-body --request GET 'http://192.168.3.110:5173/api/admin/tasks/spawn-incoming-army/run'
+```
+
+每次调用生成一支，默认总攻击力 10,000～100,000，300 **游戏秒**后攻击主城；游戏倍率为1时即现实5分钟。后台“城主控制台 → 来袭军队”调整攻击范围、掉率、数量和生成开关。完整守城、伤亡、掉落与升级说明见 [来袭军队](incoming-raids.md)。
 
 ## 可选令牌与重试
 
@@ -58,12 +65,13 @@ curl --fail-with-body --request GET 'http://localhost:5173/api/admin/tasks/refre
 - 分类刷新只修改对应类型，缺少时补足至少4个；在途/战斗/返城中的目标完全保留，也计入数量，不会因频繁调度无限增加目标。
 - 据点最高20级；野地、随机城池仍为1—5级。副本和系统城不刷新。
 - 清理保持主动战报最新50条，删除已完成普通行军和无引用0级据点；不清空全部战报，不删除被攻击战报及自动出征记录。
-- 外部定时按调度系统的真实时间运行，不受游戏加速倍率影响。原有每2秒行军/刷野结算继续运行，不需要外部定时接管。
+- 外部定时按调度系统的真实时间运行，不受游戏加速倍率影响。原有每2秒行军/刷野结算继续运行，并处理已生成军队的到达，不需要外部定时接管。
+- 刷新据点、野地、随机城池或全部地图都不会生成来袭；只有调用 `spawn-incoming-army` 才生成。关闭生成开关不取消在途来袭。
 
 ## 数据库与验证
 
-新增版本 `0007_scheduled_tasks`，幂等升级脚本 `scripts/update-scheduled-tasks.ts` 已加入 `npm run db:update`。
-唯一完整无业务数据结构 `database/schema.sql` 与增量DDL `database/migrations/0007_scheduled_tasks.sql` 同步。
+调度版本 `0007_scheduled_tasks` 和来袭版本 `0022_incoming_raids` 的幂等升级脚本都已加入 `npm run db:update`；Docker 部署也执行相同增量更新。
+唯一完整无业务数据结构 `database/schema.sql` 与对应增量DDL同步。
 仅访问 `fenghuo`；迁移只加表，不运行任何调度任务，不重置游戏存档。
 
-`npm run check` 验证类型、单元测试和生产构建；`RUN_DB_TESTS=1 npm test -- tests/game-db.integration.test.ts` 在外层事务回滚验证分类刷新、保护在途目标、重试去重、有界存储和失败原子回滚。
+`npm run check` 验证类型、单元测试和生产构建；`RUN_DB_TESTS=1 npm test -- tests/game-db.integration.test.ts` 在外层事务回滚验证分类刷新、保护在途目标、重试去重、有界存储、来袭守城和失败原子回滚。来袭测试使用连接私有临时表，不创建持久表或真实敌军。

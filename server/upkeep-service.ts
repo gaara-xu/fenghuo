@@ -2,13 +2,16 @@ import type {Pool,PoolConnection,RowDataPacket} from 'mysql2/promise'
 import {getPool} from './db.js'
 import {config} from './config.js'
 import {foodRates,foodCharge,productionSoldierHours,type UpkeepState} from '../shared/upkeep.js'
+import {INCOMING_RAID_VERSION} from '../shared/incoming-raids.js'
 const parse=(v:any)=>typeof v==='string'?JSON.parse(v):v
 async function ready(c:Pool|PoolConnection){const [r]=await c.query<RowDataPacket[]>("SELECT version FROM schema_migrations WHERE version='0013_military_upkeep'");return Boolean(r.length)}
-export async function nextMilitaryEvent(c:Pool|PoolConnection,now:Date):Promise<{kind:'MARCH'|'FARM';id:number;at:Date}|null>{
+export async function nextMilitaryEvent(c:Pool|PoolConnection,now:Date):Promise<{kind:'MARCH'|'FARM'|'INCOMING';id:number;at:Date}|null>{
+ const [ready]=await c.query<RowDataPacket[]>('SELECT version FROM schema_migrations WHERE version=?',[INCOMING_RAID_VERSION])
+ const raidSql=ready.length?" UNION ALL SELECT 'INCOMING' kind,id,arrive_game_at at_time FROM incoming_raids WHERE player_id=?":''
  const [r]=await c.query<RowDataPacket[]>(`SELECT * FROM (
  SELECT 'MARCH' kind,id,IF(status='RETURNING',return_game_at,arrive_game_at) at_time FROM march_orders WHERE player_id=? AND status IN ('MARCHING','RETURNING')
  UNION ALL SELECT 'FARM' kind,j.id,j.next_run_game_at at_time FROM auto_farm_jobs j WHERE j.player_id=? AND j.status='ACTIVE' AND NOT EXISTS (SELECT 1 FROM march_orders m WHERE m.auto_farm_job_id=j.id AND m.status IN ('MARCHING','RETURNING'))
- ) events WHERE at_time<=? ORDER BY at_time,kind,id LIMIT 1`,[config.PLAYER_ID,config.PLAYER_ID,now])
+ ${raidSql}) events WHERE at_time<=? ORDER BY at_time,CASE kind WHEN 'MARCH' THEN 0 WHEN 'INCOMING' THEN 1 ELSE 2 END,id LIMIT 1`,[config.PLAYER_ID,config.PLAYER_ID,...(ready.length?[config.PLAYER_ID]:[]),now])
  return r[0]?{kind:r[0].kind,id:Number(r[0].id),at:new Date(r[0].at_time)}:null
 }
 async function population(c:Pool|PoolConnection){

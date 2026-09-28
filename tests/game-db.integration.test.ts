@@ -52,17 +52,27 @@ import {cleanupObsoleteItems} from '../scripts/obsolete-item-cleanup-data'
 import {obsoleteItemCodes} from '../shared/obsolete-items'
 import {forgeMaterials} from '../shared/official-catalog'
 import {originalGems} from '../shared/gems'
+import {INCOMING_RAID_VERSION,defaultIncomingRaidRules,type IncomingRaid} from '../shared/incoming-raids'
+import {getIncomingRaidRules,saveIncomingRaidRules,listIncomingRaids,settleIncomingRaid} from '../server/incoming-raid-service'
 
 // 显式开启。测试仅 fenghuo，全部写入留在同一个外层事务中并回滚，不清理或重置用户记录。
 describe.skipIf(process.env.RUN_DB_TESTS!=='1')('fenghuo 实库事务回滚联调',()=>{
   let heroId:number,skillId:number
-  beforeAll(async()=>{db.c=await mysql.createConnection({host:config.DB_HOST,port:config.DB_PORT,user:config.DB_USER,password:config.DB_PASSWORD,database:'fenghuo',charset:'utf8mb4',timezone:'Z'});const [r]=await db.c.query('SELECT DATABASE() db');expect(r[0].db).toBe('fenghuo')})
+  beforeAll(async()=>{
+    db.c=await mysql.createConnection({host:config.DB_HOST,port:config.DB_PORT,user:config.DB_USER,password:config.DB_PASSWORD,database:'fenghuo',charset:'utf8mb4',timezone:'Z'});const [r]=await db.c.query('SELECT DATABASE() db');expect(r[0].db).toBe('fenghuo')
+    // Connection-private InnoDB table: no persistent migration or real enemy is created.
+    // MySQL temporary tables cannot have FKs; production DDL retains the FK.
+    const ddl=readFileSync('database/migrations/0022_incoming_raids.sql','utf8').replace('CREATE TABLE IF NOT EXISTS','CREATE TEMPORARY TABLE').replace(/,\n CONSTRAINT[^\n]+/,'')
+    await db.c.query(ddl)
+  })
   afterAll(async()=>{await db.c?.end()})
   beforeEach(async()=>{
     tavernMemory.clear()
     await db.c.beginTransaction()
     // Isolate time-sensitive services from the user's real in-flight work; outer rollback restores it.
     await db.c.query('SELECT id FROM player_profile WHERE id=? FOR UPDATE',[config.PLAYER_ID])
+    await db.c.execute('INSERT IGNORE INTO schema_migrations (version,description) VALUES (?,?)',[INCOMING_RAID_VERSION,'仅回滚测试事务可见'])
+    await db.c.execute("INSERT INTO game_settings (setting_key,setting_value,value_type) VALUES ('incoming_raid_rules',?,'JSON') ON DUPLICATE KEY UPDATE setting_value=VALUES(setting_value)",[JSON.stringify(defaultIncomingRaidRules)])
     // The live player may already have all 50 queue slots occupied. Hide existing
     // production inside this rollback-only fixture without granting troops or changing the save.
     await db.c.execute('UPDATE military_orders SET completed=quantity WHERE player_id=? AND completed<quantity',[config.PLAYER_ID])
@@ -962,7 +972,7 @@ describe.skipIf(process.env.RUN_DB_TESTS!=='1')('fenghuo 实库事务回滚联�
     }finally{random.mockRestore();await app.close()}
   })
   async function makeOutpost(level:number){const [coords]=await db.c.query('SELECT MAX(x) x FROM map_nodes');const [r]=await db.c.execute("INSERT INTO map_nodes (node_type,name,level,x,y,garrison_config,reward_config) VALUES ('OUTPOST','事务测试据点',?,?,0,'{}','{\"food\":100}')",[level,Number(coords[0].x)+1]);return Number(r.insertId)}
-  it('五个GET地址贯通真实数据库并能使用URL编号去重，测试全部回滚',async()=>{
+  it('全部GET地址贯通真实数据库并能使用URL编号去重，测试全部回滚',async()=>{
     const app=Fastify();await registerScheduledTasks(app)
     try{for(const task of scheduledTasks){const requestId=randomUUID(),url=taskPath(task.id)+'?requestId='+requestId,headers=config.SCHEDULER_TOKEN?{authorization:'Bearer '+config.SCHEDULER_TOKEN}:{}
       const first=await app.inject({method:'GET',url,headers});expect(first.statusCode).toBe(200);expect(first.json()).toMatchObject({ok:true,taskId:task.id,requestId,replayed:false});expect(first.headers['cache-control']).toContain('no-store')
@@ -1153,6 +1163,64 @@ describe.skipIf(process.env.RUN_DB_TESTS!=='1')('fenghuo 实库事务回滚联�
   async function queueRow(id:number){const [r]=await db.c.query('SELECT * FROM military_orders WHERE id=?',[id]);return r[0]}
   async function wallet(){const [r]=await db.c.query('SELECT food,wood,stone,iron,gold FROM resource_wallet WHERE player_id=?',[config.PLAYER_ID]);return r[0]}
   async function unitQuantity(code:string){const [r]=await db.c.query('SELECT quantity FROM player_forces WHERE player_id=? AND unit_code=?',[config.PLAYER_ID,code]);return Number(r[0]?.quantity??0)}
+  async function raidFixture(quantity=1000){
+    await db.c.execute("UPDATE game_clock SET game_anchor_at='2026-01-01',real_anchor_at=UTC_TIMESTAMP(3),multiplier=0 WHERE id=1")
+    await db.c.execute("UPDATE military_upkeep SET last_game_at='2026-01-01',fraction=0 WHERE player_id=?",[config.PLAYER_ID])
+    await db.c.execute('UPDATE player_forces SET quantity=0 WHERE player_id=?',[config.PLAYER_ID])
+    const unit={...await testUnit(),meleeDefense:.5,rangedDefense:.5,foodPerHour:0}
+    await db.c.execute('UPDATE military_definitions SET config_json=? WHERE code=?',[JSON.stringify(unit),unit.code]);await forceDelta(db.c,unit.code,quantity)
+    await saveIncomingRaidRules({...defaultIncomingRaidRules,attackMin:100,attackMax:100,itemChance:0})
+    const r=await runScheduledTask('spawn-incoming-army',randomUUID());return {unit,raid:r.incomingArmy!}
+  }
+  async function raidReport(raid:IncomingRaid){const [r]=await db.c.query("SELECT * FROM battle_reports WHERE player_id=? AND JSON_EXTRACT(battle_config,'$.incomingRaidId')=?",[config.PLAYER_ID,raid.id]);return r}
+  it('来袭GET每次一支、固定五分钟；重试去重，未调用不会自动产生军队',async()=>{
+    const id=randomUUID(),r=await runScheduledTask('spawn-incoming-army',id),army=r.incomingArmy!
+    expect(Date.parse(army.arriveGameAt)-Date.parse(army.departGameAt)).toBe(300000);expect(army.attackPower).toBeGreaterThanOrEqual(10000);expect(army.attackPower).toBeLessThanOrEqual(100000)
+    expect(await runScheduledTask('spawn-incoming-army',id)).toEqual({...r,replayed:true});expect(await listIncomingRaids()).toHaveLength(1)
+    await runScheduledTask('refresh-wilds',randomUUID());expect(await listIncomingRaids()).toHaveLength(1)
+    await processDueWorldWork();expect(await listIncomingRaids()).toHaveLength(1)
+    await runScheduledTask('spawn-incoming-army',randomUUID());expect(await listIncomingRaids()).toHaveLength(2)
+  })
+  it('来袭到达才扣兵，城防参与，重复结算与清理不删除被攻击战报',async()=>{
+    const {unit,raid}=await raidFixture(1000),at=new Date(raid.arriveGameAt)
+    const fort={...await testUnit(true),meleeDefense:.5,rangedDefense:.5,foodPerHour:0};await db.c.execute('UPDATE military_definitions SET config_json=? WHERE code=?',[JSON.stringify(fort),fort.code]);await forceDelta(db.c,fort.code,1000)
+    await settleIncomingRaid(db.c,raid.id,new Date(at.getTime()-1));expect(await unitQuantity(unit.code)).toBe(1000);expect(await raidReport(raid)).toHaveLength(0)
+    await settleDueWorldEvents(db.c,at)
+    const records=await raidReport(raid);expect(records).toHaveLength(1);expect(records[0].direction).toBe('INCOMING');expect(records[0].result).toBe('VICTORY')
+    expect(await unitQuantity(unit.code)+await unitQuantity(fort.code)).toBe(1995)
+    const details=typeof records[0].battle_config==='string'?JSON.parse(records[0].battle_config):records[0].battle_config;expect(details.defensePower).toBe(2000);expect(details.troopLosses).toHaveLength(2)
+    await settleIncomingRaid(db.c,raid.id,at);expect(await raidReport(raid)).toHaveLength(1);expect(await listIncomingRaids()).toHaveLength(0)
+    await clearReports();await pruneReports(db.c);expect(await raidReport(raid)).toHaveLength(1)
+  })
+  it.each([[100,'DRAW',0],[50,'DEFEAT',0],[1000,'VICTORY',990],[10000,'VICTORY',9999],[100000,'VICTORY',100000]])('来袭100战力对%d留城兵：%s，剩余%d',async(quantity,result,remaining)=>{
+    const {unit,raid}=await raidFixture(quantity);await settleDueWorldEvents(db.c,new Date(raid.arriveGameAt));expect(await unitQuantity(unit.code)).toBe(remaining);expect((await raidReport(raid))[0].result).toBe(result)
+  })
+  it('来袭战利品按出发快照入包，后台后改概率不影响当前军队，重复结算不重复发奖',async()=>{
+    const {raid}=await raidFixture();await db.c.execute('UPDATE item_definitions SET enabled=0')
+    const [i]=await db.c.execute("INSERT INTO item_definitions (code,name,item_type,rarity,quality_tier,description,effect_config,enabled) VALUES (?,'防守测试奖励','MATERIAL',1,1,'事务回滚道具','{}',1)",['raid_reward_'+randomUUID()])
+    await db.c.execute('UPDATE incoming_raids SET loot_rules=? WHERE id=?',[JSON.stringify({...defaultIncomingRaidRules,itemChance:1,quantities:{...defaultIncomingRaidRules.quantities,MATERIAL:{min:7,max:7}}}),raid.id])
+    await saveIncomingRaidRules({...defaultIncomingRaidRules,enabled:false,itemChance:0})
+    await settleDueWorldEvents(db.c,new Date(raid.arriveGameAt));const [items]=await db.c.query('SELECT quantity FROM player_inventory WHERE player_id=? AND item_definition_id=?',[config.PLAYER_ID,i.insertId]);expect(Number(items[0].quantity)).toBe(7)
+    await settleDueWorldEvents(db.c,new Date(raid.arriveGameAt));const [again]=await db.c.query('SELECT quantity FROM player_inventory WHERE player_id=? AND item_definition_id=?',[config.PLAYER_ID,i.insertId]);expect(Number(again[0].quantity)).toBe(7)
+    expect((await runScheduledTask('spawn-incoming-army',randomUUID())).incomingArmy).toBeNull()
+  })
+  it('来袭结算失败时伤亡、战报、战利品和待办全部回滚，可安全重试',async()=>{
+    const {unit,raid}=await raidFixture();await db.c.execute("UPDATE incoming_raids SET loot_rules='{}' WHERE id=?",[raid.id])
+    await expect(db.c.query('SAVEPOINT raid_failure').then(()=>settleIncomingRaid(db.c,raid.id,new Date(raid.arriveGameAt)))).rejects.toThrow()
+    await db.c.query('ROLLBACK TO SAVEPOINT raid_failure');expect(await unitQuantity(unit.code)).toBe(1000);expect(await raidReport(raid)).toHaveLength(0);expect(await listIncomingRaids()).toHaveLength(1)
+    await db.c.execute('UPDATE incoming_raids SET loot_rules=? WHERE id=?',[JSON.stringify({...defaultIncomingRaidRules,itemChance:0}),raid.id]);await settleDueWorldEvents(db.c,new Date(raid.arriveGameAt));expect(await unitQuantity(unit.code)).toBe(990)
+  })
+  it('来袭抵达时只计已经完成的生产，后台接口可保存规则且错误输入不修改',async()=>{
+    const {unit,raid}=await raidFixture(0),at=new Date(raid.arriveGameAt),fort={...await testUnit(true),meleeDefense:100,rangedDefense:100}
+    await db.c.execute('UPDATE military_definitions SET config_json=? WHERE code=?',[JSON.stringify(fort),fort.code])
+    await db.c.execute("INSERT INTO military_orders (player_id,unit_code,lane,quantity,seconds_per_unit,start_game_at,end_game_at,snapshot_json,client_action_id) VALUES (?,?,'DEFENSE',3,100,?,?,?,?)",[config.PLAYER_ID,fort.code,new Date(at.getTime()-250000),new Date(at.getTime()+50000),JSON.stringify(fort),randomUUID()])
+    await settleDueWorldEvents(db.c,at);const report=(await raidReport(raid))[0],details=typeof report.battle_config==='string'?JSON.parse(report.battle_config):report.battle_config
+    expect(details.defensePower).toBe(400);expect(details.troopLosses[0].sent).toBe(2);expect(await unitQuantity(unit.code)).toBe(0)
+    const app=Fastify();await registerApi(app)
+    try{const body={...defaultIncomingRaidRules,attackMin:1234,attackMax:2345,itemChance:.8};expect((await app.inject({method:'PUT',url:'/api/admin/incoming-army',payload:body})).statusCode).toBe(200);expect((await app.inject('/api/admin/incoming-army')).json()).toEqual(body)
+      expect((await app.inject({method:'PUT',url:'/api/admin/incoming-army',payload:{...body,attackMin:9000}})).statusCode).toBeGreaterThanOrEqual(400);expect(await getIncomingRaidRules()).toEqual(body)
+    }finally{await app.close()}
+  })
   async function farmMarch(id:number){const [r]=await db.c.query("SELECT * FROM march_orders WHERE auto_farm_job_id=? AND status IN ('MARCHING','RETURNING')",[id]);return r[0]}
   it('军营逐个生产、离线补齐、重试只扣一次金币，完成再结算不复制士兵',async()=>{
     const d=await testUnit(),before=await wallet(),key=randomUUID(),q=await enqueueMilitary(d.code,3,key),row=await queueRow(q.id),start=new Date(row.start_game_at).getTime()

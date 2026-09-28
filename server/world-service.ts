@@ -22,6 +22,7 @@ import {enqueueMilitary,listMilitary,reserveTroops,returnTroops,readArmy,process
 import {nextMilitaryEvent} from './upkeep-service.js'
 import {randomUUID} from 'node:crypto'
 import {readFarmConfig,farmReturnProgress} from '../shared/auto-farm.js'
+import {listIncomingRaids,settleIncomingRaid} from './incoming-raid-service.js'
 
 const PLAYER_ID=config.PLAYER_ID
 const rewardColumns=new Set(['food','wood','stone','iron','gold','coupon'])
@@ -45,9 +46,9 @@ export async function getWorldStatus():Promise<WorldStatus>{
     pool.query<RowDataPacket[]>(`SELECT s.*,k.owned_hero_id,k.slot_no,k.skill_level,l.effect_value,next.upgrade_exp,next.same_book_cost,next.effect_value next_effect_value FROM owned_hero_skills k JOIN owned_heroes o ON o.id=k.owned_hero_id JOIN skill_definitions s ON s.id=k.skill_definition_id LEFT JOIN skill_levels l ON l.skill_definition_id=s.id AND l.level=k.skill_level LEFT JOIN skill_levels next ON next.skill_definition_id=s.id AND next.level=k.skill_level+1 WHERE o.player_id=? AND s.enabled=1`,[PLAYER_ID]),
     pool.query<RowDataPacket[]>('SELECT b.skill_definition_id,b.quantity FROM player_skill_books b JOIN skill_definitions s ON s.id=b.skill_definition_id AND s.enabled=1 WHERE b.player_id=? AND b.quantity>0',[PLAYER_ID]),
   ])
-  const [growth,equipment,inventory,incoming]=await Promise.all([getGrowthRules(),getEquipment(),getInventory(),incomingReports()])
+  const [growth,equipment,inventory,incoming,incomingArmies]=await Promise.all([getGrowthRules(),getEquipment(),getInventory(),incomingReports(),listIncomingRaids()])
   return {
-    inventory,incoming,
+    inventory,incoming,incomingArmies,
     ownedHeroes:heroes.map(h=>{
       const id=Number(h.id),equipped=equipment.filter(e=>e.heroId===id),bonus=equipmentBonuses(equipped),stats=statsFromRow(h,growth,Number(h.level),bonus,equipmentFlatBonuses(equipped))
       return {id,heroDefinitionId:Number(h.hero_definition_id),portraitKey:h.portrait_key,experience:Number(h.experience),unlockedSlots:unlockedSkillSlots(Number(h.star),Number(h.level)),skills:heroSkills.filter(s=>Number(s.owned_hero_id)===id).map(mapLearnedRow),name:h.name,originalName:h.original_name,star:Number(h.star),qualityTier:Number(h.quality_tier),level:Number(h.level),talentGrade:h.talent_grade,stamina:Number(h.stamina),stats,nextStats:Number(h.level)<20?statsFromRow(h,growth,Number(h.level)+1,bonus,equipmentFlatBonuses(equipped)):null,upgradeExp:Number(h.level)*100,equipment:equipped,busy:marches.some(m=>Number(m.owned_hero_id)===id&&['MARCHING','FIGHTING','RETURNING'].includes(m.status))||jobs.some(j=>Number(j.owned_hero_id)===id&&j.status==='ACTIVE'),power:heroPower({...stats,level:Number(h.level)})}
@@ -211,6 +212,7 @@ export async function settleDueWorldEvents(c:PoolConnection,now:Date):Promise<vo
     const event=await nextMilitaryEvent(c,now)
     if(!event){await maintainWorldBosses(c,now);return}
     if(event.kind==='MARCH')await processMarchInTransaction(c,event.id,event.at)
+    else if(event.kind==='INCOMING')await settleIncomingRaid(c,event.id,event.at)
     else await processFarmInTransaction(c,event.id,event.at)
   }
   // Large offline backlogs are still drained by the bounded background worker.
@@ -225,7 +227,7 @@ export async function processDueWorldWork():Promise<void>{
     const pool=getPool(),[clocks]=await pool.query<RowDataPacket[]>('SELECT * FROM game_clock WHERE id=1');if(!clocks[0])return;const now=gameNow(clocks[0] as ClockRow)
     // Resolve departures, battles and returns chronologically, including offline catch-up.
     // Bound each tick; upkeep never jumps past an unresolved event and bills dead troops.
-    for(let i=0;i<200;i++){const event=await nextMilitaryEvent(pool,now);if(!event)break;if(event.kind==='MARCH')await processMarch(event.id,event.at);else await processFarm(event.id,event.at)}
+    for(let i=0;i<200;i++){const event=await nextMilitaryEvent(pool,now);if(!event)break;if(event.kind==='MARCH')await processMarch(event.id,event.at);else if(event.kind==='INCOMING')await inTransaction(async c=>{await lockReportWriter(c);await settleIncomingRaid(c,event.id,event.at)});else await processFarm(event.id,event.at)}
     await processMilitaryWork(now)
     await inTransaction(async c=>{await lockReportWriter(c);await maintainWorldBosses(c,now)})
     await maintainReports()

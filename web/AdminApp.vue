@@ -14,6 +14,7 @@ import ScheduledTasks from './ScheduledTasks.vue'
 import MilitaryManager from './MilitaryManager.vue'
 import ResourceGrant from './ResourceGrant.vue'
 import WorldBossSettings from './WorldBossSettings.vue'
+import IncomingArmySettings from './IncomingArmySettings.vue'
 import TavernRecording from './TavernRecording.vue'
 import type {ItemDefinition} from '../shared/items'
 import {itemTypes} from '../shared/items'
@@ -80,6 +81,7 @@ onUnmounted(()=>{clearInterval(poll);window.removeEventListener('hashchange',syn
         <ResourceGrant :wallet="data.player.wallet" @changed="load"/>
         <TavernRecording/>
         <WorldBossSettings/>
+        <IncomingArmySettings/>
         <div class="admin-grid">
           <form @submit.prevent="saveHero">
             <h3>{{heroForm.id?'编辑':'新增'}}英雄</h3>

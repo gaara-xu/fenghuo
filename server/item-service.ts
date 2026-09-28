@@ -4,7 +4,7 @@ import {getPool,inTransaction} from './db.js'
 import {config} from './config.js'
 import {lockAvailableHero} from './hero-service.js'
 import {SeededRandom,pickTalent} from './domain/random.js'
-import {rollWorldBossLoot} from '../shared/world-boss.js'
+import {rollWorldBossLoot,type WorldBossRules} from '../shared/world-boss.js'
 import {getWorldBossRules} from './world-boss-service.js'
 import {outpostDropFactor} from '../shared/world-rules.js'
 import {slotMatches,type GearState} from '../shared/items.js'
@@ -84,6 +84,11 @@ export function rollLoot(pools:DropPool[],items:ItemDefinition[],type:string,lev
 }
 export async function awardDrops(c:PoolConnection,nodeType:string,level:number,seed:string,worldBoss=false):Promise<Loot[]>{
   const [rows]=await c.query<RowDataPacket[]>("SELECT i.* FROM item_definitions i LEFT JOIN skill_definitions s ON s.id=JSON_EXTRACT(i.effect_config,'$.skillId') WHERE i.enabled=1 AND i.deleted_at IS NULL AND (i.item_type<>'SKILL_BOOK' OR s.enabled=1) ORDER BY i.id"),items=rows.map(mapItem),random=new SeededRandom(seed),loot=worldBoss?rollWorldBossLoot(items,await getWorldBossRules(c),()=>random.next()):rollLoot(await listDropPools(c),items,nodeType,level,seed)
+  for(const l of loot){const item=items.find(i=>i.id===l.itemId)!;if(item.itemType==='SKILL_BOOK')await c.execute('INSERT INTO player_skill_books (player_id,skill_definition_id,quantity) VALUES (?,?,?) ON DUPLICATE KEY UPDATE quantity=quantity+VALUES(quantity)',[player,item.effectConfig.skillId!,l.quantity]);else await inventoryDelta(c,l.itemId,l.quantity)}
+  return loot
+}
+export async function awardCatalogDrops(c:PoolConnection,rules:Pick<WorldBossRules,'itemChance'|'quantities'>,seed:string):Promise<Loot[]>{
+  const [rows]=await c.query<RowDataPacket[]>("SELECT i.* FROM item_definitions i LEFT JOIN skill_definitions s ON s.id=JSON_EXTRACT(i.effect_config,'$.skillId') WHERE i.enabled=1 AND i.deleted_at IS NULL AND (i.item_type<>'SKILL_BOOK' OR s.enabled=1) ORDER BY i.id"),items=rows.map(mapItem),random=new SeededRandom(seed),loot=rollWorldBossLoot(items,rules,()=>random.next())
   for(const l of loot){const item=items.find(i=>i.id===l.itemId)!;if(item.itemType==='SKILL_BOOK')await c.execute('INSERT INTO player_skill_books (player_id,skill_definition_id,quantity) VALUES (?,?,?) ON DUPLICATE KEY UPDATE quantity=quantity+VALUES(quantity)',[player,item.effectConfig.skillId!,l.quantity]);else await inventoryDelta(c,l.itemId,l.quantity)}
   return loot
 }

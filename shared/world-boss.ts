@@ -21,7 +21,7 @@ export function isWorldBoss(raw:unknown):boolean {
   try{const c=typeof raw==='string'?JSON.parse(raw):raw;return Boolean(c&&typeof c==='object'&&'worldBoss' in c&&c.worldBoss===true)}catch{return false}
 }
 export function worldBossAfterBattle(victory:boolean,level=WORLD_BOSS_LEVEL,raw?:unknown){const d=worldBossDefenses(raw);return {level:victory?0:level,power:victory?0:Math.max(d.meleeDefense,d.rangedDefense),status:victory?'DEPLETED':'ACTIVE'} as const}
-export function rollWorldBossLoot(items:ItemDefinition[],rules:WorldBossRules,random:()=>number):Loot[]{
+export function rollWorldBossLoot(items:ItemDefinition[],rules:Pick<WorldBossRules,'itemChance'|'quantities'>,random:()=>number):Loot[]{
   const loot:Loot[]=[]
   for(const item of items){
     const gem=item.itemType==='MATERIAL'&&Boolean(item.effectConfig.gemStat||item.effectConfig.gemFamily||item.effectConfig.gemLevel)

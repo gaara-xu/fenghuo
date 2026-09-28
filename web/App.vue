@@ -20,6 +20,7 @@ import MilitaryPanel from './MilitaryPanel.vue'
 import DispatchTroops from './DispatchTroops.vue'
 import AutoFarmRecord from './AutoFarmRecord.vue'
 import FoodStatus from './FoodStatus.vue'
+import IncomingArmies from './IncomingArmies.vue'
 import TavernCandidates from './TavernCandidates.vue'
 import {currencyNames} from '../shared/tavern'
 import type {MilitaryState} from '../shared/military'
@@ -73,6 +74,7 @@ onUnmounted(()=>{clearInterval(timer);clearInterval(poll)})
     <nav><button v-for="item in ([['tavern','酒馆'],['roster','我的英雄'],['map','天下'],['barracks','军营'],['defense','城防'],['bag','我的物品'],['workshop','工坊'],['treasury','藏宝阁'],['catalog','英雄技能']] as const)" :key="item[0]" :class="{active:tab===item[0]}" @click="tab=item[0];if(item[0]==='workshop')workshopInitialTab='equipment'">{{item[1]}}</button><a class="context-link" href="/admin">管理后台 ↗</a></nav>
     <div v-if="error" class="toast error">{{error}}</div><div v-if="message" class="toast">{{message}}</div>
     <FoodStatus :upkeep="military.upkeep"/>
+    <IncomingArmies :armies="world?.incomingArmies??[]" :game-time="gameTimeMs"/>
     <main v-if="data">
       <section v-if="tab==='tavern'" class="tavern">
         <div class="section-title"><div><small>招贤纳士 · 秘术奇卷 · 名器异宝</small><h1>{{currentPool?.poolType==='ITEM'?'藏宝阁':currentPool?.poolType==='SKILL'?'藏书阁':'聚贤馆'}}</h1></div><div class="pool-tabs"><button v-for="p in data.pools" :key="p.id" :disabled="busy" :class="{active:selectedPool===p.id}" @click="selectedPool=p.id">{{p.name}}</button></div></div>

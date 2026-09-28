@@ -17,6 +17,10 @@ const button=(v:View,prefix:string)=>v.all().find(n=>n.type==='button'&&content(
 beforeEach(()=>{api.mockReset();confirm.mockReset().mockResolvedValue(false)})
 afterEach(()=>{vi.unstubAllGlobals()})
 describe('战报掉落筛选',()=>{
+ it('标题胜利后直接显示物品和数量，展开详情仍保留完整掉落与伤亡',()=>{
+  const v=renderClient(Reports,{reports:[report(1,{loot:[{...drop,quantity:1200},{itemId:20,name:'精炼石',quantity:8},{itemId:30,name:'无效掉落',quantity:0}],troopLosses:[{code:'guard',name:'枪盾兵',sent:100,lost:10,remaining:90}]})],busy:false})
+  try{expect(content(v.find('summary')!)).toContain('胜利 · 天赋水 ×1,200、精炼石 ×8');expect(content(v.find('summary')!)).not.toContain('无效掉落');expect(content(v.find('details')!)).toContain('获得 天赋水 ×1200');expect(v.byClass('casualty-table')).toBeDefined()}finally{v.app.unmount()}
+ })
  it('默认仅显示实际获得物品的记录，资源收益与零数量不算物品掉落',()=>{
   const v=renderClient(Reports,{reports:structuredClone(initial),busy:false})
   try{expect(rows(v)).toEqual([4]);expect(button(v,'有物品掉落').props['aria-pressed']).toBe(true);expect(content(v.root)).toContain('显示 1 / 4 条');expect(v.props.reports).toHaveLength(4);expect(api).not.toHaveBeenCalled();expect(v.all().some(n=>n.type==='select')).toBe(false)}finally{v.app.unmount()}

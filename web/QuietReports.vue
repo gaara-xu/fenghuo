@@ -32,11 +32,13 @@ watch(visible,async()=>{
   <div ref="list" class="reports-list">
     <p v-if="!visible.length" class="report-empty">{{view==='INCOMING'?'暂无被攻击记录':lootOnly&&reports.length?'暂无物品掉落战报，可切换“全部战报”查看其他记录。':'暂无出征战报'}}</p>
     <details v-for="r in visible" :key="r.id" :data-report-id="r.id" class="battle-report">
-      <summary :class="r.result.toLowerCase()">{{r.title}} · {{label(statusLabels,r.result)}}</summary>
+      <summary :class="r.result.toLowerCase()">{{r.title}} · {{label(statusLabels,r.result)}}<span v-if="r.loot?.some(l=>l.quantity>0)" class="report-loot-summary"> · {{r.loot.filter(l=>l.quantity>0).map(l=>l.name+' ×'+l.quantity.toLocaleString()).join('、')}}</span></summary>
       <small>{{new Date(r.occurredGameAt).toLocaleString()}}</small>
       <p v-if="r.basePower!=null">基础攻击 {{r.basePower}} → 技能后 {{r.finalPower}} · 敌军有效防御 {{r.enemyPower}}</p>
-      <p v-if="r.meleeAttack!=null">我军近攻 {{r.meleeAttack.toLocaleString()}} · 远攻 {{r.rangedAttack?.toLocaleString()}}<br>敌军近防 {{r.meleeDefense?.toLocaleString()}} · 远防 {{r.rangedDefense?.toLocaleString()}}</p>
-      <table v-if="r.troopLosses?.length" class="casualty-table"><caption>随军兵力</caption><thead><tr><th>兵种</th><th>派出</th><th>阵亡</th><th>幸存返城</th></tr></thead><tbody><tr v-for="t in r.troopLosses" :key="t.code"><th>{{t.name}}</th><td>{{t.sent}}</td><td>{{t.lost}}</td><td>{{t.remaining}}</td></tr></tbody></table>
+      <p v-if="r.incomingRaidId">敌军攻击 {{r.attackPower?.toLocaleString()}} · 我军有效防御 {{r.defensePower?.toLocaleString()}}</p>
+      <p v-if="r.meleeAttack!=null">{{r.direction==='INCOMING'?'敌军':'我军'}}近攻 {{r.meleeAttack.toLocaleString()}} · 远攻 {{r.rangedAttack?.toLocaleString()}}<br>{{r.direction==='INCOMING'?'我军':'敌军'}}近防 {{r.meleeDefense?.toLocaleString()}} · 远防 {{r.rangedDefense?.toLocaleString()}}</p>
+      <table v-if="r.troopLosses?.length" class="casualty-table"><caption>{{r.direction==='INCOMING'?'守城兵力与城防':'随军兵力'}}</caption><thead><tr><th>兵种</th><th>{{r.direction==='INCOMING'?'参战':'派出'}}</th><th>阵亡</th><th>{{r.direction==='INCOMING'?'剩余':'幸存返城'}}</th></tr></thead><tbody><tr v-for="t in r.troopLosses" :key="t.code"><th>{{t.name}}</th><td>{{t.sent}}</td><td>{{t.lost}}</td><td>{{t.remaining}}</td></tr></tbody></table>
+      <p v-for="t in r.attackerLosses" :key="t.code">敌军 {{t.name}}：来袭 {{t.sent}}，阵亡 {{t.lost}}，撤退 {{t.remaining}}</p>
       <p v-if="r.targetLevelBefore!=null">目标 {{r.targetLevelBefore}} 级 → {{r.targetLevelAfter===0?'已消失':r.targetLevelAfter+'级'}}</p>
       <p v-for="(e,i) in r.skillEvents" :key="i" :class="{triggered:e.triggered}">{{e.triggered?'✦':'·'}} {{e.message}}</p>
       <p v-if="!r.skillEvents.length">本场无技能发动</p>
@@ -48,6 +50,7 @@ watch(visible,async()=>{
   </div>
 </template>
 <style scoped>
+.report-loot-summary{font-size:12px;color:#d6bb78;font-weight:normal;overflow-wrap:anywhere;line-height:1.8}
 .report-filters{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:12px 0;padding:10px 12px;border:1px solid #514c33;background:linear-gradient(120deg,#252b1d,#141b12);box-shadow:inset 0 0 0 2px #10170e;color:#b7aa7c;font-size:12px}
 .shell .report-filters button{padding:6px 10px;min-height:30px;font-size:12px;background:#1b2116;border-color:#55563a;color:#b6b58f;box-shadow:none}
 .shell .report-filters button.active{background:linear-gradient(#4c4729,#2d321f);border-color:#c1a753;color:#f6d981;box-shadow:inset 0 -2px #b59c46}

@@ -54,6 +54,16 @@
 -- battle_reports.battle_config.worldBoss为首领标记；loot仍为实际逐物品入包数量，技能书写player_skill_books。
 -- 首领掉落不复用普通drop_pools：遍历已上架且非回收物品逐项按itemChance判定，技能书还须对应技能上架。
 -- 首领宝石只限gemLevel=1，各系分别判定掉率和随机数量；二至八级及旧无等级宝石排除，不进入其他材料分类。
+-- 0022_incoming_raids：只由外部GET生成军队，无内部周期生成器；复用游戏时钟和既有离线结算。
+-- game_settings.incoming_raid_rules: {enabled:boolean,attackMin:1..10000000000,attackMax:1..10000000000,itemChance:0..1,
+--   quantities:{EQUIPMENT,TREASURE,SKILL_BOOK,CONSUMABLE,GEM,MATERIAL:{min:1..10000,max:1..10000}}}，各min<=max。
+-- incoming_raids 仅保存未结算来袭；生成时固化总攻击/人数/方向/抵达时间和loot_rules配置，300游戏秒后进攻。
+-- 抵达时使用player_forces中已建成城防与留城士兵，满科技双防；英雄、在途/自动编队和未完成训练不参与。
+-- battle_reports.direction=INCOMING；battle_config另含incomingRaidId、attackPower、defensePower、attackerLosses。
+-- troopLosses为守方损失，attackerLosses为敌方损失，结构均[{code,name,sent,lost,remaining}]。
+-- 守方战力大于敌方才发放loot；相等DRAW双方全灭。强方损失floor(总人数*(弱方战力/强方战力)^2)，按各编队人数分摊。
+-- 扣兵、发奖、写永久被攻击战报与删除incoming_raids同事务；重复结算不再伤亡或发奖。
+-- 来袭GET复用scheduled_task_runs最近50条去重窗口；规则快照只固化掉率和数量，结算仍仅从当前上架目录发奖。
 -- item_definitions.effect_config.refineMultipliers可选10个逐级倍率，对应+0至+9，优先于refineStep。
 -- 批量分解只接受包裹装备；穿戴中或镶有宝石拒绝；以forge_operations保存SALVAGE幂等请求与产出（七天清理）。
 -- 分解按精确实例id删除equipment_instances，或扣除player_inventory中的指定数量；全部与材料入包同事务。
@@ -76,7 +86,7 @@
 -- admin_resource_grants按请求编号防重复补资源；created_at为现实时间，记录最多保留七天，不受游戏加速影响。
 -- military_definitions.config_json.foodPerHour为每单位每游戏小时耗粮；城防为0。
 -- ArmyStack快照包含foodPerHour，行军与自动任务持有部队计入耗粮但不能重复计数。
--- battle_reports 每玩家只保留最新50条，超额与手动清空均物理删除；不回滚发奖。
+-- battle_reports 每玩家主动出征仅保留最新50条，超额与手动清空均物理删除；被攻击记录永久保留，不回滚发奖。
 -- owned_heroes.retired_at 非空后从名册排除；保留最小历史引用，装备退回，已学技能移除。
 CREATE DATABASE IF NOT EXISTS `fenghuo`
   CHARACTER SET utf8mb4
@@ -583,4 +593,23 @@ CREATE TABLE IF NOT EXISTS `military_orders` (
  KEY `idx_military_queue` (`player_id`,`lane`,`end_game_at`),
  CONSTRAINT `fk_military_order_player` FOREIGN KEY (`player_id`) REFERENCES `player_profile` (`id`),
  CONSTRAINT `fk_military_order_unit` FOREIGN KEY (`unit_code`) REFERENCES `military_definitions` (`code`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+
+-- Pending incoming armies only; settled results live permanently in battle_reports (INCOMING).
+CREATE TABLE IF NOT EXISTS `incoming_raids` (
+ `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+ `player_id` bigint unsigned NOT NULL,
+ `name` varchar(64) NOT NULL,
+ `attack_power` bigint unsigned NOT NULL COMMENT '刷新时锁定的总攻击力，不再额外叠加敌方科技',
+ `troop_count` int unsigned NOT NULL COMMENT '每100攻击折算1名来袭士兵，最少1名',
+ `attack_type` enum('MELEE','RANGED','BALANCED') NOT NULL,
+ `origin_x` tinyint unsigned NOT NULL,
+ `origin_y` tinyint unsigned NOT NULL,
+ `depart_game_at` datetime(3) NOT NULL,
+ `arrive_game_at` datetime(3) NOT NULL COMMENT '出发后300游戏秒抵达',
+ `loot_rules` json NOT NULL COMMENT 'IncomingRaidRules快照；后台修改不影响已出发军队',
+ `created_at` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+ PRIMARY KEY (`id`),
+ KEY `idx_raid_due` (`player_id`,`arrive_game_at`,`id`),
+ CONSTRAINT `fk_raid_player` FOREIGN KEY (`player_id`) REFERENCES `player_profile` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;

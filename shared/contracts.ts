@@ -155,6 +155,7 @@ export interface OwnedHero {
 }
 
 export interface WorldStatus {
+  incomingArmies?:import('./incoming-raids.js').IncomingRaid[]
   ownedHeroes: OwnedHero[]
   inventory:InventoryEntry[]
   marches: Array<{ id:number; targetName:string; heroName:string; status:string; arriveGameAt:string; departGameAt:string; returnGameAt?:string;heroId:number;targetX:number;targetY:number;portraitKey?:string; result?:string;troops?:Array<{name:string;quantity:number}> }>
@@ -165,5 +166,5 @@ export interface WorldStatus {
   defenses: Array<{ id:number; defenseType:string; level:number; quantity:number; damagedQuantity:number; unitCost:{wood:number;stone:number;iron:number} }>
 }
 
-export interface BattleReport {id:number;direction:'OUTGOING'|'INCOMING';title:string;result:'VICTORY'|'DEFEAT'|'DRAW';reward:Partial<Wallet>;occurredGameAt:string;skillEvents:SkillEvent[];basePower?:number;finalPower?:number;enemyPower?:number;loot?:Loot[];targetLevelBefore?:number;targetLevelAfter?:number;outpostLevelBefore?:number;outpostLevelAfter?:number;meleeAttack?:number;rangedAttack?:number;meleeDefense?:number;rangedDefense?:number;troopLosses?:import('./military.js').UnitLoss[]}
+export interface BattleReport {id:number;direction:'OUTGOING'|'INCOMING';title:string;result:'VICTORY'|'DEFEAT'|'DRAW';reward:Partial<Wallet>;occurredGameAt:string;skillEvents:SkillEvent[];basePower?:number;finalPower?:number;enemyPower?:number;loot?:Loot[];targetLevelBefore?:number;targetLevelAfter?:number;outpostLevelBefore?:number;outpostLevelAfter?:number;meleeAttack?:number;rangedAttack?:number;meleeDefense?:number;rangedDefense?:number;troopLosses?:import('./military.js').UnitLoss[];incomingRaidId?:number;attackPower?:number;defensePower?:number;attackerLosses?:import('./military.js').UnitLoss[]}
 export interface IncomingReportPage {reports:BattleReport[];total:number;nextCursor:number|null}
