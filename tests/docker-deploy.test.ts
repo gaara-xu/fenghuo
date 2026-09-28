@@ -30,6 +30,23 @@ describe('Docker 内网部署',()=>{
     expect(docker).toContain('RUN npm run check');expect(docker).toContain('USER node');expect(docker).toContain('./dist-server/database')
     for(const f of ['.git','.env','.env.*','.runtime','node_modules'])expect(ignore.split('\n')).toContain(f)
     expect(compose).toContain('${FENGHUO_PORT:-5173}:18770');expect(compose).toContain('DB_NAME: fenghuo');expect(compose).not.toMatch(/image:.*mysql/)
+    expect(compose).toContain('DB_PASSWORD: ${DB_PASSWORD:-root}')
+    const help=spawnSync('bash',['deploy.sh','--help'],{encoding:'utf8'})
+    expect(help.status).toBe(0);expect(help.stdout).toContain('用法：bash deploy.sh');expect(help.stdout).toContain('密码 root')
+  })
+  it.each(['unset','empty'])('下载源码后不传任何数据库参数即可部署（密码变量 %s）',mode=>{
+    const f=fixture(),env:{[key:string]:string|undefined}={...f.env}
+    for(const key of ['DB_HOST','DB_PORT','DB_NAME','DB_USER','DB_PASSWORD','PLAYER_ID','SCHEDULER_TOKEN','FENGHUO_PORT','FENGHUO_BIND_IP'])delete env[key]
+    if(mode==='empty')env.DB_PASSWORD=''
+    const r=spawnSync('bash',['deploy.sh'],{cwd:f.dir,env,encoding:'utf8',input:''})
+    expect(r.stderr).toBe('');expect(r.status).toBe(0)
+    const config=readFileSync(path.join(f.dir,'.env.docker'),'utf8')
+    for(const line of ["DB_HOST='192.168.3.110'","DB_PORT='3306'","DB_NAME='fenghuo'","DB_USER='root'","DB_PASSWORD='root'","FENGHUO_PORT='5173'"])expect(config.split('\n')).toContain(line)
+    expect(existsSync(path.join(f.dir,'.git'))).toBe(false)
+    expect(f.calls().some(a=>a.includes('build'))).toBe(true)
+    expect(f.calls().some(a=>a.includes('--update'))).toBe(true)
+    expect(f.calls().some(a=>a.includes('up')&&a.includes('--wait'))).toBe(true)
+    expect(r.stdout).toContain('部署完成')
   })
   it('首次部署保存配置，按构建→只读检查→停止旧服务→增量更新→健康启动排序',()=>{
     const f=fixture(),r=spawnSync('bash',['deploy.sh'],{cwd:f.dir,env:f.env,encoding:'utf8'});expect(r.stderr).toBe('');expect(r.status).toBe(0)
@@ -50,8 +67,8 @@ describe('Docker 内网部署',()=>{
     expect(spawnSync('bash',['deploy.sh'],{cwd:f.dir,env:{...f.env,DB_PASSWORD:'changed',FENGHUO_TEST_FAIL:'--update'}}).status).not.toBe(0)
     expect(readFileSync(path.join(f.dir,'.env.docker'),'utf8')).toBe(before);expect(f.calls().some(a=>a.includes('up'))).toBe(false)
   })
-  it('拒绝缺密码和换行配置，错误不留下正式环境文件',()=>{
-    for(const password of ['', 'bad\nDB_NAME=other']){
+  it('拒绝换行配置，错误不留下正式环境文件',()=>{
+    for(const password of ['bad\nDB_NAME=other', 'bad\rDB_NAME=other']){
       const f=fixture(),r=spawnSync('bash',['deploy.sh'],{cwd:f.dir,env:{...f.env,DB_PASSWORD:password}})
       expect(r.status).not.toBe(0);expect(existsSync(path.join(f.dir,'.env.docker'))).toBe(false)
     }

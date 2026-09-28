@@ -4,13 +4,23 @@
 
 ## 一条命令
 
-在 **110 服务器的终端**执行，将密码换成现有数据库密码：
+把代码下载或克隆到 **110 服务器**，解压后进入包含 `deploy.sh` 的项目目录，只执行：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/gaara-xu/fenghuo/main/scripts/install-docker.sh | DB_PASSWORD='你的数据库密码' bash
+bash deploy.sh
 ```
 
-需要服务器已有 Docker、Compose V2、git、curl，并能联网访问 GitHub、Docker镜像仓库和 npm。默认仓库目录 `/gaara/fenghuo`；可在 `bash` 前增加 `FENGHUO_DIR=/你选择的目录`。同一命令再次执行会快进拉取 main 并重新部署；不覆盖本地代码改动或其他仓库。现有 `.env.docker` 保留，不被后续命令行密码覆盖。
+数据库参数已预置：地址 `192.168.3.110`、端口 `3306`、库 `fenghuo`、账号 `root`、密码 `root`。**不需要输入任何参数、不需要复制或编辑环境文件，也不需要额外运行安装依赖、构建镜像或启动容器命令。** 脚本会一次完成这些步骤并等待健康检查。
+
+支持ZIP下载解压，在源码所在目录就地构建；不要求源码目录是Git仓库，也不要求宿主机安装Node、npm、git或curl。服务器只需已有Docker、Compose V2以及可用的镜像仓库/npm网络。以后下载新代码后执行相同命令即可重新部署，已有 `.env.docker` 保留。
+
+如果还没有下载代码，也可使用可选的在线安装入口（这个入口另需git、curl和GitHub网络）：
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gaara-xu/fenghuo/main/scripts/install-docker.sh | bash
+```
+
+在线入口默认使用 `/gaara/fenghuo`，重复执行会快进拉取main并部署；不会覆盖本地代码改动或其他仓库。下载源码后的 `bash deploy.sh` 不拉取代码，不需要GitHub网络。
 
 访问：
 
@@ -22,7 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/gaara-xu/fenghuo/main/scripts/insta
 
 ## 存档及迁移
 
-首次会生成仅当前用户可读写的 `.env.docker`（权限600），默认数据库地址110、端口3306、账号root、库fenghuo、玩家1。可自行修改其中的密码、端口等；该文件不提交Git，也不进入Docker镜像。没有数据库容器或数据库卷，删游戏容器不会删除MySQL存档。
+首次自动生成 `.env.docker`（权限600），数据库地址110、端口3306、账号root、密码root、库fenghuo、玩家1；无需手工操作。只有想偏离默认配置时才需要修改它。该运行配置不提交Git，也不进入Docker镜像；默认连接参数已写在脚本及Compose中。没有数据库容器或数据库卷，删游戏容器不会删除MySQL存档。
 
 **切换前关闭Mac上的本地游戏服务**：在本地项目目录执行 `bash 游戏启动器.sh stop`。两套服务不要同时长期连接同一个单人存档，特别是酒馆关闭记录时，候选只存在各自进程内存。浏览器关闭不等于服务关闭；切换服务时内存酒馆候选会丢失，已领取的物品和英雄不受影响。
 
@@ -33,7 +43,7 @@ curl -fsSL https://raw.githubusercontent.com/gaara-xu/fenghuo/main/scripts/insta
 ## 日常命令
 
 ```bash
-cd /gaara/fenghuo
+# 在你下载的项目目录中执行
 bash deploy.sh status   # 状态
 bash deploy.sh logs     # 最近100行并跟随日志，Ctrl+C退出日志
 bash deploy.sh stop     # 只停止游戏，保留存档和MySQL

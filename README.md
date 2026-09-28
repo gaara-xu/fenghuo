@@ -98,13 +98,15 @@ npm start
 
 ## 192.168.3.110 一键 Docker 部署
 
-在110服务器终端执行（填入现有数据库密码）：
+把代码下载或克隆到 **110服务器**，进入包含 `deploy.sh` 的项目目录，只执行：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/gaara-xu/fenghuo/main/scripts/install-docker.sh | DB_PASSWORD='你的数据库密码' bash
+bash deploy.sh
 ```
 
-默认部署到 `/gaara/fenghuo`，访问 **http://192.168.3.110:5173/**，后台 **http://192.168.3.110:5173/admin**。只启动游戏容器，连接同机现有MySQL `192.168.3.110:3306/fenghuo`，不创建MySQL容器、不初始化或清空存档；无需Nginx。重复执行可更新部署，本地密码配置 `.env.docker` 保留。首次切换前请关闭Mac上的本地游戏服务，避免两套进程使用同一个单人存档。
+**不用输入密码、不用创建配置文件、不用手工安装Node或npm依赖，也不用再执行Docker命令。** 已预置数据库 `192.168.3.110:3306/fenghuo`、账号 `root`、密码 `root`。脚本自动生成配置、构建生产镜像、检查现有数据库、执行必要增量更新、启动容器并等待健康检查。
+
+访问 **http://192.168.3.110:5173/**，后台 **http://192.168.3.110:5173/admin**。在下载目录就地构建，支持ZIP下载，不依赖Git；只启动游戏容器，不创建MySQL容器、不初始化或清空存档，无需Nginx。后续下载新代码后运行同一命令即可重新构建部署，已有 `.env.docker` 自定义配置保留。需要服务器已有Docker与Compose V2，并能拉取基础镜像及npm依赖。
 
 环境要求、日常启停、健康检查及故障处理见 [Docker部署说明](docs/docker-deployment.md)。
 

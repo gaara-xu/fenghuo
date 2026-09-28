@@ -16,7 +16,7 @@ services:
       DB_PORT: ${DB_PORT:-3306}
       DB_NAME: fenghuo
       DB_USER: ${DB_USER:-root}
-      DB_PASSWORD: ${DB_PASSWORD:?请在 .env.docker 中配置数据库密码}
+      DB_PASSWORD: ${DB_PASSWORD:-root}
       PLAYER_ID: ${PLAYER_ID:-1}
       SCHEDULER_TOKEN: ${SCHEDULER_TOKEN:-}
     ports:
