@@ -14,9 +14,9 @@ cd /gaara/fenghuo && git pull --ff-only && bash deploy.sh
 
 以后进入 `http://192.168.3.110:5173/admin#update`，直接点“更新游戏”。首次 `deploy.sh` 仍保留原部署脚本的既有数据库增量更新步骤；它不是更新按钮的执行流程。若仅更新代码不部署，当前服务器不会凭空增加挂载或更新能力。
 
-### 已部署服务器修复更新器（运行协议2）
+### 已部署服务器修复更新器（运行协议3）
 
-2026-09-29 修复 HTTPS 拉取时的 HTTP/2 framing / GnuTLS 中断、失败重试及连接等待。仍使用原 HTTPS 地址，不需要 SSH 密钥、不修改主机 Git 全局配置、不关闭证书校验。更新器固化在镜像中，单纯点击旧版更新按钮或拉源码不会替换它，需要在110执行一次：
+2026-09-29 修复检查更新长时间等待，以及 Git 大文件传输的 HTTP/2 framing / GnuTLS 中断。版本查询改用 GitHub API，源码改用 GitHub codeload 的固定提交源码包，由 Node HTTPS 下载，不再通过 Git/libcurl 拉取线上源码。不需要 SSH 密钥、不修改主机 Git 全局配置、不关闭证书校验。更新器固化在镜像中，单纯点击旧版更新按钮或拉源码不会替换它，需要在110执行一次：
 
 ```bash
 cd /gaara/fenghuo && git pull --ff-only origin main && bash deploy.sh update-runtime
@@ -41,7 +41,7 @@ cd /gaara/fenghuo && git pull --ff-only origin main && bash deploy.sh update-run
 
 ## 更新边界与失败处理
 
-固定来源为 `https://github.com/gaara-xu/fenghuo.git` 的 `main`。先查提交SHA，再下载该固定提交；不接受HTTP传入的仓库、分支、脚本、目录或命令。Git树不允许软链接、子模块、真实环境文件、路径穿越或预置 `node_modules`。`.env.example`仅作为模板允许。
+固定来源为 `https://github.com/gaara-xu/fenghuo.git` 的 `main`。通过 `api.github.com/repos/gaara-xu/fenghuo/git/ref/heads/main` 查提交SHA，再从 `codeload.github.com/gaara-xu/fenghuo/tar.gz/<SHA>` 下载该固定提交；不跟随重定向，不接受HTTP传入的仓库、分支、脚本、目录或命令。解压前完整检查 tar 头校验和、提交标记、固定根目录、大小上限和必要文件；禁止软／硬链接、特殊文件、路径覆盖扩展、重复条目、真实环境文件、路径穿越或预置 `node_modules`。`.env.example`仅作为模板允许。流式下载与解压不把大型素材包一次性载入内存，失败清理本次临时文件。
 
 依赖锁与镜像一致时，复制匹配的Linux依赖到新版独立目录；不共用可被安装过程覆盖的运行目录。锁改变时在新目录 `npm ci --include=dev`，随后 `npm run check`。构建不继承数据库凭据，实库测试开关固定关闭。候选代码仍属于受信任的程序代码，因此GitHub仓库写权限必须只交给可信人员。
 
@@ -49,7 +49,7 @@ cd /gaara/fenghuo && git pull --ff-only origin main && bash deploy.sh update-run
 
 新版启动失败：停止候选进程，重新激活并启动原版；若原版也无法启动，保留管理更新页并明确显示失败。切换中断后重启：优先恢复切换前已确认版本，不把尚未健康确认的版本当成功。源码拉取、构建和进程健康检查有超时限制。
 
-Git 请求固定使用 `http.version=HTTP/1.1`，避免已观测到的 HTTP/2 framing 错误。只对 TLS 接收中断、连接重置、超时、部分传输和429／部分5xx等暂时错误重试，最多3次，间隔2秒、4秒；认证、证书、仓库不存在等错误不盲目重试。检查版本每次最多30秒，下载每次最多180秒；持续30秒低于1KB/s时终止本次传输。失败在更新页保留原因并释放忙碌状态，旧游戏继续运行；不把获取版本号成功误报成下载或更新成功。
+线上检查版本每次最多8秒，临时网络错误只重试一次，间隔0.5秒；不再回退到长时间 Git 等待。下载每次最多120秒，同样最多两次，并持续显示已下载大小。认证、证书、仓库不存在、源码安全校验失败不盲目重试。失败在更新页保留原因并释放忙碌状态，旧游戏继续运行；不把获取版本号成功误报成下载或更新成功。Git 通路只保留给本地测试仓库，不作为线上检查或下载的后备等待。
 
 服务器受理完整更新请求后，更新任务独立于网页连接。关闭页面只停止浏览器轮询，重新进入继续读取服务器状态；单次网页请求超过10秒会退出等待并重新连接，不永久卡在加载中。迟到的旧进度不会覆盖较新的终态。停止容器会取消 Git／构建及重试等待，先向该命令的进程组发送SIGTERM，必要时SIGKILL，避免孤立子进程继续占用资源。
 
