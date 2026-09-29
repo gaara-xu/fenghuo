@@ -62,7 +62,8 @@ export interface SkillDefinition {
 export interface SkillEffectConfig { base:number; perLevel:number; ratePerLevel:number; mode:'ATTACK'|'DEFENSE'|'BOTH' }
 export interface SkillLevel { level:number; effectValue:number; upgradeExp:number; sameBookCost:number }
 export interface LearnedSkill { slotNo:number; skillDefinitionId:number; name:string; level:number; iconKey?:string|null; description:string; effectType:string; targetScope:string; triggerRate:number; effectValue:number; mode:SkillEffectConfig['mode']; upgradeExp:number; maxLevel:number;qualityTier?:number;sameBookCost?:number;nextEffectValue?:number;nextTriggerRate?:number }
-export interface SkillEvent { name:string; level:number; side:'ATTACK'|'DEFENSE'; triggered:boolean; reason:string; effectValue:number; triggerRate:number; target:string; message:string }
+export interface CombatSkill extends LearnedSkill {ownerCode?:string;ownerName?:string}
+export interface SkillEvent { name:string; level:number; side:'ATTACK'|'DEFENSE'; triggered:boolean; reason:string; effectValue:number; triggerRate:number; target:string; message:string;ownerCode?:string;ownerName?:string }
 
 export interface TavernPool {
   id: number
@@ -166,5 +167,5 @@ export interface WorldStatus {
   defenses: Array<{ id:number; defenseType:string; level:number; quantity:number; damagedQuantity:number; unitCost:{wood:number;stone:number;iron:number} }>
 }
 
-export interface BattleReport {id:number;direction:'OUTGOING'|'INCOMING';title:string;result:'VICTORY'|'DEFEAT'|'DRAW';reward:Partial<Wallet>;occurredGameAt:string;skillEvents:SkillEvent[];basePower?:number;finalPower?:number;enemyPower?:number;loot?:Loot[];targetLevelBefore?:number;targetLevelAfter?:number;outpostLevelBefore?:number;outpostLevelAfter?:number;meleeAttack?:number;rangedAttack?:number;meleeDefense?:number;rangedDefense?:number;troopLosses?:import('./military.js').UnitLoss[];incomingRaidId?:number;attackPower?:number;defensePower?:number;attackerLosses?:import('./military.js').UnitLoss[]}
+export interface BattleReport {id:number;direction:'OUTGOING'|'INCOMING';title:string;result:'VICTORY'|'DEFEAT'|'DRAW';reward:Partial<Wallet>;occurredGameAt:string;skillEvents:SkillEvent[];basePower?:number;finalPower?:number;enemyPower?:number;loot?:Loot[];targetLevelBefore?:number;targetLevelAfter?:number;outpostLevelBefore?:number;outpostLevelAfter?:number;meleeAttack?:number;rangedAttack?:number;meleeDefense?:number;rangedDefense?:number;troopLosses?:import('./military.js').UnitLoss[];incomingRaidId?:number;attackPower?:number;defensePower?:number;attackerLosses?:import('./military.js').UnitLoss[];baseAttackPower?:number;defendingHeroes?:import('./military.js').DefenseHero[];defenderLossReduction?:number}
 export interface IncomingReportPage {reports:BattleReport[];total:number;nextCursor:number|null}

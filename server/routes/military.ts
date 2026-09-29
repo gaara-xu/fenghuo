@@ -1,6 +1,6 @@
 import type {FastifyInstance} from 'fastify'
 import {z} from 'zod'
-import {enqueueMilitary,getMilitaryState,listMilitary,saveMilitary} from '../military-service.js'
+import {accelerateMilitary,enqueueMilitary,getMilitaryState,listMilitary,saveMilitary} from '../military-service.js'
 export const troopSelectionSchema=z.array(z.object({code:z.string().regex(/^[a-z0-9_]+$/).max(64),quantity:z.number().int().min(1).max(1000000)})).max(30).default([])
 const stat=z.number().int().min(0).max(100000000)
 export const militarySchema=z.object({
@@ -11,6 +11,7 @@ export const militarySchema=z.object({
 export async function registerMilitary(app:FastifyInstance){
  app.get('/api/military',async (_r,reply)=>{reply.header('Cache-Control','no-store');return getMilitaryState()})
  app.post('/api/military/orders',async r=>{const b=z.object({code:z.string().max(64),quantity:z.number().int().min(1).max(100000),clientActionId:z.string().uuid()}).parse(r.body);return enqueueMilitary(b.code,b.quantity,b.clientActionId)})
+ app.post('/api/military/orders/:id/accelerate',async r=>{const {id}=z.object({id:z.coerce.number().int().positive().safe()}).parse(r.params),b=z.object({clientActionId:z.string().uuid(),maxGold:z.number().int().min(0).max(100000000)}).strict().parse(r.body);return accelerateMilitary(id,b.clientActionId,b.maxGold)})
  app.get('/api/admin/military',()=>listMilitary())
  app.put('/api/admin/military/:code',async r=>{const d=militarySchema.parse(r.body);if(d.code!==(r.params as {code:string}).code)throw Error('兵种编号不一致');return saveMilitary(d)})
 }

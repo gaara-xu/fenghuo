@@ -9,6 +9,7 @@ import {INCOMING_RAID_VERSION,defaultIncomingRaidRules,RAID_TRAVEL_SECONDS,RAID_
 import {SeededRandom} from './domain/random.js'
 import {incomingRaidOutcome} from './domain/raid-battle.js'
 import {awardCatalogDrops} from './item-service.js'
+import {homeHeroArmy} from './home-defense-service.js'
 
 const player=config.PLAYER_ID,parse=(v:any)=>typeof v==='string'?JSON.parse(v):v
 const quantity=z.object({min:z.number().int().min(1).max(10000),max:z.number().int().min(1).max(10000)}).strict().refine(q=>q.min<=q.max,'数量下限不能大于上限')
@@ -46,11 +47,11 @@ export async function settleIncomingRaid(c:PoolConnection,id:number,now:Date){
   await settleMilitary(c,at)
   const definitions=await listMilitary(c),[stock]=await c.query<RowDataPacket[]>('SELECT unit_code,quantity FROM player_forces WHERE player_id=? AND quantity>0 FOR UPDATE',[player])
   const defenders=stock.flatMap(s=>{const d=definitions.find(d=>d.code===s.unit_code);return d?[stackFromDefinition(d,Number(s.quantity))]:[]})
-  const outcome=incomingRaidOutcome(raid,defenders)
+  const home=await homeHeroArmy(c,true),outcome=incomingRaidOutcome(raid,[...defenders,...home.army],home.skills,`raid:${id}:combat`)
   for(const loss of outcome.troopLosses)await forceDelta(c,loss.code,-loss.lost)
   const loot=outcome.result==='VICTORY'?await awardCatalogDrops(c,incomingRaidRulesSchema.parse(parse(row.loot_rules)),`raid:${id}:loot`):[]
   const title=`${outcome.result==='VICTORY'?'击退':outcome.result==='DRAW'?'同归于尽：':'未能抵御'} ${raid.name}`
-  await c.execute("INSERT INTO battle_reports (player_id,direction,title,result,battle_config,reward_config,occurred_game_at) VALUES (?,'INCOMING',?,?,?,'{}',?)",[player,title,outcome.result,JSON.stringify({...outcome,incomingRaidId:id,loot,skillEvents:[]}),at])
+  await c.execute("INSERT INTO battle_reports (player_id,direction,title,result,battle_config,reward_config,occurred_game_at) VALUES (?,'INCOMING',?,?,?,'{}',?)",[player,title,outcome.result,JSON.stringify({...outcome,incomingRaidId:id,loot}),at])
   // Report, loot, losses and deletion are atomic; retries cannot fight/award twice.
   await c.execute('DELETE FROM incoming_raids WHERE player_id=? AND id=?',[player,id])
 }

@@ -23,7 +23,7 @@ import FoodStatus from './FoodStatus.vue'
 import IncomingArmies from './IncomingArmies.vue'
 import TavernCandidates from './TavernCandidates.vue'
 import {currencyNames} from '../shared/tavern'
-import type {MilitaryState} from '../shared/military'
+import type {MilitaryState,MilitarySpeedupResult} from '../shared/military'
 
 type Tab='workshop'|'tavern'|'map'|'barracks'|'defense'|'roster'|'catalog'|'bag'|'treasury'
 const tab=ref<Tab>('tavern'), data=ref<BootstrapPayload|null>(null), heroes=ref<HeroDefinition[]>([]), skills=ref<SkillDefinition[]>([])
@@ -55,6 +55,8 @@ async function march(){if(!selectedNode.value)return;await act(async()=>{const r
 async function autoFarm(){if(!selectedNode.value||selectedNode.value.worldBoss)return;await act(async()=>{await api('/api/world/auto-farm',{method:'POST',body:JSON.stringify({heroId:selectedHero.value||null,troops:selectedTroops.value,nodeId:selectedNode.value!.id,nodeType:selectedNode.value!.nodeType,minLevel:selectedNode.value!.level,maxLevel:selectedNode.value!.level,runs:10})});troopSelection.value={};message.value='自动出征已锁定当前目标：每次返城完成一轮，再次出发；最多 10 轮，目标耗尽或兵力耗尽时停止';selectedNode.value=null;await load()})}
 async function pauseFarm(id:number){await act(async()=>{await api(`/api/world/auto-farm/${id}/pause`,{method:'POST'});message.value='自动刷野已暂停';await load()})}
 async function orderMilitary(code:string,quantity:number){await act(async()=>{await api('/api/military/orders',{method:'POST',body:JSON.stringify({code,quantity,clientActionId:actionId()})});message.value=`${military.value.definitions.find(d=>d.code===code)?.name??'生产'} × ${quantity} 已加入队列，完成后逐个入城`;await load()})}
+const speedupRequests=new Map<number,string>()
+async function speedupMilitary(orderId:number,maxGold:number){if(busy.value)return;await act(async()=>{const clientActionId=speedupRequests.get(orderId)??actionId();speedupRequests.set(orderId,clientActionId);const r=await api<MilitarySpeedupResult>('/api/military/orders/'+orderId+'/accelerate',{method:'POST',body:JSON.stringify({clientActionId,maxGold})});speedupRequests.delete(orderId);message.value=r.alreadyCompleted?'订单已完成，未扣金币':`订单已加速完成 · ${r.goldSpent} 金币`;await load()})}
 async function heroCommand(url:string,body?:object){await act(async()=>{const r=await api<any>(url,{method:'POST',body:body?JSON.stringify(body):undefined});message.value=r?.message??(r?.before&&r?.after?'天赋洗练：'+label(talentLabels,r.before)+' → '+label(talentLabels,r.after):url.endsWith('/retire')?'英雄已从名册移除，装备宝物已退回仓库':'英雄操作已完成');await load()})}
 async function clearReports(){await act(async()=>{await api('/api/world/reports',{method:'DELETE'});message.value='主动出征战报已从数据库清空；被攻击记录永久保留';await load()})}
 let timer:ReturnType<typeof setInterval>,poll:ReturnType<typeof setInterval>,polling=false
@@ -101,7 +103,7 @@ onUnmounted(()=>{clearInterval(timer);clearInterval(poll)})
       <section v-if="tab==='bag'&&world" class="catalog"><InventoryBag :inventory="world.inventory" :skills="skills" @forge="workshopInitialTab='gems';tab='workshop'" @use-item="openItemUse"/></section>
       <section v-if="tab==='workshop'&&world" class="catalog"><GameWorkshop :world="world" :gems="gems" :busy="busy" :focus-instance-id="forgeFocus" :initial-tab="workshopInitialTab" @bag="tab='bag'" @forge="workshopForge" @combine="combineGem" @salvaged="salvaged"/></section>
       <section v-if="tab==='treasury'&&world" class="catalog"><Treasury :world="world"/></section>
-      <section v-if="tab==='barracks'||tab==='defense'" class="defense-panel"><MilitaryPanel :key="tab" :state="military" :kind="tab==='barracks'?'TROOP':'DEFENSE'" :wallet="data.player.wallet" :game-time="gameTimeMs" :busy="busy" @order="orderMilitary"/></section>
+      <section v-if="tab==='barracks'||tab==='defense'" class="defense-panel"><MilitaryPanel :key="tab" :state="military" :kind="tab==='barracks'?'TROOP':'DEFENSE'" :wallet="data.player.wallet" :game-time="gameTimeMs" :busy="busy" @order="orderMilitary" @speedup="speedupMilitary"/></section>
 
       <section v-if="tab==='catalog'" class="catalog">
         <div class="section-title"><div><small>完整数据目录</small><h1>英雄与技能</h1></div></div>

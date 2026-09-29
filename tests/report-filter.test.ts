@@ -17,6 +17,11 @@ const button=(v:View,prefix:string)=>v.all().find(n=>n.type==='button'&&content(
 beforeEach(()=>{api.mockReset();confirm.mockReset().mockResolvedValue(false)})
 afterEach(()=>{vi.unstubAllGlobals()})
 describe('战报掉落筛选',()=>{
+ it('守城详情保留武将贡献、技能施放者及减伤结果',async()=>{
+  const incoming=report(20,{direction:'INCOMING',attackPower:800,baseAttackPower:1000,defensePower:1200,defenderLossReduction:.3,defendingHeroes:[{heroId:1,name:'章邯',meleeDefense:1200,rangedDefense:1300}],skillEvents:[{name:'拯救',level:5,side:'DEFENSE',triggered:true,effectValue:30,triggerRate:1,ownerCode:'hero_1',ownerName:'章邯',message:'章邯 · 拯救（5级）发动'}]})
+  const v=renderClient(Reports,{reports:[],incoming:{reports:[incoming],total:1,nextCursor:null},busy:false})
+  try{button(v,'被攻击').props.onClick();await flush();const text=content(v.find('details')!);expect(text).toContain('参战武将 · 1 位');expect(text).toContain('章邯 · 近防 1,200 · 远防 1,300');expect(text).toContain('章邯 · 拯救（5级）发动');expect(text).toContain('敌军初始攻击 1,000');expect(text).toContain('30%')}finally{v.app.unmount()}
+ })
  it('标题胜利后直接显示物品和数量，展开详情仍保留完整掉落与伤亡',()=>{
   const v=renderClient(Reports,{reports:[report(1,{loot:[{...drop,quantity:1200},{itemId:20,name:'精炼石',quantity:8},{itemId:30,name:'无效掉落',quantity:0}],troopLosses:[{code:'guard',name:'枪盾兵',sent:100,lost:10,remaining:90}]})],busy:false})
   try{expect(content(v.find('summary')!)).toContain('胜利 · 天赋水 ×1,200、精炼石 ×8');expect(content(v.find('summary')!)).not.toContain('无效掉落');expect(content(v.find('details')!)).toContain('获得 天赋水 ×1200');expect(v.byClass('casualty-table')).toBeDefined()}finally{v.app.unmount()}

@@ -4,9 +4,11 @@ import {config} from './config.js'
 import {gameNow,type ClockRow} from './domain/clock.js'
 import {lockReportWriter} from './report-service.js'
 import {getUpkeep,nextMilitaryEvent,settleUpkeep} from './upkeep-service.js'
-import {armyStats,completedUnits,stackFromDefinition,type ArmyStack,type MilitaryDefinition,type MilitaryState,type TroopSelection} from '../shared/military.js'
+import {armyStats,completedUnits,stackFromDefinition,remainingProductionMs,speedupGoldCost,type ArmyStack,type MilitaryDefinition,type MilitaryState,type MilitaryOrder,type MilitarySpeedupResult,type TroopSelection} from '../shared/military.js'
+import {homeHeroArmy} from './home-defense-service.js'
 const player=config.PLAYER_ID
 const parse=(v:any)=>typeof v==='string'?JSON.parse(v):v
+const mapOrder=(r:RowDataPacket):MilitaryOrder=>({id:Number(r.id),code:r.unit_code,name:parse(r.snapshot_json).name,kind:r.lane,quantity:Number(r.quantity),completed:Number(r.completed),seconds:Number(r.seconds_per_unit),startGameAt:new Date(r.start_game_at).toISOString(),endGameAt:new Date(r.end_game_at).toISOString()})
 export async function militaryTime(c:PoolConnection){const [rows]=await c.query<RowDataPacket[]>('SELECT * FROM game_clock WHERE id=1');if(!rows[0])throw Error('游戏时钟未初始化');return gameNow(rows[0] as ClockRow)}
 export async function listMilitary(c:Pool|PoolConnection=getPool()):Promise<MilitaryDefinition[]>{const [rows]=await c.query<RowDataPacket[]>('SELECT * FROM military_definitions ORDER BY kind,code');return rows.map(r=>({...parse(r.config_json),code:r.code,name:r.name,kind:r.kind}))}
 export async function forceDelta(c:PoolConnection,code:string,quantity:number){
@@ -30,8 +32,37 @@ export async function getMilitaryState():Promise<MilitaryState>{
  const [version]=await getPool().query<RowDataPacket[]>('SELECT version FROM schema_migrations WHERE version=?',['0010_military'])
  if(!version.length)return {definitions:[],stock:{},orders:[],defense:{melee:0,ranged:0},ready:false}
  const definitions=await listMilitary(),[[stockRows],[orders]]=await Promise.all([getPool().query<RowDataPacket[]>('SELECT unit_code,quantity FROM player_forces WHERE player_id=?',[player]),getPool().query<RowDataPacket[]>('SELECT * FROM military_orders WHERE player_id=? AND completed<quantity ORDER BY start_game_at,id',[player])])
- const stock=Object.fromEntries(stockRows.map(r=>[r.unit_code,Number(r.quantity)])),home=armyStats(definitions.map(d=>stackFromDefinition(d,stock[d.code]??0)))
- return {ready:true,definitions,stock,upkeep:await getUpkeep(),defense:{melee:home.meleeDefense*2,ranged:home.rangedDefense*2},orders:orders.map(r=>({id:Number(r.id),code:r.unit_code,name:parse(r.snapshot_json).name,kind:r.lane,quantity:Number(r.quantity),completed:Number(r.completed),seconds:Number(r.seconds_per_unit),startGameAt:new Date(r.start_game_at).toISOString(),endGameAt:new Date(r.end_game_at).toISOString()}))}
+ const stock=Object.fromEntries(stockRows.map(r=>[r.unit_code,Number(r.quantity)])),heroes=await homeHeroArmy(),home=armyStats([...definitions.map(d=>stackFromDefinition(d,stock[d.code]??0)),...heroes.army])
+ return {ready:true,definitions,stock,upkeep:await getUpkeep(),defense:{melee:home.meleeDefense*2,ranged:home.rangedDefense*2,heroes:heroes.heroes},orders:orders.map(mapOrder)}
+}
+export async function accelerateMilitary(orderId:number,clientActionId:string,maxGold:number):Promise<MilitarySpeedupResult>{
+ if(!Number.isSafeInteger(orderId)||orderId<1||!clientActionId||!Number.isSafeInteger(maxGold)||maxGold<0)throw Error('加速请求无效')
+ return inTransaction(async c=>{
+  await lockReportWriter(c)
+  const [found]=await c.query<RowDataPacket[]>('SELECT * FROM military_orders WHERE player_id=? AND id=? FOR UPDATE',[player,orderId])
+  if(!found[0])throw Error('订单不存在或已清理')
+  const receipt=parse(found[0].snapshot_json).speedup
+  if(receipt?.clientActionId===clientActionId)return {...receipt.result,replayed:true}
+  const now=await militaryTime(c)
+  // Resolve earlier raids/returns before granting instantly completed units; never defend retroactively.
+  await settleMilitaryBeforeAction(c,now)
+  const [rows]=await c.query<RowDataPacket[]>('SELECT * FROM military_orders WHERE player_id=? AND lane=? AND completed<quantity ORDER BY start_game_at,id FOR UPDATE',[player,found[0].lane])
+  const index=rows.findIndex(r=>Number(r.id)===orderId)
+  if(index<0)return {orderId,goldSpent:0,completedUnits:0,savedSeconds:0,completedAt:now.toISOString(),alreadyCompleted:true}
+  const row=rows[index],order=mapOrder(row),gold= speedupGoldCost(order,now.getTime()),remaining=order.quantity-order.completed
+  if(gold>maxGold)throw Error('加速价格已变化，请刷新队列后重试')
+  if(gold>0){const [paid]=await c.execute<ResultSetHeader>('UPDATE resource_wallet SET gold=gold-? WHERE player_id=? AND gold>=?',[gold,player,gold]);if(!paid.affectedRows)throw Error('金币不足，无法加速')}
+  const result:MilitarySpeedupResult={orderId,goldSpent:gold,completedUnits:remaining,savedSeconds:remainingProductionMs(order,now.getTime())/1000,completedAt:now.toISOString()}
+  await forceDelta(c,order.code,remaining)
+  await c.execute('UPDATE military_orders SET completed=quantity,start_game_at=LEAST(start_game_at,?),end_game_at=?,snapshot_json=? WHERE player_id=? AND id=?',[now,now,JSON.stringify({...parse(row.snapshot_json),speedup:{clientActionId,result}}),player,orderId])
+  // A waiting order skips its own work, not the orders ahead of it. The other production lane is untouched.
+  let cursor=Math.max(now.getTime(),Date.parse(order.startGameAt))
+  for(const next of rows.slice(index+1)){
+   const end=cursor+Number(next.seconds_per_unit)*Number(next.quantity)*1000
+   await c.execute('UPDATE military_orders SET start_game_at=?,end_game_at=? WHERE player_id=? AND id=?',[new Date(cursor),new Date(end),player,next.id]);cursor=end
+  }
+  return result
+ })
 }
 export async function enqueueMilitary(code:string,quantity:number,clientActionId:string){
  if(!Number.isSafeInteger(quantity)||quantity<1||quantity>100000)throw Error('数量须为1至100000的整数')

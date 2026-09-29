@@ -6,7 +6,12 @@ export interface MilitaryDefinition extends HeroStats {code:string;name:string;k
 export interface ArmyStack {code:string;name:string;kind:'HERO'|'TROOP'|'FORT';quantity:number;stats:HeroStats;foodPerHour?:number}
 export interface TroopSelection {code:string;quantity:number}
 export interface MilitaryOrder {id:number;code:string;name:string;kind:MilitaryKind;quantity:number;completed:number;seconds:number;startGameAt:string;endGameAt:string}
-export interface MilitaryState {definitions:MilitaryDefinition[];stock:Record<string,number>;orders:MilitaryOrder[];defense:{melee:number;ranged:number};ready:boolean;upkeep?:UpkeepState}
+export interface DefenseHero {heroId:number;name:string;meleeDefense:number;rangedDefense:number}
+export interface MilitaryState {definitions:MilitaryDefinition[];stock:Record<string,number>;orders:MilitaryOrder[];defense:{melee:number;ranged:number;heroes?:DefenseHero[]};ready:boolean;upkeep?:UpkeepState}
+export interface MilitarySpeedupResult {orderId:number;goldSpent:number;completedUnits:number;savedSeconds:number;completedAt:string;alreadyCompleted?:boolean;replayed?:boolean}
+export const SPEEDUP_SECONDS_PER_GOLD=300
+export function remainingProductionMs(order:MilitaryOrder,now:number){return Math.max(0,Math.min((order.quantity-order.completed)*order.seconds*1000,Date.parse(order.endGameAt)-Math.max(now,Date.parse(order.startGameAt))))}
+export function speedupGoldCost(order:MilitaryOrder,now:number){return Math.ceil(remainingProductionMs(order,now)/(SPEEDUP_SECONDS_PER_GOLD*1000))}
 export interface UnitLoss {code:string;name:string;sent:number;lost:number;remaining:number}
 const costs=(food:number,wood:number,stone:number,iron:number,gold=0)=>({food,wood,stone,iron,gold})
 const sourceNote='兵种属性据旧资料交叉整理；招募资源与满建筑耗时尚无完整原表，采用可调单机值。'

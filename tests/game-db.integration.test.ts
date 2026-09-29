@@ -1164,6 +1164,8 @@ describe.skipIf(process.env.RUN_DB_TESTS!=='1')('fenghuo 实库事务回滚联�
   async function wallet(){const [r]=await db.c.query('SELECT food,wood,stone,iron,gold FROM resource_wallet WHERE player_id=?',[config.PLAYER_ID]);return r[0]}
   async function unitQuantity(code:string){const [r]=await db.c.query('SELECT quantity FROM player_forces WHERE player_id=? AND unit_code=?',[config.PLAYER_ID,code]);return Number(r[0]?.quantity??0)}
   async function raidFixture(quantity=1000){
+    // These numerical troop-loss fixtures deliberately exclude heroes; the outer transaction restores every row.
+    await db.c.execute('UPDATE owned_heroes SET retired_at=UTC_TIMESTAMP() WHERE player_id=? AND retired_at IS NULL',[config.PLAYER_ID])
     await db.c.execute("UPDATE game_clock SET game_anchor_at='2026-01-01',real_anchor_at=UTC_TIMESTAMP(3),multiplier=0 WHERE id=1")
     await db.c.execute("UPDATE military_upkeep SET last_game_at='2026-01-01',fraction=0 WHERE player_id=?",[config.PLAYER_ID])
     await db.c.execute('UPDATE player_forces SET quantity=0 WHERE player_id=?',[config.PLAYER_ID])

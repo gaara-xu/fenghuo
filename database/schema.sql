@@ -58,10 +58,15 @@
 -- game_settings.incoming_raid_rules: {enabled:boolean,attackMin:1..10000000000,attackMax:1..10000000000,itemChance:0..1,
 --   quantities:{EQUIPMENT,TREASURE,SKILL_BOOK,CONSUMABLE,GEM,MATERIAL:{min:1..10000,max:1..10000}}}，各min<=max。
 -- incoming_raids 仅保存未结算来袭；生成时固化总攻击/人数/方向/抵达时间和loot_rules配置，300游戏秒后进攻。
--- 抵达时使用player_forces中已建成城防与留城士兵，满科技双防；英雄、在途/自动编队和未完成训练不参与。
--- battle_reports.direction=INCOMING；battle_config另含incomingRaidId、attackPower、defensePower、attackerLosses。
+-- 抵达时使用player_forces中已建成城防与留城士兵，以及未退休且不在行军/返程/ACTIVE自动任务中的全部武将。
+-- 武将按当前等级、天赋、装备、宝石和套装计算属性，全军享受满科技；未完成训练不参与。
+-- battle_reports.direction=INCOMING；battle_config另含incomingRaidId、baseAttackPower、attackPower、defensePower、attackerLosses。
+-- defendingHeroes:[{heroId,name,meleeDefense,rangedDefense}]记录技能后的武将防御；skillEvents含ownerCode/ownerName。
+-- 技能按武将最多四个；同名全军/城防技能仅最高级判定一次不叠加，自身技能各自生效；下架及未解锁技能不参与。
+-- defenderLossReduction仅减少普通士兵伤亡，不降低城防损耗；技能判定以raid编号固定随机种子，重试不重抽。
 -- troopLosses为守方损失，attackerLosses为敌方损失，结构均[{code,name,sent,lost,remaining}]。
--- 守方战力大于敌方才发放loot；相等DRAW双方全灭。强方损失floor(总人数*(弱方战力/强方战力)^2)，按各编队人数分摊。
+-- 守方技能后战力大于敌方才发放loot；无减伤时相等DRAW双方士兵/城防全灭，武将不按兵损删除。
+-- 无减伤时强方损失floor(总人数*(弱方战力/强方战力)^2)，按各编队人数分摊；减伤先修正普通士兵权重再统一取整。
 -- 扣兵、发奖、写永久被攻击战报与删除incoming_raids同事务；重复结算不再伤亡或发奖。
 -- 来袭GET复用scheduled_task_runs最近50条去重窗口；规则快照只固化掉率和数量，结算仍仅从当前上架目录发奖。
 -- item_definitions.effect_config.refineMultipliers可选10个逐级倍率，对应+0至+9，优先于refineStep。
@@ -81,6 +86,9 @@
 -- 军事结算另含 meleeAttack/rangedAttack/meleeDefense/rangedDefense、troopLosses:[{code,name,sent,lost,remaining}]。
 -- military_definitions.config_json 保存基础攻防、速度、负重、cost:{food,wood,stone,iron,gold}、seconds及来源备注。
 -- military_orders.snapshot_json 为付费时的MilitaryDefinition，后改目录不重算已付款时间；completed防止重复发兵。
+-- snapshot_json.speedup可选:{clientActionId,result:{orderId,goldSpent,completedUnits,savedSeconds,completedAt}}，复用订单七天保留期防重复扣金。
+-- 金币加速每300游戏秒1金币向上取整，只计本单剩余生产而不收前置等待；完成当前单并提前后续同lane订单，不更改另一队列。
+-- 加速须先按时间顺序处理旧来袭/行军与耗粮，然后原子扣金、入城、改订单和回执；没有新表或字段。
 -- player_forces仅存已完成且可用数量；出征及自动编队所持士兵不同时计入本城。
 -- 0011_military_catalog为配置校正，无新字段：停用未考证快骑；不物理删除已有兵力或订单。
 -- admin_resource_grants按请求编号防重复补资源；created_at为现实时间，记录最多保留七天，不受游戏加速影响。

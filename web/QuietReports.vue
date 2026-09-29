@@ -36,6 +36,9 @@ watch(visible,async()=>{
       <small>{{new Date(r.occurredGameAt).toLocaleString()}}</small>
       <p v-if="r.basePower!=null">基础攻击 {{r.basePower}} → 技能后 {{r.finalPower}} · 敌军有效防御 {{r.enemyPower}}</p>
       <p v-if="r.incomingRaidId">敌军攻击 {{r.attackPower?.toLocaleString()}} · 我军有效防御 {{r.defensePower?.toLocaleString()}}</p>
+      <p v-if="r.baseAttackPower!=null&&r.baseAttackPower!==r.attackPower">敌军初始攻击 {{r.baseAttackPower.toLocaleString()}} · 已受我方技能削弱</p>
+      <div v-if="r.defendingHeroes?.length" class="defending-heroes"><b>参战武将 · {{r.defendingHeroes.length}} 位</b><p v-for="h in r.defendingHeroes" :key="h.heroId">{{h.name}} · 近防 {{h.meleeDefense.toLocaleString()}} · 远防 {{h.rangedDefense.toLocaleString()}}</p></div>
+      <p v-if="r.defenderLossReduction">士兵伤亡减少 {{Math.round(r.defenderLossReduction*100)}}%（不影响城防损耗）</p>
       <p v-if="r.meleeAttack!=null">{{r.direction==='INCOMING'?'敌军':'我军'}}近攻 {{r.meleeAttack.toLocaleString()}} · 远攻 {{r.rangedAttack?.toLocaleString()}}<br>{{r.direction==='INCOMING'?'我军':'敌军'}}近防 {{r.meleeDefense?.toLocaleString()}} · 远防 {{r.rangedDefense?.toLocaleString()}}</p>
       <table v-if="r.troopLosses?.length" class="casualty-table"><caption>{{r.direction==='INCOMING'?'守城兵力与城防':'随军兵力'}}</caption><thead><tr><th>兵种</th><th>{{r.direction==='INCOMING'?'参战':'派出'}}</th><th>阵亡</th><th>{{r.direction==='INCOMING'?'剩余':'幸存返城'}}</th></tr></thead><tbody><tr v-for="t in r.troopLosses" :key="t.code"><th>{{t.name}}</th><td>{{t.sent}}</td><td>{{t.lost}}</td><td>{{t.remaining}}</td></tr></tbody></table>
       <p v-for="t in r.attackerLosses" :key="t.code">敌军 {{t.name}}：来袭 {{t.sent}}，阵亡 {{t.lost}}，撤退 {{t.remaining}}</p>
