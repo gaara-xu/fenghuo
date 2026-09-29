@@ -46,7 +46,7 @@ export const runCommand: RunCommand = (command, args, options = {}) => new Promi
 export function buildEnvironment(cache: string, temp: string): NodeJS.ProcessEnv {
   // Candidate tests/build scripts never inherit live database settings or the opt-in DB test flag.
   const env = {...process.env}
-  for (const key of Object.keys(env)) if (/^(DB_|MYSQL_|SCHEDULER_|RUN_DB_TESTS$|NODE_OPTIONS$|NODE_ENV$|VITE_USER_NODE_ENV$|GIT_CONFIG_|GIT_SSH)/.test(key)) delete env[key]
+  for (const key of Object.keys(env)) if (/^(DB_|MYSQL_|SCHEDULER_|RUN_DB_TESTS$|NODE_OPTIONS$|NODE_ENV$|VITE_USER_NODE_ENV$|GIT_CONFIG_|GIT_SSH|GIT_SSL_NO_VERIFY$)/.test(key)) delete env[key]
   // Let Vitest choose test mode and Vite choose production mode. npm ci explicitly includes build dependencies.
   return {...env, RUN_DB_TESTS: '0', npm_config_cache: cache, TMPDIR: temp, GIT_TERMINAL_PROMPT: '0'}
 }

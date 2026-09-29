@@ -52,7 +52,7 @@ export class UpdateManager {
     const before = this.current
     let switched = false
     try {
-      await this.save('checking', '正在检查 GitHub 主分支版本')
+      await this.save('checking', '正在检查 GitHub 主分支版本，单次最多8秒，失败自动重试一次')
       const latest = await this.source.latest(signal, message => this.save('checking', message))
       signal.throwIfAborted()
       this.status.latestRevision = latest; this.status.checkedAt = new Date().toISOString(); this.status.available = latest !== before.revision

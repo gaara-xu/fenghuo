@@ -4,9 +4,12 @@ import path from 'node:path'
 import {setTimeout as delay} from 'node:timers/promises'
 import {UpdateStorage, directory, revision, type Release} from './storage.js'
 import {CommandError, runCommand, buildEnvironment, type RunCommand} from './commands.js'
+import {validateTree} from './source-tree.js'
+import {GithubSnapshot, type SnapshotTransport} from './github-snapshot.js'
+export {validateTree} from './source-tree.js'
 
 export const GAME_REPOSITORY = 'https://github.com/gaara-xu/fenghuo.git'
-export const RUNTIME_PROTOCOL = 2
+export const RUNTIME_PROTOCOL = 3
 export function retryableGitError(error: unknown) {
   if (error instanceof CommandError && error.kind !== 'exit') return error.kind === 'timeout'
   const message = error instanceof Error ? error.message : String(error)
@@ -14,17 +17,6 @@ export function retryableGitError(error: unknown) {
   return /GnuTLS recv error|TLS connection was non-properly terminated|HTTP.?2.*(?:framing|stream)|curl (?:6|7|16|18|28|35|52|55|56|92)\b|early EOF|remote end hung up|connection (?:reset|timed out)|could not resolve host|failed to connect|requested URL returned error: (?:429|50[0234])\b/i.test(message)
 }
 const digest = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex')
-export function validateTree(tree: string) {
-  const paths = new Set<string>()
-  for (const entry of tree.split('\0').filter(Boolean)) {
-    const match = /^(100644|100755) blob [a-f0-9]{40}\t(.+)$/s.exec(entry)
-    if (!match) throw Error('源码含符号链接、子模块或不支持的文件类型')
-    const file = match[2], parts = file.split('/')
-    if (file.includes('\\') || /[\x00-\x1f\x7f]/.test(file) || parts.some(p => !p || p === '.' || p === '..') || (parts[0].startsWith('.env') && file!=='.env.example') || ['.git', '.game-update', 'node_modules', 'dist-web', 'dist-server', '.fenghuo-release.json', 'source.tar'].includes(parts[0])) throw Error('源码含不安全的路径：' + file)
-    paths.add(file)
-  }
-  for (const file of ['package.json', 'package-lock.json', 'game-runtime.json', 'server/index.ts']) if (!paths.has(file)) throw Error('源码缺少必要文件：' + file)
-}
 export interface ReleaseSource {
   latest(signal?: AbortSignal, retry?: (message: string) => Promise<void>): Promise<string>
   prepare(sha: string, progress: (phase: 'fetching' | 'dependencies' | 'building', message: string) => Promise<void>, signal?: AbortSignal): Promise<Release>
@@ -36,7 +28,8 @@ export function verifyDependencyLock(pkg: any, lock: any) {
 }
 export class GitReleaseSource implements ReleaseSource {
   constructor(private store: UpdateStorage, private run: RunCommand = runCommand, private remote = GAME_REPOSITORY,
-    private wait = (ms: number, signal?: AbortSignal) => delay(ms, undefined, {signal})) {}
+    private wait = (ms: number, signal?: AbortSignal) => delay(ms, undefined, {signal}),
+    private snapshot: SnapshotTransport | null = remote === GAME_REPOSITORY ? new GithubSnapshot() : null) {}
   private git(args: string[], timeoutMs = 120000, signal?: AbortSignal) {
     signal?.throwIfAborted()
     return this.run('git', ['-c', 'core.hooksPath=/dev/null', '-c', 'protocol.ext.allow=never', '-c', 'http.version=HTTP/1.1', '-c', 'http.lowSpeedLimit=1024', '-c', 'http.lowSpeedTime=30', ...args], {
@@ -57,6 +50,7 @@ export class GitReleaseSource implements ReleaseSource {
     }
   }
   async latest(signal?: AbortSignal, retry?: (message: string) => Promise<void>) {
+    if (this.snapshot) return this.snapshot.latest(signal, retry)
     const output = await this.networkGit(['ls-remote', '--exit-code', this.remote, 'refs/heads/main'], 30000, signal, retry)
     const match = /^([a-f0-9]{40})\trefs\/heads\/main\s*$/.exec(output)
     if (!match) throw Error('无法读取游戏主分支版本')
@@ -66,19 +60,22 @@ export class GitReleaseSource implements ReleaseSource {
     signal?.throwIfAborted()
     revision(sha)
     try {return await this.store.release(sha)} catch (error) {if ((error as NodeJS.ErrnoException).code !== 'ENOENT' && !(error as Error).message.includes('不完整')) throw error}
-    const repo = this.store.file('repository.git')
-    await directory(repo)
     await progress('fetching', '正在拉取固定版本源码，旧游戏继续运行')
-    await this.git(['init', '--bare', repo], 120000, signal)
-    await this.networkGit(['--git-dir=' + repo, 'fetch', '--depth=1', '--no-tags', this.remote, sha], 180000, signal, message => progress('fetching', message))
-    const actual = (await this.git(['--git-dir=' + repo, 'rev-parse', 'FETCH_HEAD'], 120000, signal)).trim()
-    if (actual !== sha) throw Error('下载版本与检查结果不一致')
-    validateTree(await this.git(['--git-dir=' + repo, 'ls-tree', '-rz', '--full-tree', sha], 120000, signal))
     const work = await mkdtemp(path.join(this.store.file('work'), 'build-')), archive = path.join(work, 'source.tar')
     try {
-      await this.git(['--git-dir=' + repo, 'archive', '--format=tar', '--output=' + archive, sha], 120000, signal)
-      await this.run('tar', ['-xf', archive, '-C', work], {timeoutMs: 120000, signal})
-      await rm(archive)
+      if (this.snapshot) await this.snapshot.extract(sha, work, message => progress('fetching', message), signal)
+      else {
+        const repo = this.store.file('repository.git')
+        await directory(repo)
+        await this.git(['init', '--bare', repo], 120000, signal)
+        await this.networkGit(['--git-dir=' + repo, 'fetch', '--depth=1', '--no-tags', this.remote, sha], 180000, signal, message => progress('fetching', message))
+        const actual = (await this.git(['--git-dir=' + repo, 'rev-parse', 'FETCH_HEAD'], 120000, signal)).trim()
+        if (actual !== sha) throw Error('下载版本与检查结果不一致')
+        validateTree(await this.git(['--git-dir=' + repo, 'ls-tree', '-rz', '--full-tree', sha], 120000, signal))
+        await this.git(['--git-dir=' + repo, 'archive', '--format=tar', '--output=' + archive, sha], 120000, signal)
+        await this.run('tar', ['-xf', archive, '-C', work], {timeoutMs: 120000, signal})
+        await rm(archive)
+      }
       const manifest = JSON.parse(await readFile(path.join(work, 'game-runtime.json'), 'utf8'))
       if (manifest.protocol !== RUNTIME_PROTOCOL || manifest.nodeMajor !== Number(process.versions.node.split('.')[0])) throw Error('新版要求升级运行环境，请先更新固定镜像；当前游戏未改动')
       const env = buildEnvironment(this.store.file('npm-cache'), this.store.file('tmp'))
