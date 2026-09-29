@@ -108,8 +108,8 @@ describe('源码安全与构建',()=>{
     expect(()=>verifyDependencyLock({},{})).toThrow('缺少')
   })
   it('构建不继承实库凭据或实库测试开关，命令超时终止进程组',async()=>{
-    vi.stubEnv('DB_PASSWORD','secret');vi.stubEnv('RUN_DB_TESTS','1');vi.stubEnv('NODE_OPTIONS','--inspect')
-    const env=buildEnvironment('/cache','/temp');expect(env.DB_PASSWORD).toBeUndefined();expect(env.RUN_DB_TESTS).toBe('0');expect(env.NODE_OPTIONS).toBeUndefined()
+    vi.stubEnv('DB_PASSWORD','secret');vi.stubEnv('RUN_DB_TESTS','1');vi.stubEnv('NODE_OPTIONS','--inspect');vi.stubEnv('NODE_ENV','production');vi.stubEnv('VITE_USER_NODE_ENV','development')
+    const env=buildEnvironment('/cache','/temp');expect(env.DB_PASSWORD).toBeUndefined();expect(env.RUN_DB_TESTS).toBe('0');expect(env.NODE_OPTIONS).toBeUndefined();expect(env.NODE_ENV).toBeUndefined();expect(env.VITE_USER_NODE_ENV).toBeUndefined()
     await expect(runCommand(process.execPath,['-e','setInterval(()=>{},1000)'],{timeoutMs:50})).rejects.toThrow('超时')
   })
   it('真实Git固定提交拉取、独立编译目录、依赖复用和失败清理（不运行游戏或接触数据库）',async()=>{
