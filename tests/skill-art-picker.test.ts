@@ -18,7 +18,8 @@ describe('44技能大小图',()=>{
   expect(hashes.size).toBe(44)
   const manifest=JSON.parse(readFileSync('public/art/skills-generation-20260916.json','utf8'));expect(manifest.status).toBe('imported');expect(manifest.assets).toHaveLength(37)
   for(const a of manifest.assets){expect(a.imported).toBe(true);expect(createHash('sha256').update(readFileSync('public/art/skills/originals/'+a.key+'.png')).digest('hex')).toBe(a.sha256)}
- })
+ // This reads and hashes all original PNGs as well; bind-mounted update releases can have slow disk I/O.
+ },30000)
  it('小图、大图按显示区域选用，英雄原头像路径不变',async()=>{
   expect(await render(AssetIcon,{name:'鼓舞',iconKey:'guwu',size:'tiny'})).toContain('/art/skills/guwu-small.png')
   expect(await render(AssetIcon,{name:'鼓舞',iconKey:'guwu',size:'large'})).toContain('/art/skills/guwu-large.png')
