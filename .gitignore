@@ -13,3 +13,4 @@ exports/
 .DS_Store
 coverage/
 .runtime/
+.game-update/

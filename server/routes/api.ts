@@ -22,6 +22,7 @@ import {MAX_DROP_QUANTITY} from '../../shared/drop-rules.js'
 import {getWorldBossRules,saveWorldBossRules} from '../world-boss-service.js'
 import {salvageEquipment} from '../salvage-service.js'
 import {getIncomingRaidRules,saveIncomingRaidRules} from '../incoming-raid-service.js'
+import {unsupportedUpdate} from '../../shared/game-update.js'
 
 const sourceStatus = z.enum(['VERIFIED','ESTIMATED','DIY'])
 const artKey=z.string().regex(/^[a-z0-9_-]+$/).max(64).nullish()
@@ -49,6 +50,8 @@ const forgeTargetSchema=z.discriminatedUnion('kind',[
 ])
 
 export async function registerApi(app: FastifyInstance): Promise<void> {
+  app.get('/api/admin/game-update/status',()=>unsupportedUpdate())
+  for(const action of ['check','run'])app.post('/api/admin/game-update/'+action,async(_r,reply)=>reply.code(409).send({error:unsupportedUpdate().message}))
   await registerScheduledTasks(app)
   app.get('/api/admin/world-boss',()=>getWorldBossRules())
   app.put('/api/admin/world-boss',r=>saveWorldBossRules(r.body))
@@ -84,7 +87,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
   app.post('/api/heroes/:id/retire',async r=>{const q=z.object({reason:z.enum(['EXILE','EXECUTE']),confirmName:z.string().min(1).max(64)}).parse(r.body);await retireHero(heroId(r),q.reason,q.confirmName);return {ok:true}})
   app.delete('/api/world/reports',async()=>{await clearReports();return {ok:true}})
   app.get('/api/world/reports/incoming',async r=>{const q=z.object({beforeId:z.coerce.number().int().positive().optional()}).parse(r.query);return incomingReports(q.beforeId)})
-  app.get('/api/health', async () => { await assertDatabaseScope(getPool()); return { ok:true,database:'fenghuo' } })
+  app.get('/api/health', async () => { await assertDatabaseScope(getPool()); return { ok:true,database:'fenghuo',revision:process.env.FENGHUO_APP_REVISION??'development' } })
   app.get('/api/bootstrap', getBootstrap)
   app.get('/api/admin/tavern-recording',getTavernRecording)
   app.put('/api/admin/tavern-recording',async request=>setTavernRecording(z.object({enabled:z.boolean()}).strict().parse(request.body).enabled))

@@ -5,6 +5,7 @@ dist-server
 .env
 .env.*
 .runtime
+.game-update
 .deploy
 backups
 exports

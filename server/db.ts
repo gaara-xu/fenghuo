@@ -3,6 +3,11 @@ import { config } from './config.js'
 
 let singleton: Pool | undefined
 
+export async function closePool(): Promise<void> {
+  const pool = singleton; singleton = undefined
+  if (pool) await pool.end()
+}
+
 export function getPool(): Pool {
   singleton ??= mysql.createPool({
     host: config.DB_HOST,

@@ -15,12 +15,13 @@ import MilitaryManager from './MilitaryManager.vue'
 import ResourceGrant from './ResourceGrant.vue'
 import WorldBossSettings from './WorldBossSettings.vue'
 import IncomingArmySettings from './IncomingArmySettings.vue'
+import GameUpdater from './GameUpdater.vue'
 import TavernRecording from './TavernRecording.vue'
 import type {ItemDefinition} from '../shared/items'
 import {itemTypes} from '../shared/items'
 import {eligibleTreasureItem,currencyNames} from '../shared/tavern'
-type Tab='controls'|'catalog'|'items'|'tasks'|'military'
-const tabNames={controls:'城主控制台',catalog:'英雄与技能',items:'物品与培养',military:'兵种与城防',tasks:'定时任务接口'}
+type Tab='controls'|'catalog'|'items'|'tasks'|'military'|'update'
+const tabNames={controls:'城主控制台',catalog:'英雄与技能',items:'物品与培养',military:'兵种与城防',tasks:'定时任务接口',update:'更新游戏'}
 const initialTab=window.location.hash.slice(1)
 const tab=ref<Tab>(initialTab in tabNames?initialTab as Tab:'controls')
 const data=ref<BootstrapPayload|null>(null),world=ref<WorldStatus|null>(null),heroes=ref<HeroDefinition[]>([]),skills=ref<SkillDefinition[]>([]),entries=ref<any[]>([])
@@ -56,7 +57,7 @@ async function updateEntry(e:any){await act(async()=>{await api('/api/admin/pool
 function syncHash(){const value=window.location.hash.slice(1);if(value in tabNames)tab.value=value as Tab}
 watch(tab,value=>{if(window.location.hash!==('#'+value))window.location.hash=value;if(value==='controls')void act(loadAdmin)})
 let poll:ReturnType<typeof setInterval>,polling=false
-onMounted(()=>{document.title='烽火战国 · 管理后台';window.addEventListener('hashchange',syncHash);void act(async()=>{await load();await loadAdmin()});poll=setInterval(async()=>{if(busy.value||polling)return;polling=true;try{await load()}catch{error.value='后台连接中断，请检查服务'}finally{polling=false}},5000)})
+onMounted(()=>{document.title='烽火战国 · 管理后台';window.addEventListener('hashchange',syncHash);void act(async()=>{await load();await loadAdmin()});poll=setInterval(async()=>{if(busy.value||polling||tab.value==='update')return;polling=true;try{await load()}catch{error.value='后台连接中断，请检查服务'}finally{polling=false}},5000)})
 onUnmounted(()=>{clearInterval(poll);window.removeEventListener('hashchange',syncHash)})
 </script>
 <template>
@@ -65,7 +66,8 @@ onUnmounted(()=>{clearInterval(poll);window.removeEventListener('hashchange',syn
     <nav aria-label="后台导航"><button v-for="(name,key) in tabNames" :key="key" :class="{active:tab===key}" @click="tab=key">{{name}}</button></nav>
     <p class="admin-context-note">当前为管理环境，修改将影响同一份游戏存档。/admin 仅分离操作界面，无用户登录或权限隔离，请仅在受信内网使用。</p>
     <div v-if="error" class="toast error">{{error}}</div><div v-if="message" class="toast">{{message}}</div>
-    <main v-if="data">
+    <GameUpdater v-if="tab==='update'"/>
+    <main v-if="data&&tab!=='update'">
       <section v-if="tab==='tasks'" class="catalog"><ScheduledTasks/></section>
       <section v-if="tab==='military'" class="catalog"><MilitaryManager/></section>
       <section v-if="tab==='items'&&world" class="catalog"><div class="section-title"><div><small>仓库 · 目录 · 掉落 · 成长</small><h1>物品与培养管理</h1></div></div><ItemManager :world="world" @changed="load" @edit-skill="editItemSkill" /></section>

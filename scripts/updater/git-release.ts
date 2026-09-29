@@ -1,0 +1,77 @@
+import {readFile, mkdtemp, lstat, rm, cp, access} from 'node:fs/promises'
+import {createHash} from 'node:crypto'
+import path from 'node:path'
+import {UpdateStorage, directory, revision, type Release} from './storage.js'
+import {runCommand, buildEnvironment, type RunCommand} from './commands.js'
+
+export const GAME_REPOSITORY = 'https://github.com/gaara-xu/fenghuo.git'
+export const RUNTIME_PROTOCOL = 1
+const digest = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex')
+export function validateTree(tree: string) {
+  const paths = new Set<string>()
+  for (const entry of tree.split('\0').filter(Boolean)) {
+    const match = /^(100644|100755) blob [a-f0-9]{40}\t(.+)$/s.exec(entry)
+    if (!match) throw Error('源码含符号链接、子模块或不支持的文件类型')
+    const file = match[2], parts = file.split('/')
+    if (file.includes('\\') || /[\x00-\x1f\x7f]/.test(file) || parts.some(p => !p || p === '.' || p === '..') || (parts[0].startsWith('.env') && file!=='.env.example') || ['.git', '.game-update', 'node_modules', 'dist-web', 'dist-server', '.fenghuo-release.json', 'source.tar'].includes(parts[0])) throw Error('源码含不安全的路径：' + file)
+    paths.add(file)
+  }
+  for (const file of ['package.json', 'package-lock.json', 'game-runtime.json', 'server/index.ts']) if (!paths.has(file)) throw Error('源码缺少必要文件：' + file)
+}
+export interface ReleaseSource {
+  latest(): Promise<string>
+  prepare(sha: string, progress: (phase: 'fetching' | 'dependencies' | 'building', message: string) => Promise<void>): Promise<Release>
+}
+export function verifyDependencyLock(pkg: any, lock: any) {
+  if (!lock?.packages?.['']) throw Error('依赖锁文件缺少项目记录')
+  const signature=(value: any)=>JSON.stringify(Object.entries(value??{}).sort(([a],[b])=>a.localeCompare(b)))
+  for (const key of ['dependencies','devDependencies','optionalDependencies']) if(signature(pkg[key])!==signature(lock.packages[''][key]))throw Error('package.json 与依赖锁文件不一致，请修正代码后更新')
+}
+export class GitReleaseSource implements ReleaseSource {
+  constructor(private store: UpdateStorage, private run: RunCommand = runCommand, private remote = GAME_REPOSITORY) {}
+  private git(args: string[], timeoutMs = 120000) {
+    return this.run('git', ['-c', 'core.hooksPath=/dev/null', '-c', 'protocol.ext.allow=never', ...args], {
+      env: {...buildEnvironment(this.store.file('npm-cache'), this.store.file('tmp')), GIT_CONFIG_NOSYSTEM: '1', GIT_CONFIG_GLOBAL: '/dev/null'}, timeoutMs,
+    })
+  }
+  async latest() {
+    const output = await this.git(['ls-remote', '--exit-code', this.remote, 'refs/heads/main'])
+    const match = /^([a-f0-9]{40})\trefs\/heads\/main\s*$/.exec(output)
+    if (!match) throw Error('无法读取游戏主分支版本')
+    return revision(match[1])
+  }
+  async prepare(sha: string, progress: Parameters<ReleaseSource['prepare']>[1]) {
+    revision(sha)
+    try {return await this.store.release(sha)} catch (error) {if ((error as NodeJS.ErrnoException).code !== 'ENOENT' && !(error as Error).message.includes('不完整')) throw error}
+    const repo = this.store.file('repository.git')
+    await directory(repo)
+    await progress('fetching', '正在拉取固定版本源码，旧游戏继续运行')
+    await this.git(['init', '--bare', repo])
+    await this.git(['--git-dir=' + repo, 'fetch', '--depth=1', '--no-tags', this.remote, sha], 600000)
+    const actual = (await this.git(['--git-dir=' + repo, 'rev-parse', 'FETCH_HEAD'])).trim()
+    if (actual !== sha) throw Error('下载版本与检查结果不一致')
+    validateTree(await this.git(['--git-dir=' + repo, 'ls-tree', '-rz', '--full-tree', sha]))
+    const work = await mkdtemp(path.join(this.store.file('work'), 'build-')), archive = path.join(work, 'source.tar')
+    try {
+      await this.git(['--git-dir=' + repo, 'archive', '--format=tar', '--output=' + archive, sha])
+      await this.run('tar', ['-xf', archive, '-C', work], {timeoutMs: 120000})
+      await rm(archive)
+      const manifest = JSON.parse(await readFile(path.join(work, 'game-runtime.json'), 'utf8'))
+      if (manifest.protocol !== RUNTIME_PROTOCOL || manifest.nodeMajor !== Number(process.versions.node.split('.')[0])) throw Error('新版要求升级运行环境，请先更新固定镜像；当前游戏未改动')
+      const env = buildEnvironment(this.store.file('npm-cache'), this.store.file('tmp'))
+      await progress('dependencies', '正在准备匹配当前版本的 Linux 依赖')
+      verifyDependencyLock(JSON.parse(await readFile(path.join(work,'package.json'),'utf8')),JSON.parse(await readFile(path.join(work,'package-lock.json'),'utf8')))
+      const sameLock = digest(await readFile(path.join(work, 'package-lock.json'))) === digest(await readFile(path.join(this.store.bundled.dir, 'package-lock.json')))
+      if (sameLock) {
+        await access(path.join(this.store.bundled.dir, 'node_modules/typescript'))
+        // Each release owns its dependencies; a future base-image upgrade cannot change an old release underneath it.
+        await cp(path.join(this.store.bundled.dir, 'node_modules'), path.join(work, 'node_modules'), {recursive:true,verbatimSymlinks:true})
+      } else await this.run('npm', ['ci', '--include=dev', '--no-audit', '--no-fund'], {cwd: work, env, timeoutMs: 900000})
+      await progress('building', '正在类型检查、测试和编译，未连接数据库')
+      // Fixed commands, not an API-provided shell script. Real-DB tests stay disabled.
+      await this.run('npm', ['run', 'check'], {cwd: work, env, timeoutMs: 900000})
+      for (const file of ['dist-server/server/index.js', 'dist-web/index.html']) if (!(await lstat(path.join(work, file))).isFile()) throw Error('编译产物缺失')
+      return await this.store.publish(sha, work)
+    } finally {await rm(work, {recursive: true, force: true})}
+  }
+}

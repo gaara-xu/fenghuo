@@ -37,6 +37,12 @@ if [[ ! -f .env.docker ]]; then
 fi
 # Existing server configuration is authoritative, not the invoking shell or local development .env.
 unset DB_HOST DB_PORT DB_NAME DB_USER DB_PASSWORD PLAYER_ID SCHEDULER_TOKEN FENGHUO_PORT FENGHUO_BIND_IP
+# The user's source folder is the mount root; on 110 this is /gaara/fenghuo.
+export FENGHUO_SOURCE_DIR="$FENGHUO_PROJECT"
+export FENGHUO_BUILD_REVISION=bundled
+if command -v git >/dev/null && [[ -d .git ]] && [[ -z "$(git status --porcelain)" ]]; then
+  FENGHUO_BUILD_REVISION="$(git rev-parse HEAD)"
+fi
 compose(){ docker compose --project-name fenghuo --env-file "$FENGHUO_PROJECT/.env.docker" -f "$FENGHUO_PROJECT/docker-compose.yml" "$@"; }
 compose config --quiet
 case "$action" in
@@ -49,10 +55,15 @@ mkdir .deploy/lock 2>/dev/null || fail '另一个部署正在进行；如上次�
 trap '[[ -z "${tmp:-}" ]] || rm -f -- "$tmp"; rmdir "$FENGHUO_PROJECT/.deploy/lock"' EXIT
 printf '%s\n' '构建生产镜像（包含类型检查、单元测试和网页构建）…'
 compose build fenghuo-app
+[[ ! -L .game-update ]] || fail '.game-update 不能是符号链接'
+mkdir -p .game-update
+compose run --rm --no-deps -T --user 0 fenghuo-app node dist-server/scripts/prepare-updater.js
 compose run --rm --no-deps -T fenghuo-app node dist-server/scripts/docker-db.js --check
 [[ "$action" != check ]] || { printf '%s\n' '镜像和现有数据库检查通过，未启动服务、未更新数据库。'; exit; }
 compose stop fenghuo-app
 compose run --rm --no-deps -T fenghuo-app node dist-server/scripts/docker-db.js --update
+compose run --rm --no-deps -T --user 0 fenghuo-app node dist-server/scripts/prepare-updater.js --activate-bundled
 compose up -d --no-build --wait --wait-timeout 120 fenghuo-app
 printf '%s\n' '部署完成，默认访问：http://192.168.3.110:5173/  后台：http://192.168.3.110:5173/admin' '如自定义了端口/绑定地址，以以下实际映射为准：'
 compose port fenghuo-app 18770
+printf '%s\n' '后续更新直接使用后台“更新游戏”按钮；源码与版本存储位于本目录 .game-update，不再需要手工部署。'

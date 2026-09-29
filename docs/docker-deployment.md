@@ -42,6 +42,8 @@ curl -fsSL https://raw.githubusercontent.com/gaara-xu/fenghuo/main/scripts/insta
 
 ## 日常命令
 
+推荐日常直接使用后台“更新游戏”，自动检查、拉代码、构建和切换，不执行数据库迁移。固定源码挂载目录为 `/gaara/fenghuo`，更新数据保存在其 `.game-update` 子目录。第一次启用、网络依赖及版本恢复见 [后台一键更新](game-updates.md)。
+
 ```bash
 # 在你下载的项目目录中执行
 bash deploy.sh status   # 状态
@@ -51,7 +53,7 @@ bash deploy.sh          # 按当前本地代码重新部署
 bash deploy.sh check    # 仅构建和数据库连接验证，不启动游戏、不运行增量更新
 ```
 
-日志自动轮换，最多3份，每份10MB。容器以非root用户运行，服务器重启后Docker按 `unless-stopped` 恢复游戏。
+日志自动轮换，最多3份，每份10MB。容器以非root用户运行，服务器重启后Docker按 `unless-stopped` 恢复游戏。首次准备助手只设置挂载的更新子目录权限，不修改整棵源码目录权限。
 
 自定义配置后，直接运行 `bash deploy.sh`。需要更改基础镜像来源时可指定 `NODE_IMAGE=你的镜像代理/node:22-bookworm-slim bash deploy.sh`，不会更改数据库地址；请仅使用可信镜像来源。
 
