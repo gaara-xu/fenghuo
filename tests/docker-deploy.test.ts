@@ -71,6 +71,21 @@ describe('Docker 内网部署',()=>{
     expect(spawnSync('bash',['deploy.sh'],{cwd:f.dir,env:{...f.env,DB_PASSWORD:'changed',FENGHUO_TEST_FAIL:'--update'}}).status).not.toBe(0)
     expect(readFileSync(path.join(f.dir,'.env.docker'),'utf8')).toBe(before);expect(f.calls().some(a=>a.includes('up'))).toBe(false)
   })
+  it('update-runtime仅升级固定镜像和代码，保留配置，不执行任何数据库维护命令',()=>{
+    const f=fixture(),before="DB_HOST='192.168.3.110'\nDB_PASSWORD='unchanged'\n"
+    writeFileSync(path.join(f.dir,'.env.docker'),before)
+    const r=spawnSync('bash',['deploy.sh','update-runtime'],{cwd:f.dir,env:f.env,encoding:'utf8'});expect(r.stderr).toBe('');expect(r.status).toBe(0)
+    const calls=f.calls(),index=(arg:string)=>calls.findIndex(a=>a.includes(arg))
+    expect(index('build')).toBeLessThan(index('stop'));expect(index('stop')).toBeLessThan(index('--activate-bundled'));expect(index('--activate-bundled')).toBeLessThan(index('up'))
+    expect(calls.some(a=>a.some(arg=>arg.includes('docker-db')||arg.includes('db:update')||arg.includes('db:seed')))).toBe(false)
+    expect(readFileSync(path.join(f.dir,'.env.docker'),'utf8')).toBe(before);expect(r.stdout).toContain('未执行数据库维护脚本')
+  })
+  it('update-runtime构建失败不停止旧游戏；未部署时拒绝该入口',()=>{
+    const f=fixture();expect(spawnSync('bash',['deploy.sh','update-runtime'],{cwd:f.dir,env:f.env}).status).not.toBe(0)
+    writeFileSync(path.join(f.dir,'.env.docker'),"DB_NAME='fenghuo'\n")
+    expect(spawnSync('bash',['deploy.sh','update-runtime'],{cwd:f.dir,env:{...f.env,FENGHUO_TEST_FAIL:'build'}}).status).not.toBe(0)
+    expect(f.calls().some(a=>a.includes('stop')||a.includes('up'))).toBe(false)
+  })
   it('拒绝换行配置，错误不留下正式环境文件',()=>{
     for(const password of ['bad\nDB_NAME=other', 'bad\rDB_NAME=other']){
       const f=fixture(),r=spawnSync('bash',['deploy.sh'],{cwd:f.dir,env:{...f.env,DB_PASSWORD:password}})

@@ -4,11 +4,11 @@ FENGHUO_PROJECT="$(CDPATH='' cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P
 cd "$FENGHUO_PROJECT"
 fail(){ printf '%s\n' "$*" >&2; exit 1; }
 if [[ "${1:-}" == --help ]]; then
-  printf '%s\n' '用法：bash deploy.sh [deploy|check|status|logs|stop]' '无需配置：默认连接 192.168.3.110:3306/fenghuo，账号 root，密码 root，游戏端口 5173。' '首次自动生成 .env.docker，之后保留此配置；deploy 不拉取代码，不初始化或清空数据库。'
+  printf '%s\n' '用法：bash deploy.sh [deploy|update-runtime|check|status|logs|stop]' '无需配置：默认连接 192.168.3.110:3306/fenghuo，账号 root，密码 root，游戏端口 5173。' '首次自动生成 .env.docker，之后保留此配置；deploy 不拉取代码，不初始化或清空数据库。' 'update-runtime：为已部署游戏更新固定镜像和代码，不执行任何数据库检查、迁移或种子脚本。'
   exit 0
 fi
 action="${1:-deploy}"
-case "$action" in deploy|check|status|logs|stop) ;; *) fail '不支持的操作';; esac
+case "$action" in deploy|update-runtime|check|status|logs|stop) ;; *) fail '不支持的操作';; esac
 command -v docker >/dev/null || fail '请先安装 Docker 和 Docker Compose V2'
 docker compose version >/dev/null || fail '需要 Docker Compose V2（docker compose）'
 docker info >/dev/null || fail 'Docker 服务不可用，或当前用户没有 Docker 权限'
@@ -58,12 +58,17 @@ compose build fenghuo-app
 [[ ! -L .game-update ]] || fail '.game-update 不能是符号链接'
 mkdir -p .game-update
 compose run --rm --no-deps -T --user 0 fenghuo-app node dist-server/scripts/prepare-updater.js
-compose run --rm --no-deps -T fenghuo-app node dist-server/scripts/docker-db.js --check
+if [[ "$action" != update-runtime ]]; then
+  compose run --rm --no-deps -T fenghuo-app node dist-server/scripts/docker-db.js --check
+fi
 [[ "$action" != check ]] || { printf '%s\n' '镜像和现有数据库检查通过，未启动服务、未更新数据库。'; exit; }
 compose stop fenghuo-app
-compose run --rm --no-deps -T fenghuo-app node dist-server/scripts/docker-db.js --update
+if [[ "$action" != update-runtime ]]; then
+  compose run --rm --no-deps -T fenghuo-app node dist-server/scripts/docker-db.js --update
+fi
 compose run --rm --no-deps -T --user 0 fenghuo-app node dist-server/scripts/prepare-updater.js --activate-bundled
 compose up -d --no-build --wait --wait-timeout 120 fenghuo-app
+[[ "$action" != update-runtime ]] || printf '%s\n' '更新器与游戏代码已升级；未执行数据库维护脚本。'
 printf '%s\n' '部署完成，默认访问：http://192.168.3.110:5173/  后台：http://192.168.3.110:5173/admin' '如自定义了端口/绑定地址，以以下实际映射为准：'
 compose port fenghuo-app 18770
 printf '%s\n' '后续更新直接使用后台“更新游戏”按钮；源码与版本存储位于本目录 .game-update，不再需要手工部署。'

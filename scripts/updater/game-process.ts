@@ -12,7 +12,8 @@ export class LocalGameProcess implements GameProcess {
   onUnexpectedExit?: () => void
   constructor(readonly port: number, private env: NodeJS.ProcessEnv = process.env, private healthTimeout = 60000, private stopTimeout = 60000) {}
   isRunning() {return Boolean(this.child && this.child.exitCode === null && this.child.signalCode === null)}
-  async start(release: Release) {
+  async start(release: Release, signal?: AbortSignal) {
+    signal?.throwIfAborted()
     if (this.isRunning()) throw Error('旧游戏尚未停止，拒绝同时运行两个游戏进程')
     this.stopping = false; this.healthy = false
     const child = spawn(process.execPath, [path.join(release.dir, 'dist-server/server/index.js')], {
@@ -26,14 +27,15 @@ export class LocalGameProcess implements GameProcess {
     })
     const deadline = Date.now() + this.healthTimeout
     while (Date.now() < deadline) {
+      signal?.throwIfAborted()
       if (launchError) throw launchError
       if (!this.isRunning()) throw Error('游戏进程启动后退出，请查看容器日志')
       try {
-        const response = await fetch(`http://127.0.0.1:${this.port}/api/health`, {signal: AbortSignal.timeout(1500)})
+        const response = await fetch(`http://127.0.0.1:${this.port}/api/health`, {signal: signal ? AbortSignal.any([signal, AbortSignal.timeout(1500)]) : AbortSignal.timeout(1500)})
         const result = await response.json() as {ok?: boolean; revision?: string}
         if (response.ok && result.ok && result.revision === release.revision) {this.healthy = true; return}
       } catch {}
-      await delay(300)
+      await delay(300, undefined, {signal})
     }
     throw Error('新版服务启动检查超时')
   }

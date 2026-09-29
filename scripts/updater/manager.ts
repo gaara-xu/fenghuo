@@ -2,13 +2,14 @@ import type {GameUpdateStatus, UpdatePhase} from '../../shared/game-update.js'
 import {UpdateStorage, atomicJson, readJson, type Release} from './storage.js'
 import type {ReleaseSource} from './git-release.js'
 
-export interface GameProcess {start(release: Release): Promise<void>; stop(): Promise<void>; isRunning?(): boolean}
+export interface GameProcess {start(release: Release, signal?: AbortSignal): Promise<void>; stop(): Promise<void>; isRunning?(): boolean}
 export class UpdateManager {
   status: GameUpdateStatus
   current: Release
   private task?: Promise<void>
   private closing = false
   private running = false
+  private controller?: AbortController
   constructor(readonly store: UpdateStorage, readonly source: ReleaseSource, readonly game: GameProcess) {
     this.current = store.bundled
     this.status = {supported: true, busy: false, available: false, currentRevision: this.current.revision, phase: 'idle', message: '可以检查并更新游戏', updatedAt: new Date().toISOString(), events: []}
@@ -39,19 +40,21 @@ export class UpdateManager {
     if (this.closing) throw Error('服务正在停止')
     if (this.running || this.status.busy || this.status.requestId === requestId) return this.snapshot()
     this.running = true
-    this.status = {...this.status, busy: true, phase: 'checking', requestId, message: '正在检查游戏版本', events: [], previousKey: this.current.key}
-    this.task = this.execute(kind).catch(async error => {
+    this.controller = new AbortController()
+    this.status = {...this.status, busy: true, phase: 'checking', requestId, message: '正在检查游戏版本', updatedAt: new Date().toISOString(), events: [], previousKey: this.current.key}
+    this.task = this.execute(kind, this.controller.signal).catch(async error => {
       this.status.busy = false
       await this.save('failed', error instanceof Error ? error.message : '更新失败').catch(console.error)
-    }).finally(()=>{this.running=false})
+    }).finally(()=>{this.running=false;this.status.busy=false;this.controller=undefined})
     return this.snapshot()
   }
-  private async execute(kind: 'check' | 'run') {
+  private async execute(kind: 'check' | 'run', signal: AbortSignal) {
     const before = this.current
     let switched = false
     try {
       await this.save('checking', '正在检查 GitHub 主分支版本')
-      const latest = await this.source.latest()
+      const latest = await this.source.latest(signal, message => this.save('checking', message))
+      signal.throwIfAborted()
       this.status.latestRevision = latest; this.status.checkedAt = new Date().toISOString(); this.status.available = latest !== before.revision
       if (kind === 'check' || !this.status.available) {
         if(kind==='run' && this.game.isRunning && !this.game.isRunning())await this.game.start(before)
@@ -59,7 +62,7 @@ export class UpdateManager {
         await this.save('idle', this.status.available ? '发现新版本，点击更新游戏即可安装' : '当前已是最新版本')
         return
       }
-      const candidate = await this.source.prepare(latest, (phase, message) => this.save(phase, message))
+      const candidate = await this.source.prepare(latest, (phase, message) => this.save(phase, message), signal)
       if (this.closing) throw Error('服务停止，已取消版本切换')
       await this.save('switching', '编译测试通过，正在等待旧游戏安全退出')
       // No database backup/migration/seed commands are part of this update pipeline.
@@ -67,7 +70,7 @@ export class UpdateManager {
       await this.game.stop()
       await this.store.activate(candidate.key, before.key)
       await this.save('verifying', '正在启动新版并检查服务状态')
-      await this.game.start(candidate)
+      await this.game.start(candidate, signal)
       this.current = candidate; this.status.busy = false; this.status.available = false
       await this.save('succeeded', '更新完成，游戏已恢复')
       await this.store.prune([candidate.key, before.key]).catch(error => console.error('旧版本清理未完成', error))
@@ -76,13 +79,19 @@ export class UpdateManager {
       if (switched) {
         try {
           await this.save('recovering', '新版未能正常启动，正在恢复原版本')
-          await this.game.stop(); await this.store.activate(before.key, null); await this.game.start(before)
-          this.current = before; message += '；已恢复原版本'
+          await this.game.stop(); await this.store.activate(before.key, null)
+          if (!this.closing) await this.game.start(before)
+          this.current = before; message += this.closing ? '；已保留原版本供下次启动恢复' : '；已恢复原版本'
         } catch (recovery) {message += '；原版本恢复失败：' + String(recovery)}
       } else message += '；原游戏未切换'
       this.status.busy = false
       await this.save('failed', message)
     }
   }
-  async close() {this.closing = true; await this.task; await this.game.stop()}
+  async close() {
+    this.closing = true
+    this.controller?.abort(Error('服务正在停止，已取消更新'))
+    await this.task
+    await this.game.stop()
+  }
 }

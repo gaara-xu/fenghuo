@@ -7,6 +7,7 @@ import type {UpdateManager} from './manager.js'
 
 const prefix = '/api/admin/game-update'
 const json = (res: ServerResponse, status: number, value: unknown) => {
+  if (res.destroyed || res.writableEnded) return
   res.writeHead(status, {'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff'})
   res.end(JSON.stringify(value))
 }
@@ -49,7 +50,10 @@ export function updateServer(manager: UpdateManager, appPort: number, serving: (
         if (!permittedUpdateRequest(req)) return json(res, 403, {error: '请从本游戏管理后台执行更新'})
         let id: string
         try {id = await actionBody(req)} catch {return json(res, 400, {error: '更新请求格式无效'})}
-        return json(res, 202, manager.request(url.pathname.endsWith('/run') ? 'run' : 'check', id))
+        // Accept a complete request once. Disconnecting the browser only drops the response,
+        // never cancels the server-owned update job.
+        const status = manager.request(url.pathname.endsWith('/run') ? 'run' : 'check', id)
+        return json(res, 202, status)
       }
       if (!serving()) return await maintenancePage(req, res, manager.current.dir)
       // Only a fixed loopback app is proxied. The web process never receives a Docker socket or shell endpoint.

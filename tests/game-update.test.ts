@@ -5,7 +5,7 @@ import {createServer} from 'node:http'
 import type {AddressInfo} from 'node:net'
 import {UpdateStorage,atomicJson,readJson} from '../scripts/updater/storage'
 import {UpdateManager} from '../scripts/updater/manager'
-import {GitReleaseSource,validateTree,verifyDependencyLock} from '../scripts/updater/git-release'
+import {GitReleaseSource,RUNTIME_PROTOCOL,validateTree,verifyDependencyLock} from '../scripts/updater/git-release'
 import {buildEnvironment,runCommand} from '../scripts/updater/commands'
 import {LocalGameProcess} from '../scripts/updater/game-process'
 import {updateServer} from '../scripts/updater/http'
@@ -115,18 +115,21 @@ describe('源码安全与构建',()=>{
   it('真实Git固定提交拉取、独立编译目录、依赖复用和失败清理（不运行游戏或接触数据库）',async()=>{
     const f=await fixture(),repo=path.join(f.root,'source');await mkdir(repo);await mkdir(path.join(repo,'server'))
     await writeFile(path.join(repo,'server/index.ts'),'//fixture');await writeFile(path.join(repo,'package.json'),'{}');await writeFile(path.join(repo,'package-lock.json'),'{"packages":{"":{}}}')
-    await writeFile(path.join(repo,'game-runtime.json'),JSON.stringify({protocol:1,nodeMajor:Number(process.versions.node.split('.')[0])}))
+    await writeFile(path.join(repo,'game-runtime.json'),JSON.stringify({protocol:RUNTIME_PROTOCOL,nodeMajor:Number(process.versions.node.split('.')[0])}))
     await writeFile(path.join(f.store.bundled.dir,'package-lock.json'),'{"packages":{"":{}}}');await mkdir(path.join(f.store.bundled.dir,'node_modules/typescript'),{recursive:true})
     await runCommand('git',['init','-b','main',repo]);await runCommand('git',['-C',repo,'add','.']);await runCommand('git',['-C',repo,'-c','user.name=Test','-c','user.email=test@example.invalid','commit','-m','fixture'])
+    let fetchAttempts=0
     const command=vi.fn(async(cmd:string,args:string[],options:any)=>{
+      if(cmd==='git'&&args.includes('fetch')&&++fetchAttempts===1)throw Error('curl 16 Error in the HTTP2 framing layer')
       if(cmd!=='npm')return runCommand(cmd,args,options)
       expect(args).toEqual(['run','check']);expect(options.env.RUN_DB_TESTS).toBe('0')
       await mkdir(path.join(options.cwd,'dist-server/server'),{recursive:true});await mkdir(path.join(options.cwd,'dist-web'))
       await writeFile(path.join(options.cwd,'dist-server/server/index.js'),'//fixture');await writeFile(path.join(options.cwd,'dist-web/index.html'),'fixture');return ''
     })
-    const source=new GitReleaseSource(f.store,command,repo),sha=await source.latest(),release=await source.prepare(sha,async()=>{})
+    const progress=vi.fn(async()=>{}),source=new GitReleaseSource(f.store,command,repo,async()=>{}),sha=await source.latest(),release=await source.prepare(sha,progress)
     expect(release.revision).toBe(sha);expect(await readFile(path.join(release.dir,'server/index.ts'),'utf8')).toBe('//fixture');expect(await source.prepare(sha,async()=>{})).toEqual(release)
     expect(command.mock.calls.filter(([cmd])=>cmd==='npm')).toHaveLength(1)
+    expect(fetchAttempts).toBe(2);expect(progress.mock.calls.some(c=>String(c[1]).includes('2/3'))).toBe(true)
     expect(command.mock.calls.some(([,args])=>args.includes('db:update'))).toBe(false)
   })
 })
