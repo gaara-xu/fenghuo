@@ -4,7 +4,7 @@ import {config} from './config.js'
 import {gameNow,type ClockRow} from './domain/clock.js'
 import {lockReportWriter} from './report-service.js'
 import {getUpkeep,nextMilitaryEvent,settleUpkeep} from './upkeep-service.js'
-import {armyStats,completedUnits,stackFromDefinition,remainingProductionMs,speedupGoldCost,type ArmyStack,type MilitaryDefinition,type MilitaryState,type MilitaryOrder,type MilitarySpeedupResult,type TroopSelection} from '../shared/military.js'
+import {MAX_MILITARY_ORDER_QUANTITY,armyStats,completedUnits,stackFromDefinition,remainingProductionMs,speedupGoldCost,type ArmyStack,type MilitaryDefinition,type MilitaryState,type MilitaryOrder,type MilitarySpeedupResult,type TroopSelection} from '../shared/military.js'
 import {homeHeroArmy} from './home-defense-service.js'
 const player=config.PLAYER_ID
 const parse=(v:any)=>typeof v==='string'?JSON.parse(v):v
@@ -65,7 +65,7 @@ export async function accelerateMilitary(orderId:number,clientActionId:string,ma
  })
 }
 export async function enqueueMilitary(code:string,quantity:number,clientActionId:string){
- if(!Number.isSafeInteger(quantity)||quantity<1||quantity>100000)throw Error('数量须为1至100000的整数')
+ if(!Number.isSafeInteger(quantity)||quantity<1||quantity>MAX_MILITARY_ORDER_QUANTITY)throw Error(`数量须为1至${MAX_MILITARY_ORDER_QUANTITY}的整数`)
  return inTransaction(async c=>{
   await lockReportWriter(c)
   const [done]=await c.query<RowDataPacket[]>('SELECT * FROM military_orders WHERE player_id=? AND client_action_id=?',[player,clientActionId])

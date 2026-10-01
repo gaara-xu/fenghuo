@@ -23,6 +23,7 @@ import {getWorldBossRules,saveWorldBossRules} from '../world-boss-service.js'
 import {salvageEquipment} from '../salvage-service.js'
 import {getIncomingRaidRules,saveIncomingRaidRules} from '../incoming-raid-service.js'
 import {unsupportedUpdate} from '../../shared/game-update.js'
+import {MAX_MILITARY_ORDER_QUANTITY} from '../../shared/military.js'
 
 const sourceStatus = z.enum(['VERIFIED','ESTIMATED','DIY'])
 const artKey=z.string().regex(/^[a-z0-9_-]+$/).max(64).nullish()
@@ -101,7 +102,7 @@ export async function registerApi(app: FastifyInstance): Promise<void> {
   app.post('/api/world/marches',async request=>{const body=z.object({heroId:z.number().int().positive().nullable().default(null),nodeId:z.number().int().positive(),troops:troopSelectionSchema,clientActionId:z.string().uuid().optional()}).parse(request.body);return startMarch(body.heroId,body.nodeId,body.troops,body.clientActionId)})
   app.post('/api/world/auto-farm',async request=>{const body=z.object({heroId:z.number().int().positive().nullable().default(null),nodeId:z.number().int().positive().optional(),troops:troopSelectionSchema,nodeType:z.enum(['OUTPOST','WILD','DUNGEON','SYSTEM_CITY','RANDOM_CITY']),minLevel:z.number().int().min(1),maxLevel:z.number().int().max(100),runs:z.number().int().min(1).max(999)}).refine(v=>v.minLevel<=v.maxLevel).parse(request.body);return startAutoFarm(body.heroId,body.nodeType,body.minLevel,body.maxLevel,body.runs,body.troops,body.nodeId)})
   app.post('/api/world/auto-farm/:id/pause',async request=>{await pauseAutoFarm(z.coerce.number().int().positive().parse((request.params as {id:string}).id));return {ok:true}})
-  app.post('/api/city/defenses/build',async request=>{const body=z.object({defenseType:z.string().min(1).max(64),quantity:z.number().int().min(1).max(100000),clientActionId:z.string().uuid().optional()}).parse(request.body);return buildDefense(body.defenseType,body.quantity,body.clientActionId)})
+  app.post('/api/city/defenses/build',async request=>{const body=z.object({defenseType:z.string().min(1).max(64),quantity:z.number().int().min(1).max(MAX_MILITARY_ORDER_QUANTITY),clientActionId:z.string().uuid().optional()}).parse(request.body);return buildDefense(body.defenseType,body.quantity,body.clientActionId)})
   app.get('/api/admin/heroes', listHeroes)
   app.post('/api/admin/heroes', async request => ({id:await saveHero(heroSchema.parse(request.body))}))
   app.put('/api/admin/heroes/:id', async request => ({id:await saveHero(heroSchema.parse(request.body),z.coerce.number().int().positive().parse((request.params as {id:string}).id))}))

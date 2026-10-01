@@ -4,7 +4,7 @@ import {clientComponent} from './vue-client'
 import {content,renderClient} from './ui-renderer'
 import * as military from '../shared/military'
 import * as labels from '../shared/labels'
-const Panel=clientComponent('web/MilitaryPanel.vue',{'../shared/military':military,'../shared/labels':labels,'./UnitBadge.vue':{default:{render:()=>h('i')}}})
+const Panel=clientComponent('web/MilitaryPanel.vue',{'../shared/military':military,'../shared/labels':labels,'./UnitBadge.vue':{render:()=>h('i')}})
 const now=Date.parse('2026-09-29T00:00:00Z')
 const order=(id:number,start=now,seconds=30,quantity=20):military.MilitaryOrder=>({id,code:'wall',name:'城墙',kind:'DEFENSE',quantity,completed:0,seconds,startGameAt:new Date(start).toISOString(),endGameAt:new Date(start+quantity*seconds*1000).toISOString()})
 function mount(orders:military.MilitaryOrder[],gold=50){
@@ -14,6 +14,17 @@ function mount(orders:military.MilitaryOrder[],gold=50){
 const buttons=(v:ReturnType<typeof mount>)=>v.all().filter(n=>n.type==='button'&&String(n.props.class).includes('speedup-button'))
 afterEach(()=>vi.unstubAllGlobals())
 describe('金币加速与驻城界面',()=>{
+ it.each(['TROOP','DEFENSE'] as const)('%s单批最多1000，快捷选择受资源限制，超量不可提交',async kind=>{
+  const onOrder=vi.fn(),d=military.militaryDefaults.find(d=>d.kind===kind)!,v=mount([])
+  try{
+   v.props.kind=kind;v.props.state.definitions=[d];v.props.wallet={gold:1e9,food:1e9,wood:1e9,stone:1e9,iron:1e9,coupon:0};v.props.onOrder=onOrder;await nextTick()
+   const input=()=>v.all().find(n=>n.type==='input')!,submit=()=>v.all().find(n=>n.type==='button'&&String(n.props.class).includes('primary'))!
+   expect(input().props.max).toBe(1000);v.find('button','最多1000')!.props.onClick();await nextTick();expect(input().props.value).toBe(1000)
+   submit().props.onClick();expect(onOrder).toHaveBeenCalledWith(d.code,1000);onOrder.mockClear()
+   input().props.onInput({target:{value:'1001'}});await nextTick();expect(submit().props.disabled).toBe(true);submit().props.onClick();expect(onOrder).not.toHaveBeenCalled()
+   v.props.wallet.wood=(d.cost.wood??0)*7;await nextTick();v.find('button','最多1000')!.props.onClick();await nextTick();expect(input().props.value).toBe(7)
+  }finally{v.app.unmount()}
+ })
  it('点击直接按本单报价加速，不收等待时间，无系统选择框',()=>{
   const v=mount([order(1),order(2,now+86400000,30,5)])
   try{const [a,b]=buttons(v);expect(content(a)).toContain('2 金币');expect(content(b)).toContain('1 金币');b.props.onClick();expect(v.speedup).toHaveBeenCalledExactlyOnceWith(2,1);expect(v.all().some(n=>n.type==='select'||n.type==='dialog')).toBe(false)}finally{v.app.unmount()}

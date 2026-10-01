@@ -6,7 +6,7 @@ const db=vi.hoisted(()=>({state:{gold:20,stock:{} as Record<string,number>,order
 vi.mock('../server/db.js',()=>({getPool:()=>({query:db.query,execute:db.execute}),inTransaction:async(fn:any)=>{let release!:()=>void;const previous=db.tail;db.tail=new Promise<void>(r=>{release=r});await previous;const before=structuredClone(db.state);try{return await fn({query:db.query,execute:db.execute})}catch(e){db.state=before;throw e}finally{release()}}}))
 vi.mock('../server/upkeep-service.js',()=>({settleUpkeep:vi.fn(async()=>{db.events.push('upkeep')}),getUpkeep:vi.fn(),nextMilitaryEvent:vi.fn()}))
 vi.mock('../server/world-service.js',()=>({settleDueWorldEvents:vi.fn(async()=>{db.events.push('prior-world-events:'+JSON.stringify(db.state.stock))})}))
-import {accelerateMilitary} from '../server/military-service'
+import {accelerateMilitary,enqueueMilitary} from '../server/military-service'
 import {registerMilitary} from '../server/routes/military'
 const start=Date.parse('2026-01-01T00:00:00Z')
 const row=(id:number,offset=0,seconds=100,quantity=3,lane='DEFENSE')=>({id,player_id:1,unit_code:lane==='TROOP'?'pikeman':'wall',lane,quantity,completed:0,seconds_per_unit:seconds,start_game_at:new Date(start+offset*1000),end_game_at:new Date(start+(offset+seconds*quantity)*1000),snapshot_json:JSON.stringify({name:'城防',seconds})})
@@ -69,6 +69,17 @@ describe('金币加速计价',()=>{
   db.state.orders=[row(1,0,10,3),row(2,30,10,2)];db.now=start+11000
   if(reason==='余额不足')db.state.gold=0;if(reason==='入城失败')db.failWrite=true
   const before=structuredClone(db.state);await expect(accelerateMilitary(1,randomUUID(),reason==='价格超过展示上限'?0:1)).rejects.toThrow();expect(db.state).toEqual(before)
+ })
+ it.each(['TROOP','DEFENSE'])('%s订单接受1000，服务层与HTTP拒绝1001且不扣资源',async kind=>{
+  const lane=kind,code=kind==='TROOP'?'pikeman':'wall',clientActionId=randomUUID()
+  db.state.orders=[{...row(1,0,30,1000,lane),client_action_id:clientActionId}]
+  await expect(enqueueMilitary(code,1001,clientActionId)).rejects.toThrow('1至1000');expect(db.query).not.toHaveBeenCalled()
+  const app=Fastify();await registerMilitary(app)
+  try{
+   const request=(quantity:number)=>app.inject({method:'POST',url:'/api/military/orders',payload:{code,quantity,clientActionId}})
+   expect((await request(1001)).statusCode).toBeGreaterThanOrEqual(400);expect(db.query).not.toHaveBeenCalled()
+   expect((await request(1000)).statusCode).toBe(200);expect(db.execute).not.toHaveBeenCalled();expect(db.state.gold).toBe(20)
+  }finally{await app.close()}
  })
  it('HTTP只接受POST、有效订单与整数报价，不接受客户端指定完成数量或扣款金额',async()=>{
   const app=Fastify();await registerMilitary(app);db.state.orders=[row(1)]

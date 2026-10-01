@@ -9,6 +9,7 @@ export interface MilitaryOrder {id:number;code:string;name:string;kind:MilitaryK
 export interface DefenseHero {heroId:number;name:string;meleeDefense:number;rangedDefense:number}
 export interface MilitaryState {definitions:MilitaryDefinition[];stock:Record<string,number>;orders:MilitaryOrder[];defense:{melee:number;ranged:number;heroes?:DefenseHero[]};ready:boolean;upkeep?:UpkeepState}
 export interface MilitarySpeedupResult {orderId:number;goldSpent:number;completedUnits:number;savedSeconds:number;completedAt:string;alreadyCompleted?:boolean;replayed?:boolean}
+export const MAX_MILITARY_ORDER_QUANTITY=1000
 export const SPEEDUP_SECONDS_PER_GOLD=300
 export function remainingProductionMs(order:MilitaryOrder,now:number){return Math.max(0,Math.min((order.quantity-order.completed)*order.seconds*1000,Date.parse(order.endGameAt)-Math.max(now,Date.parse(order.startGameAt))))}
 export function speedupGoldCost(order:MilitaryOrder,now:number){return Math.ceil(remainingProductionMs(order,now)/(SPEEDUP_SECONDS_PER_GOLD*1000))}
