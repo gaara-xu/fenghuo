@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed,ref,watch} from 'vue'
+import {computed,ref,watch,useId} from 'vue'
 import {worldBossCountdown} from '../shared/world-boss'
 import type {MapNode,WorldStatus} from '../shared/contracts'
 import {nodeLabels,label} from '../shared/labels'
@@ -14,6 +14,8 @@ const visibleNodes=computed(()=>props.nodes.filter(n=>!expired(n)&&(filter.value
 watch(()=>props.gameTime,()=>{if(hovered.value&&expired(hovered.value))hovered.value=undefined})
 function point(x:number,y:number){return {x:550+(x-y)*4.65,y:325-(x+y-100)*2.3}}
 function location(x:number,y:number){const p=point(x,y);return {left:p.x+'px',top:p.y+'px'}}
+const terrainClip='terrain-'+useId().replace(/:/g,'')
+// 地块与行军共用投影：每格宽 93、高 46，两个轴各移动半格。
 const tiles=Array.from({length:121},(_,i)=>({x:i%11*10,y:Math.floor(i/11)*10,variant:i%17===0?1:i%13===0?4:i%9===0?0:2}))
 function position(m:NonNullable<typeof props.world>['marches'][number]){const returning=m.status==='RETURNING',start=new Date(returning?m.arriveGameAt:m.departGameAt).getTime(),end=new Date(returning?m.returnGameAt??m.arriveGameAt:m.arriveGameAt).getTime(),p=Math.max(0,Math.min(1,(props.gameTime-start)/Math.max(1,end-start)));return {...location(returning?m.targetX+(50-m.targetX)*p:50+(m.targetX-50)*p,returning?m.targetY+(50-m.targetY)*p:50+(m.targetY-50)*p),seconds:Math.max(0,Math.ceil((end-props.gameTime)/1000))}}
 function start(e:PointerEvent){moved.value=false;if(e.button!==0||(e.target as HTMLElement).closest('button'))return;hovered.value=undefined;drag.value={x:e.clientX,y:e.clientY,ox:offset.value.x,oy:offset.value.y};(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)}
@@ -26,7 +28,14 @@ function art(node:MapNode){if(node.worldBoss)return {backgroundImage:'url(/art/o
 <div class="map-kind-tabs" aria-label="地图目标筛选"><button v-for="(name,key) in {ALL:'全部',WORLD_BOSS:'世界首领',OUTPOST:'据点',WILD:'野地',DUNGEON:'副本',SYSTEM_CITY:'系统城',RANDOM_CITY:'随机城'}" :key="key" :aria-pressed="filter===key" :class="{active:filter===key}" @click="filter=key">{{name}}</button></div>
 <div class="world-map-viewport classic-map" @pointerdown="start" @pointermove="move" @pointerup="drag=null" @pointercancel="drag=null" @mouseleave="hovered=undefined">
 <div class="original-map-ground" :style="{transform:'translate('+offset.x+'px,'+offset.y+'px) scale('+zoom+')'}">
-<div v-for="t in tiles" :key="t.x+'-'+t.y" class="original-terrain" :style="{...location(t.x,t.y),backgroundPosition:(t.variant*25)+'% 0'}" aria-hidden="true"></div>
+<svg class="terrain-sheet" viewBox="0 0 1100 650" aria-hidden="true">
+<defs><clipPath :id="terrainClip"><path d="M 0 -23 L 46.5 0 L 0 23 L -46.5 0 Z"/></clipPath></defs>
+<path class="terrain-foundation" d="M 550 72 L 1061.5 325 L 550 578 L 38.5 325 Z"/>
+<g v-for="t in tiles" :key="t.x+'-'+t.y" :transform="'translate('+point(t.x,t.y).x+' '+point(t.x,t.y).y+')'">
+<g :clip-path="'url(#'+terrainClip+')'"><svg x="-47" y="-23.5" width="94" height="47" :viewBox="(t.variant*100+4)+' 7 92 45'" preserveAspectRatio="none"><image href="/art/official/map_outposts.jpg" width="500" height="57"/></svg></g>
+</g>
+<path class="terrain-boundary" d="M 550 72 L 1061.5 325 L 550 578 L 38.5 325 Z"/>
+</svg>
 <svg class="world-routes" viewBox="0 0 1100 650" aria-hidden="true"><line v-for="m in active" :key="m.id" x1="550" y1="325" :x2="point(m.targetX,m.targetY).x" :y2="point(m.targetX,m.targetY).y" :class="['march-route',{returning:m.status==='RETURNING'}]"/></svg>
 <div class="original-home" :style="location(50,50)"><i class="classic-site home-site" aria-hidden="true"></i><b>烽火城</b><small>（50，50）</small></div>
 <button v-for="n in visibleNodes" :key="n.id" type="button" class="original-node" :class="{chosen:selectedId===n.id,'world-boss':n.worldBoss}" :style="location(n.x,n.y)" :aria-label="n.name+'，'+n.level+'级，点击出征'" @click="choose(n,$event)" @contextmenu.prevent="choose(n)" @mouseenter="show($event,n)" @mouseleave="hovered=undefined" @focus="show($event,n)" @blur="hovered=undefined"><i class="classic-site" :style="art(n)" aria-hidden="true"></i><span>{{n.name}} <b>{{n.level}}级</b></span><em v-if="n.worldBoss" class="boss-countdown">消失 {{worldBossCountdown(n.expiresGameAt,gameTime)}}</em><small>（{{n.x}}，{{n.y}}）</small></button>
@@ -38,4 +47,13 @@ function art(node:MapNode){if(node.worldBoss)return {backgroundImage:'url(/art/o
 .map-kind-tabs{display:flex;gap:4px;padding:7px 10px;background:#25291d;border-inline:1px solid #686b46;flex-wrap:wrap}.shell .map-kind-tabs button{font-size:11px;padding:5px 16px;min-height:28px;border-color:#494e34;background:#151e13;box-shadow:inset 0 1px #7f815322}.shell .map-kind-tabs button.active{color:#ffe496;background:linear-gradient(#636038,#383a25);border-color:#ae9858}.classic-map{height:620px;background:radial-gradient(ellipse,#3e4730,#171e17 77%);border:4px ridge #676847}.original-map-ground{position:absolute;width:1100px;height:650px;left:calc(50% - 550px);top:calc(50% - 325px);transform-origin:center}.original-terrain{position:absolute;width:96px;height:57px;transform:translate(-50%,-50%);background-image:url('/art/official/map_outposts.jpg');background-size:500% 100%;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);pointer-events:none;filter:saturate(.8) brightness(.92)}.classic-map .world-routes{pointer-events:none}.classic-map .march-route{stroke-width:2;stroke-dasharray:6 4}.shell .original-node,.original-home{position:absolute;transform:translate(-50%,-56%);width:96px;min-height:0;border:0;border-radius:0;padding:0;box-shadow:none;background:transparent;z-index:2;text-align:center;overflow:visible}.shell .original-node:hover:not(:disabled),.shell .original-node:active:not(:disabled){background:transparent;box-shadow:none;transform:translate(-50%,-56%);z-index:9}.classic-site{display:block;width:96px;height:63px;background-repeat:no-repeat;margin:0 auto;mix-blend-mode:multiply}.original-home{z-index:3;pointer-events:none}.home-site{height:71px;background-image:url('/art/official/map_elements.jpg');background-size:600% 100%;background-position:100% 0}.original-node>span,.original-home>b{display:block;position:relative;margin:-8px auto 0;width:max-content;max-width:130px;font-size:10px;font-weight:normal;white-space:nowrap;background:#1b2118e8;border:1px solid #7c86545c;color:#e6e1b9;padding:2px 5px;text-shadow:0 1px #000}.original-node b{color:#dcca78;font-weight:normal}.original-node>small,.original-home>small{display:block;font:9px Georgia,serif;color:#cac7a6;text-shadow:0 1px 2px #000;background:#1b2118b8;width:max-content;margin:1px auto;padding:1px 4px}.original-home>b{color:#ffdf7a;border-color:#b09c5e}.original-node.chosen>span,.original-node:hover>span{border-color:#ffe085;color:#ffe99c;box-shadow:0 0 7px #edcd6866}.original-node:focus-visible{outline:1px solid #ffe38c;outline-offset:4px}.map-target-tooltip{pointer-events:none;border-color:#9c9560}.map-target-tooltip h3{color:#f0d386}@media(max-width:700px){.classic-map{height:480px}.map-kind-tabs button{flex:1}}
  .original-node>small{display:none}.original-node:hover>small,.original-node:focus-visible>small,.original-node.chosen>small{display:block}
  .boss-countdown{display:block;width:max-content;margin:2px auto 0;color:#ffc58c;background:#331611e8;font:10px Georgia,serif;padding:2px 5px}.world-boss .classic-site{filter:sepia(.25) saturate(1.8) drop-shadow(0 0 12px #ed382d);mix-blend-mode:normal}.world-boss>span{color:#ffd7a1;border-color:#e36744;background:#401715;box-shadow:0 0 12px #e5483955}.world-boss b,.boss-warning{color:#ffad79}
+</style>
+<style scoped>
+.terrain-sheet{position:absolute;inset:0;width:1100px;height:650px;pointer-events:none;filter:saturate(.78) brightness(.88);isolation:isolate}
+.terrain-foundation{fill:#8d955b;stroke:#8d955b;stroke-width:1.5}
+.terrain-boundary{fill:none;stroke:#b5b481;stroke-opacity:.45;stroke-width:1;pointer-events:none}
+.classic-map{background:radial-gradient(ellipse at 50% 45%,#444b35 0,#262e22 55%,#141b16 100%)}
+.classic-site{isolation:auto;filter:saturate(.8);background-color:transparent}
+.world-boss .classic-site{mix-blend-mode:multiply;filter:sepia(.25) saturate(1.5)}
+.original-node.world-boss::before{content:'';position:absolute;inset:12px 13px 25px;border-radius:50%;box-shadow:0 0 18px 5px #e7423566;pointer-events:none;z-index:-1}
 </style>
