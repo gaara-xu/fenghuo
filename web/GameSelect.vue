@@ -1,6 +1,7 @@
 <script setup lang="ts" generic="T extends string|number|null|undefined">
 import {computed,nextTick,ref,useId,watch} from 'vue'
 import AssetIcon from './AssetIcon.vue'
+import {itemArt} from './art'
 const props=defineProps<{modelValue?:T;label:string;placeholder?:string;disabled?:boolean;options:Array<{id:T;label:string;detail?:string;iconKey?:string|null;imageUrl?:string;quality?:number;hero?:boolean}>}>()
 const emit=defineEmits<{'update:modelValue':[T]}>()
 const open=ref(false),search=ref(''),trigger=ref<HTMLButtonElement>(),panel=ref<HTMLElement>(),id=useId()
@@ -28,7 +29,7 @@ watch(()=>props.disabled,value=>{if(value)open.value=false})
       <div v-if="options.length>8" class="choice-search"><input v-model="search" type="search" :aria-label="'搜索'+label" placeholder="输入名称查找…" @keydown.enter.prevent><span>{{filtered.length}} 项</span></div>
       <div class="choice-grid" :aria-label="label+'选项'">
         <button v-for="(o,index) in filtered" :key="String(o.id)+'-'+index" type="button" class="choice-tile" :class="['quality-'+(o.quality??0),{selected:o.id===modelValue}]" :aria-pressed="o.id===modelValue" @click="choose(o.id)">
-          <AssetIcon v-if="o.iconKey||o.imageUrl" :name="o.label" :hero="o.hero" :icon-key="o.iconKey" :image-url="o.imageUrl" :quality="o.quality" size="tiny"/>
+          <AssetIcon v-if="o.iconKey||o.imageUrl||itemArt(o.label)" :name="o.label" :hero="o.hero" :icon-key="o.iconKey" :image-url="o.imageUrl" :quality="o.quality" size="tiny"/>
           <span v-else class="choice-seal" aria-hidden="true">{{o.label.slice(0,1)}}</span><span class="choice-copy">{{o.label}}<small v-if="o.detail">{{o.detail}}</small></span><b v-if="o.id===modelValue" aria-hidden="true">✓</b>
         </button><p v-if="!filtered.length" class="choice-empty">没有匹配的选项</p>
       </div><footer>点击选用 · Esc 返回</footer>

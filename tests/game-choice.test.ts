@@ -2,7 +2,8 @@ import {afterEach,describe,it,expect,vi} from 'vitest'
 import {createRenderer,h,markRaw,nextTick,ref} from 'vue'
 import {readdirSync,readFileSync} from 'node:fs'
 import {clientComponent} from './vue-client'
-const GameChoice=clientComponent('web/GameSelect.vue',{'./AssetIcon.vue':{setup:()=>()=>h('span')}})
+import * as art from '../web/art'
+const GameChoice=clientComponent('web/GameSelect.vue',{'./AssetIcon.vue':{setup:()=>()=>h('span')},'./art':art})
 type Element={type:string;text:string;props:Record<string,any>;children:Element[];parent:Element|null;focus:()=>void;querySelector:(s:string)=>Element|undefined;querySelectorAll:(s:string)=>Element[];addEventListener:()=>void;removeEventListener:()=>void;getRootNode:()=>unknown;value:string}
 function all(node:Element):Element[]{return [node,...node.children.flatMap(all)]}
 function text(node:Element):string{return node.text+node.children.map(text).join('')}

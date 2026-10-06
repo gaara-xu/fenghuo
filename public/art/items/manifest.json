@@ -1,0 +1,59 @@
+{
+  "generator": "image_gen",
+  "style": "低细节旧页游消耗品与材料，暗绿底、青铜与柔和色彩，清晰轮廓；无文字、边框及品质光效。",
+  "sizes": {
+    "small": 64,
+    "large": 128
+  },
+  "assets": [
+    {
+      "key": "talent_water",
+      "name": "天赋水",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory consumable or crafting material icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a squat simple ancient Chinese glazed ceramic potion bottle with a bronze neck and cork, filled with subdued jade green liquid, plain body, three-quarter view. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, only a few flat shaded color areas and tiny highlights. Muted earthy bronze and olive palette with the subject's specified subdued accent color, charcoal dark green background (#151a12) with quiet soft vignette. Center ONE item filling 75% of square, generous 12% margins, readable at 48-64px. Match the existing modest bronze equipment and talisman icon set. No text, letters, border, frame, rarity glow, characters, scenery, ornate carvings, microtextures, photorealism, sparks, HDR, watermark.",
+      "small": "public/art/items/talent_water-small.png",
+      "large": "public/art/items/talent_water-large.png"
+    },
+    {
+      "key": "hero_experience_book",
+      "name": "英雄经验书",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory consumable or crafting material icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a closed old Chinese stitched book with a muted red-brown cloth cover, pale ivory page edges and a small plain bronze clasp, three-quarter view, blank cover without any lettering. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, only a few flat shaded color areas and tiny highlights. Muted earthy bronze and olive palette with the subject's specified subdued accent color, charcoal dark green background (#151a12) with quiet soft vignette. Center ONE item filling 75% of square, generous 12% margins, readable at 48-64px. Match the existing modest bronze equipment and talisman icon set. No text, letters, border, frame, rarity glow, characters, scenery, ornate carvings, microtextures, photorealism, sparks, HDR, watermark.",
+      "small": "public/art/items/hero_experience_book-small.png",
+      "large": "public/art/items/hero_experience_book-large.png"
+    },
+    {
+      "key": "hero_stamina_potion",
+      "name": "英雄体力药",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory consumable or crafting material icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a tall simple ancient Chinese glazed ceramic medicine flask with a cork and a thin red cord, warm dark red liquid, plain body, three-quarter view. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, only a few flat shaded color areas and tiny highlights. Muted earthy bronze and olive palette with the subject's specified subdued accent color, charcoal dark green background (#151a12) with quiet soft vignette. Center ONE item filling 75% of square, generous 12% margins, readable at 48-64px. Match the existing modest bronze equipment and talisman icon set. No text, letters, border, frame, rarity glow, characters, scenery, ornate carvings, microtextures, photorealism, sparks, HDR, watermark.",
+      "small": "public/art/items/hero_stamina_potion-small.png",
+      "large": "public/art/items/hero_stamina_potion-large.png"
+    },
+    {
+      "key": "refine_common",
+      "name": "精炼石",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory consumable or crafting material icon for a nostalgic 2012 Chinese Warring States browser game. Subject: one rough compact dark grey mineral stone with a few broad facets and a faint bronze vein, a humble ordinary crafting material. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, only a few flat shaded color areas and tiny highlights. Muted earthy bronze and olive palette with the subject's specified subdued accent color, charcoal dark green background (#151a12) with quiet soft vignette. Center ONE item filling 75% of square, generous 12% margins, readable at 48-64px. Match the existing modest bronze equipment and talisman icon set. No text, letters, border, frame, rarity glow, characters, scenery, ornate carvings, microtextures, photorealism, sparks, HDR, watermark.",
+      "small": "public/art/items/refine_common-small.png",
+      "large": "public/art/items/refine_common-large.png"
+    },
+    {
+      "key": "refine_advanced",
+      "name": "高级精炼石",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory consumable or crafting material icon for a nostalgic 2012 Chinese Warring States browser game. Subject: one compact amber-gold crystal chunk with a few broad facets embedded in a small dark rock base, modest highlights. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, only a few flat shaded color areas and tiny highlights. Muted earthy bronze and olive palette with the subject's specified subdued accent color, charcoal dark green background (#151a12) with quiet soft vignette. Center ONE item filling 75% of square, generous 12% margins, readable at 48-64px. Match the existing modest bronze equipment and talisman icon set. No text, letters, border, frame, rarity glow, characters, scenery, ornate carvings, microtextures, photorealism, sparks, HDR, watermark.",
+      "small": "public/art/items/refine_advanced-small.png",
+      "large": "public/art/items/refine_advanced-large.png"
+    },
+    {
+      "key": "refine_stone",
+      "name": "精炼神石",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory consumable or crafting material icon for a nostalgic 2012 Chinese Warring States browser game. Subject: one compact muted purple crystal shard cluster with only three broad facets on a dark bronze base, subtle highlight, no magical aura. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, only a few flat shaded color areas and tiny highlights. Muted earthy bronze and olive palette with the subject's specified subdued accent color, charcoal dark green background (#151a12) with quiet soft vignette. Center ONE item filling 75% of square, generous 12% margins, readable at 48-64px. Match the existing modest bronze equipment and talisman icon set. No text, letters, border, frame, rarity glow, characters, scenery, ornate carvings, microtextures, photorealism, sparks, HDR, watermark.",
+      "small": "public/art/items/refine_stone-small.png",
+      "large": "public/art/items/refine_stone-large.png"
+    },
+    {
+      "key": "synthesis_stone",
+      "name": "合成神石",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory crafting material icon for a nostalgic 2012 Chinese Warring States browser game. Subject: two small joined muted blue crystal chunks on a tiny bronze base, a simple synthesis crafting stone. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, only a few flat shaded color areas and tiny highlights. Muted earthy bronze and olive palette with subdued blue accent, charcoal dark green background (#151a12) with quiet soft vignette. Center one compact cluster filling 75% of square, generous 12% margins, readable at 48-64px. Match the modest bronze equipment and talisman icon set. No text, letters, border, frame, rarity glow, characters, scenery, ornate carvings, microtextures, photorealism, sparks, HDR, watermark.",
+      "small": "public/art/items/synthesis_stone-small.png",
+      "large": "public/art/items/synthesis_stone-large.png"
+    }
+  ]
+}

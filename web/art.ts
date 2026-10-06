@@ -11,11 +11,21 @@ const oneStarTreasureIcons:Record<string,string>={
   '一星近防宝物':'meleedefense','一星远防宝物':'rangeddefense',
   '一星速度宝物':'speed','一星负重宝物':'loadcapacity',
 }
+const consumableIcons:Record<string,string>={
+  '天赋水':'talent_water','英雄经验书':'hero_experience_book','英雄体力药':'hero_stamina_potion',
+  '精炼石':'refine_common','高级精炼石':'refine_advanced','精炼神石':'refine_stone','合成神石':'synthesis_stone',
+}
+const legacyGemIcons:Record<string,string>={
+  '近攻宝石':'item73','远攻宝石':'item76','近防宝石':'item79',
+  '远防宝石':'item79','速度宝石':'item82','负重宝石':'item85',
+}
 export function itemArt(name:string,icon?:string,size:'small'|'large'='small'){
   if(icon?.startsWith('/art/')&&!icon.includes('..'))return icon
   if(Object.hasOwn(officialItemIcons,name))return officialItemIcons[name]
   if(Object.hasOwn(bronzeEquipmentIcons,name))return `/art/equipment/bronze_${bronzeEquipmentIcons[name]}-${size}.png`
   if(Object.hasOwn(oneStarTreasureIcons,name))return `/art/treasures/one_star_${oneStarTreasureIcons[name]}-${size}.png`
+  if(Object.hasOwn(consumableIcons,name))return `/art/items/${consumableIcons[name]}-${size}.png`
+  if(Object.hasOwn(legacyGemIcons,name))return `/art/official/${legacyGemIcons[name]}.gif`
   return null
 }
 export const iconNames:Record<string,string>=Object.fromEntries(officialSkills.map(s=>[s[0],s[1]]))
