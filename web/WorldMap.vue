@@ -4,6 +4,7 @@ import {worldBossCountdown} from '../shared/world-boss'
 import type {MapNode,WorldStatus} from '../shared/contracts'
 import {nodeLabels,label} from '../shared/labels'
 import AssetIcon from './AssetIcon.vue'
+import MapSprite from './MapSprite.vue'
 import {tooltipPosition} from './tooltip-position'
 const props=defineProps<{nodes:MapNode[];world:WorldStatus|null;gameTime:number;selectedId?:number}>(),emit=defineEmits<{select:[MapNode]}>()
 const zoom=ref(1),offset=ref({x:0,y:0}),drag=ref<{x:number;y:number;ox:number;oy:number}|null>(null),moved=ref(false),filter=ref('ALL')
@@ -22,7 +23,7 @@ function start(e:PointerEvent){moved.value=false;if(e.button!==0||(e.target as H
 function move(e:PointerEvent){if(!drag.value)return;const dx=e.clientX-drag.value.x,dy=e.clientY-drag.value.y;if(Math.abs(dx)+Math.abs(dy)>5)moved.value=true;offset.value={x:Math.max(-550,Math.min(550,drag.value.ox+dx)),y:Math.max(-350,Math.min(350,drag.value.oy+dy))}}
 function choose(node:MapNode,e?:MouseEvent){if(!expired(node)&&(!e?.detail||!moved.value)){hovered.value=undefined;emit('select',node)}}
 function show(e:Event,node:MapNode){hovered.value=node;tipPosition.value=tooltipPosition((e.currentTarget as HTMLElement).getBoundingClientRect(),{width:window.innerWidth,height:window.innerHeight})}
-function art(node:MapNode){if(node.worldBoss)return {backgroundImage:'url(/art/official/map_cities.jpg)',backgroundSize:'500% 100%',backgroundPosition:'100% 0'};if(['SYSTEM_CITY','RANDOM_CITY'].includes(node.nodeType))return {backgroundImage:'url(/art/official/map_elements.jpg)',backgroundSize:'600% 100%',backgroundPosition:(node.nodeType==='SYSTEM_CITY'?100:60)+'% 0'};if(node.nodeType==='WILD')return {backgroundImage:'url(/art/official/map_outposts.jpg)',backgroundSize:'500% 100%',backgroundPosition:'100% 0'};return {backgroundImage:'url(/art/official/map_cities.jpg)',backgroundSize:'500% 100%',backgroundPosition:((node.nodeType==='DUNGEON'?4:Math.min(4,Math.floor((node.level-1)/4)))*25)+'% 0'}}
+function art(node:MapNode){if(node.worldBoss)return {src:'/art/official/map_cities.jpg',columns:5,frame:4};if(['SYSTEM_CITY','RANDOM_CITY'].includes(node.nodeType))return {src:'/art/official/map_elements.jpg',columns:6,frame:node.nodeType==='SYSTEM_CITY'?5:3};if(node.nodeType==='WILD')return {src:'/art/official/map_outposts.jpg',columns:5,frame:4};return {src:'/art/official/map_cities.jpg',columns:5,frame:node.nodeType==='DUNGEON'?4:Math.min(4,Math.floor((node.level-1)/4))}}
 </script>
 <template><div class="world-map-toolbar"><b>天下 · 烽火城</b><span>行军 {{active.length}} 支 · 自动刷野 {{world?.autoFarmJobs.filter(j=>j.status==='ACTIVE').length??0}} 队</span><div><button aria-label="地图缩小" @click="zoom=Math.max(.6,zoom-.15)">−</button><button @click="zoom=1;offset={x:0,y:0};moved=false">回到主城</button><button aria-label="地图放大" @click="zoom=Math.min(2,zoom+.15)">＋</button></div></div>
 <div class="map-kind-tabs" aria-label="地图目标筛选"><button v-for="(name,key) in {ALL:'全部',WORLD_BOSS:'世界首领',OUTPOST:'据点',WILD:'野地',DUNGEON:'副本',SYSTEM_CITY:'系统城',RANDOM_CITY:'随机城'}" :key="key" :aria-pressed="filter===key" :class="{active:filter===key}" @click="filter=key">{{name}}</button></div>
@@ -37,8 +38,8 @@ function art(node:MapNode){if(node.worldBoss)return {backgroundImage:'url(/art/o
 <path class="terrain-boundary" d="M 550 72 L 1061.5 325 L 550 578 L 38.5 325 Z"/>
 </svg>
 <svg class="world-routes" viewBox="0 0 1100 650" aria-hidden="true"><line v-for="m in active" :key="m.id" x1="550" y1="325" :x2="point(m.targetX,m.targetY).x" :y2="point(m.targetX,m.targetY).y" :class="['march-route',{returning:m.status==='RETURNING'}]"/></svg>
-<div class="original-home" :style="location(50,50)"><i class="classic-site home-site" aria-hidden="true"></i><b>烽火城</b><small>（50，50）</small></div>
-<button v-for="n in visibleNodes" :key="n.id" type="button" class="original-node" :class="{chosen:selectedId===n.id,'world-boss':n.worldBoss}" :style="location(n.x,n.y)" :aria-label="n.name+'，'+n.level+'级，点击出征'" @click="choose(n,$event)" @contextmenu.prevent="choose(n)" @mouseenter="show($event,n)" @mouseleave="hovered=undefined" @focus="show($event,n)" @blur="hovered=undefined"><i class="classic-site" :style="art(n)" aria-hidden="true"></i><span>{{n.name}} <b>{{n.level}}级</b></span><em v-if="n.worldBoss" class="boss-countdown">消失 {{worldBossCountdown(n.expiresGameAt,gameTime)}}</em><small>（{{n.x}}，{{n.y}}）</small></button>
+<div class="original-home" :style="location(50,50)"><MapSprite class="classic-site home-site" src="/art/official/map_elements.jpg" :columns="6" :frame="5"/><b>烽火城</b><small>（50，50）</small></div>
+<button v-for="n in visibleNodes" :key="n.id" type="button" class="original-node" :class="{chosen:selectedId===n.id,'world-boss':n.worldBoss}" :style="location(n.x,n.y)" :aria-label="n.name+'，'+n.level+'级，点击出征'" @click="choose(n,$event)" @contextmenu.prevent="choose(n)" @mouseenter="show($event,n)" @mouseleave="hovered=undefined" @focus="show($event,n)" @blur="hovered=undefined"><MapSprite class="classic-site" v-bind="art(n)"/><span>{{n.name}} <b>{{n.level}}级</b></span><em v-if="n.worldBoss" class="boss-countdown">消失 {{worldBossCountdown(n.expiresGameAt,gameTime)}}</em><small>（{{n.x}}，{{n.y}}）</small></button>
 <div v-for="m in active" :key="'army'+m.id" class="army-marker" :class="{returning:m.status==='RETURNING'}" :style="{left:position(m).left,top:position(m).top}"><span v-if="!m.heroId" class="army-flag" aria-label="士兵部队">⚑</span><AssetIcon v-else :name="m.heroName" :icon-key="m.portraitKey" hero size="tiny"/><span>{{m.heroName}} · {{m.status==='RETURNING'?'返城':'出征'}}<small v-if="m.troops?.some(t=>t.quantity>0)">兵力 {{m.troops.reduce((n,t)=>n+t.quantity,0)}}</small><small>{{position(m).seconds}} 秒{{m.status==='RETURNING'?'返城':'抵达'}}</small></span></div>
 </div><small class="map-art-note">拖动舆图 · 点击或右键目标出征 · 金线出征／青线返城</small></div>
 <Teleport to="body"><div v-if="hovered" class="bag-tooltip map-target-tooltip" role="tooltip" :style="tipPosition"><h3>{{hovered.name}} · {{hovered.level}}级</h3><p>{{hovered.worldBoss?'世界首领':label(nodeLabels,hovered.nodeType)}} （{{hovered.x}}，{{hovered.y}}）</p><p>近防 {{hovered.meleeDefense?.toLocaleString()}} · 远防 {{hovered.rangedDefense?.toLocaleString()}}</p><p>战利品：{{hovered.rewardHint}}</p><p v-if="hovered.worldBoss" class="boss-warning">剩余 {{worldBossCountdown(hovered.expiresGameAt,gameTime)}}（游戏时间）<br>首次获胜或到期即消失 · 战败不降级 · 无法自动刷野</p><small>点击或右键，调遣英雄与士兵</small></div></Teleport>
@@ -53,7 +54,7 @@ function art(node:MapNode){if(node.worldBoss)return {backgroundImage:'url(/art/o
 .terrain-foundation{fill:#8d955b;stroke:#8d955b;stroke-width:1.5}
 .terrain-boundary{fill:none;stroke:#b5b481;stroke-opacity:.45;stroke-width:1;pointer-events:none}
 .classic-map{background:radial-gradient(ellipse at 50% 45%,#444b35 0,#262e22 55%,#141b16 100%)}
-.classic-site{isolation:auto;filter:saturate(.8);background-color:transparent}
-.world-boss .classic-site{mix-blend-mode:multiply;filter:sepia(.25) saturate(1.5)}
+.classic-site,.home-site{isolation:auto;filter:saturate(.8);background:none;mix-blend-mode:normal}
+.world-boss .classic-site{mix-blend-mode:normal;filter:sepia(.25) saturate(1.5)}
 .original-node.world-boss::before{content:'';position:absolute;inset:12px 13px 25px;border-radius:50%;box-shadow:0 0 18px 5px #e7423566;pointer-events:none;z-index:-1}
 </style>
