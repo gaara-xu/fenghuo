@@ -1,0 +1,52 @@
+{
+  "generator": "image_gen",
+  "style": "低细节旧页游一星宝物，暗绿底、青铜或暗玉、清晰轮廓；无文字、边框及品质光效。",
+  "sizes": {
+    "small": 64,
+    "large": 128
+  },
+  "assets": [
+    {
+      "key": "one_star_meleeattack",
+      "name": "一星近攻宝物",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory treasure icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a small plain bronze tiger-shaped military seal, compact crouching tiger on a rectangular base, three-quarter view. This is a humble one-star talisman, not luxurious legendary equipment. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with a quiet soft vignette. Center ONE object filling 75% of square, generous 12% margins, readable at 48-64px. Match a modest bronze equipment icon set. No text, border, frame, rarity glow, characters, scenery, intricate carvings, microtextures, photorealism, sparks, HDR, watermark.",
+      "small": "public/art/treasures/one_star_meleeattack-small.png",
+      "large": "public/art/treasures/one_star_meleeattack-large.png"
+    },
+    {
+      "key": "one_star_rangedattack",
+      "name": "一星远攻宝物",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory treasure icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a single simple ancient bronze arrowhead charm with a small hanging loop, diagonal three-quarter view. This is a humble one-star talisman, not luxurious legendary equipment. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with a quiet soft vignette. Center ONE object filling 75% of square, generous 12% margins, readable at 48-64px. Match a modest bronze equipment icon set. No text, border, frame, rarity glow, characters, scenery, intricate carvings, microtextures, photorealism, sparks, HDR, watermark.",
+      "small": "public/art/treasures/one_star_rangedattack-small.png",
+      "large": "public/art/treasures/one_star_rangedattack-large.png"
+    },
+    {
+      "key": "one_star_meleedefense",
+      "name": "一星近防宝物",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory treasure icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a square ancient bronze protective seal amulet with a very simple raised shield motif, three-quarter view. This is a humble one-star talisman, not luxurious legendary equipment. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with a quiet soft vignette. Center ONE object filling 75% of square, generous 12% margins, readable at 48-64px. Match a modest bronze equipment icon set. No text, border, frame, rarity glow, characters, scenery, intricate carvings, microtextures, photorealism, sparks, HDR, watermark.",
+      "small": "public/art/treasures/one_star_meleedefense-small.png",
+      "large": "public/art/treasures/one_star_meleedefense-large.png"
+    },
+    {
+      "key": "one_star_rangeddefense",
+      "name": "一星远防宝物",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory treasure icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a round dull olive jade protective disc with a simple broad bow-shaped bronze relief, no writing. This is a humble one-star talisman, not luxurious legendary equipment. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with a quiet soft vignette. Center ONE object filling 75% of square, generous 12% margins, readable at 48-64px. Match a modest bronze equipment icon set. No text, border, frame, rarity glow, characters, scenery, intricate carvings, microtextures, photorealism, sparks, HDR, watermark.",
+      "small": "public/art/treasures/one_star_rangeddefense-small.png",
+      "large": "public/art/treasures/one_star_rangeddefense-large.png"
+    },
+    {
+      "key": "one_star_speed",
+      "name": "一星速度宝物",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory treasure icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a small plain ancient Chinese bronze galloping horse figurine, strong easily readable horse silhouette, side three-quarter view. This is a humble one-star talisman, not luxurious legendary equipment. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with a quiet soft vignette. Center ONE object filling 75% of square, generous 12% margins, readable at 48-64px. Match a modest bronze equipment icon set. No text, border, frame, rarity glow, characters, scenery, intricate carvings, microtextures, photorealism, sparks, HDR, watermark.",
+      "small": "public/art/treasures/one_star_speed-small.png",
+      "large": "public/art/treasures/one_star_speed-large.png"
+    },
+    {
+      "key": "one_star_loadcapacity",
+      "name": "一星负重宝物",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory treasure icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a small plain ancient Chinese bronze ding cauldron with two handles and three short legs, three-quarter view. This is a humble one-star talisman, not luxurious legendary equipment. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with a quiet soft vignette. Center ONE object filling 75% of square, generous 12% margins, readable at 48-64px. Match a modest bronze equipment icon set. No text, border, frame, rarity glow, characters, scenery, intricate carvings, microtextures, photorealism, sparks, HDR, watermark.",
+      "small": "public/art/treasures/one_star_loadcapacity-small.png",
+      "large": "public/art/treasures/one_star_loadcapacity-large.png"
+    }
+  ]
+}
