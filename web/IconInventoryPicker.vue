@@ -9,7 +9,7 @@ const emit=defineEmits<{'update:modelValue':[value:number|undefined];activate:[v
 const selected=computed(()=>props.options.find(o=>o.id===props.modelValue))
 const hovered=ref<number>(),tip=computed(()=>props.options.find(o=>o.id===hovered.value)),position=ref({left:'0px',top:'0px'}),tooltipId=useId()
 const tooltip=ref<HTMLElement>()
-const src=(o:IconChoice,size:'small'|'large'='small')=>itemArt(o.name,o.imageUrl)??(o.iconKey?artUrl(o.iconKey,true,size):null)
+const src=(o:IconChoice,size:'small'|'large'='small')=>itemArt(o.name,o.imageUrl,size)??(o.iconKey?artUrl(o.iconKey,true,size):null)
 function show(event:Event,id:number){hovered.value=id;position.value=tooltipPosition((event.currentTarget as HTMLElement).getBoundingClientRect(),{width:window.innerWidth,height:window.innerHeight})}
 function close(){hovered.value=undefined}
 function scroll(event:Event){if(event.target!==tooltip.value)close()}

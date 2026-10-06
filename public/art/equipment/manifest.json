@@ -1,0 +1,58 @@
+{
+  "generator": "image_gen",
+  "style": "低细节旧页游青铜装备，暗绿底、清晰轮廓、少量高光；不绘制文字、边框与品质光效。",
+  "sizes": {
+    "small": 64,
+    "large": 128
+  },
+  "assets": [
+    {
+      "key": "bronze_helmet",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory equipment icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a plain ancient Chinese bronze helmet with a short nose guard and two small cheek plates, three-quarter view, no plume. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, soft slightly pixelated edges when downscaled, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with quiet soft vignette. Center one helmet filling 75% of square, generous 12% margins, readable at 48-64px. Match modest early browser-game equipment rather than luxurious legendary gear. No text, border, frame, rarity glow, character, scene, ornate carvings, photorealism, microtextures, sparks, HDR, watermark.",
+      "small": "public/art/equipment/bronze_helmet-small.png",
+      "large": "public/art/equipment/bronze_helmet-large.png"
+    },
+    {
+      "key": "bronze_shoulder",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory equipment icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a plain ancient Chinese bronze shoulder guard made of three curved overlapping plates, three-quarter view, not a full suit. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, soft slightly pixelated edges when downscaled, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with quiet soft vignette. Center the equipment filling 75% of square, generous 12% margins, readable at 48-64px. Match modest early browser-game equipment rather than luxurious legendary gear. No text, border, frame, rarity glow, character, scene, ornate carvings, photorealism, microtextures, sparks, HDR, watermark.",
+      "small": "public/art/equipment/bronze_shoulder-small.png",
+      "large": "public/art/equipment/bronze_shoulder-large.png"
+    },
+    {
+      "key": "bronze_armor",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory equipment icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a plain ancient Chinese bronze lamellar torso cuirass with a broad chest plate and a few overlapping bronze scales, empty armor without a person. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, soft slightly pixelated edges when downscaled, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with quiet soft vignette. Center the equipment filling 75% of square, generous 12% margins, readable at 48-64px. Match modest early browser-game equipment rather than luxurious legendary gear. No text, border, frame, rarity glow, character, scene, ornate carvings, photorealism, microtextures, sparks, HDR, watermark.",
+      "small": "public/art/equipment/bronze_armor-small.png",
+      "large": "public/art/equipment/bronze_armor-large.png"
+    },
+    {
+      "key": "bronze_legs",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory equipment icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a pair of plain ancient Chinese bronze leg greaves, two compact curved shin guards slightly overlapping. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, soft slightly pixelated edges when downscaled, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with quiet soft vignette. Center the equipment filling 75% of square, generous 12% margins, readable at 48-64px. Match modest early browser-game equipment rather than luxurious legendary gear. No text, border, frame, rarity glow, character, scene, ornate carvings, photorealism, microtextures, sparks, HDR, watermark.",
+      "small": "public/art/equipment/bronze_legs-small.png",
+      "large": "public/art/equipment/bronze_legs-large.png"
+    },
+    {
+      "key": "bronze_boots",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory equipment icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a pair of simple dark brown ancient Chinese leather war boots reinforced with bronze toe caps and ankle guards, slightly overlapping. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, soft slightly pixelated edges when downscaled, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with quiet soft vignette. Center the equipment filling 75% of square, generous 12% margins, readable at 48-64px. Match modest early browser-game equipment rather than luxurious legendary gear. No text, border, frame, rarity glow, character, scene, ornate carvings, photorealism, microtextures, sparks, HDR, watermark.",
+      "small": "public/art/equipment/bronze_boots-small.png",
+      "large": "public/art/equipment/bronze_boots-large.png"
+    },
+    {
+      "key": "bronze_necklace",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory equipment icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a simple ancient Chinese bronze round-disc pendant hanging on a plain dark leather cord shaped in an oval, one plain disc, no intricate carving. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, soft slightly pixelated edges when downscaled, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with quiet soft vignette. Center the equipment filling 75% of square, generous 12% margins, readable at 48-64px. Match modest early browser-game equipment rather than luxurious legendary gear. No text, border, frame, rarity glow, character, scene, ornate carvings, photorealism, microtextures, sparks, HDR, watermark.",
+      "small": "public/art/equipment/bronze_necklace-small.png",
+      "large": "public/art/equipment/bronze_necklace-large.png"
+    },
+    {
+      "key": "bronze_bracelet",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory equipment icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a plain wide ancient Chinese bronze cuff bracelet, open curved band shown in three-quarter view, one simple ridge. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, soft slightly pixelated edges when downscaled, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with quiet soft vignette. Center the equipment filling 75% of square, generous 12% margins, readable at 48-64px. Match modest early browser-game equipment rather than luxurious legendary gear. No text, border, frame, rarity glow, character, scene, ornate carvings, photorealism, microtextures, sparks, HDR, watermark.",
+      "small": "public/art/equipment/bronze_bracelet-small.png",
+      "large": "public/art/equipment/bronze_bracelet-large.png"
+    },
+    {
+      "key": "bronze_ring",
+      "prompt": "Use case: stylized-concept. Asset type: one square inventory equipment icon for a nostalgic 2012 Chinese Warring States browser game. Subject: a plain thick ancient Chinese bronze signet ring with a small flat round bronze face, three-quarter view, no gem or inscription. Style: simple old hand-painted low-detail game sprite, broad compact silhouette, soft slightly pixelated edges when downscaled, only a few flat shaded color areas and tiny highlights. Muted brown bronze with subtle olive patina, charcoal dark green background (#151a12) with quiet soft vignette. Center the equipment filling 75% of square, generous 12% margins, readable at 48-64px. Match modest early browser-game equipment rather than luxurious legendary gear. No text, border, frame, rarity glow, character, scene, ornate carvings, photorealism, microtextures, sparks, HDR, watermark.",
+      "small": "public/art/equipment/bronze_ring-small.png",
+      "large": "public/art/equipment/bronze_ring-large.png"
+    }
+  ]
+}
