@@ -17,7 +17,19 @@ function point(x:number,y:number){return {x:1650+(x-y)*13.95,y:975-(x+y-100)*6.9
 function location(x:number,y:number){const p=point(x,y);return {left:p.x+'px',top:p.y+'px'}}
 const terrainClip='terrain-'+useId().replace(/:/g,'')
 // 地块与行军共用投影：每格宽 93、高 46，两个轴各移动半格。
-const tiles=Array.from({length:1089},(_,i)=>({x:(i%33-1)*10/3,y:(Math.floor(i/33)-1)*10/3,variant:i%17===0?1:i%13===0?4:i%9===0?0:2}))
+// 坐标散列保证地貌稳定；成片林地与零散岩石不随轮询、刷新目标跳动。
+function terrainRandom(x:number,y:number,salt=0){let n=Math.imul(x+137,374761393)^Math.imul(y+269,668265263)^salt;n=Math.imul(n^(n>>>13),1274126177);return ((n^(n>>>16))>>>0)/4294967296}
+const tiles=Array.from({length:1089},(_,i)=>{
+  const col=i%33,row=Math.floor(i/33),r=terrainRandom(col,row)
+  const grove=(Math.sin(col*.43+Math.sin(row*.31)*2)+Math.cos(row*.48-col*.17))/2
+  const ridge=(Math.sin(col*.28-row*.39)+Math.cos(col*.51+row*.23))/2
+  const variant=r<(grove>.2?.43:.07)?4:r>.94&&ridge>.05?1:r>.8?0:r<.2?3:2
+  return {x:(col-1)*10/3,y:(row-1)*10/3,variant,flip:terrainRandom(col,row,731)>.5?-1:1}
+})
+const rivers=[
+  {width:25,d:'M 1030 430 C 1220 500 1050 610 1270 650 S 1500 735 1310 820 S 1150 1010 1360 1050 S 1610 1170 1450 1240 S 1500 1480 1780 1570'},
+  {width:13,d:'M 2390 690 C 2220 730 2360 825 2150 850 S 1940 975 1740 975 S 1510 930 1360 1050'},
+]
 function position(m:NonNullable<typeof props.world>['marches'][number]){const returning=m.status==='RETURNING',start=new Date(returning?m.arriveGameAt:m.departGameAt).getTime(),end=new Date(returning?m.returnGameAt??m.arriveGameAt:m.arriveGameAt).getTime(),p=Math.max(0,Math.min(1,(props.gameTime-start)/Math.max(1,end-start)));return {...location(returning?m.targetX+(50-m.targetX)*p:50+(m.targetX-50)*p,returning?m.targetY+(50-m.targetY)*p:50+(m.targetY-50)*p),seconds:Math.max(0,Math.ceil((end-props.gameTime)/1000))}}
 function start(e:PointerEvent){moved.value=false;if(e.button!==0||(e.target as HTMLElement).closest('button'))return;hovered.value=undefined;drag.value={x:e.clientX,y:e.clientY,ox:offset.value.x,oy:offset.value.y};(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)}
 function move(e:PointerEvent){if(!drag.value)return;const dx=e.clientX-drag.value.x,dy=e.clientY-drag.value.y;if(Math.abs(dx)+Math.abs(dy)>5)moved.value=true;offset.value={x:Math.max(-1650*zoom.value,Math.min(1650*zoom.value,drag.value.ox+dx)),y:Math.max(-975*zoom.value,Math.min(975*zoom.value,drag.value.oy+dy))}}
@@ -30,11 +42,22 @@ function art(node:MapNode){if(node.worldBoss)return {src:'/art/official/map_citi
 <div class="world-map-viewport classic-map" @pointerdown="start" @pointermove="move" @pointerup="drag=null" @pointercancel="drag=null" @mouseleave="hovered=undefined">
 <div class="original-map-ground" :style="{transform:'translate('+offset.x+'px,'+offset.y+'px) scale('+zoom+')'}">
 <svg class="terrain-sheet" viewBox="0 0 3300 1950" aria-hidden="true">
-<defs><clipPath :id="terrainClip"><path d="M 0 -23 L 46.5 0 L 0 23 L -46.5 0 Z"/></clipPath></defs>
+<defs><clipPath :id="terrainClip"><path d="M 0 -23 L 46.5 0 L 0 23 L -46.5 0 Z"/></clipPath>
+<clipPath :id="terrainClip+'-land'"><path d="M 1650 216 L 3184.5 975 L 1650 1734 L 115.5 975 Z"/></clipPath>
+</defs>
 <path class="terrain-foundation" d="M 1650 216 L 3184.5 975 L 1650 1734 L 115.5 975 Z"/>
 <g v-for="t in tiles" :key="t.x+'-'+t.y" :transform="'translate('+point(t.x,t.y).x+' '+point(t.x,t.y).y+')'">
-<g :clip-path="'url(#'+terrainClip+')'"><svg x="-47" y="-23.5" width="94" height="47" :viewBox="(t.variant*100+4)+' 7 92 45'" preserveAspectRatio="none"><image href="/art/official/map_outposts.jpg" width="500" height="57"/></svg></g>
+<g :clip-path="'url(#'+terrainClip+')'" :transform="'scale('+t.flip+' 1)'"><svg x="-47" y="-23.5" width="94" height="47" :viewBox="(t.variant*100+6)+' 8 88 43'" preserveAspectRatio="none"><image href="/art/official/map_outposts.jpg" width="500" height="57"/></svg></g>
 </g>
+<g :clip-path="'url(#'+terrainClip+'-land)'" class="map-rivers">
+<g v-for="(river,index) in rivers" :key="index">
+<path :d="river.d" stroke="#788452" :stroke-width="river.width+22" opacity=".65"/>
+<path :d="river.d" stroke="#b3ab76" :stroke-width="river.width+10"/>
+<path :d="river.d" stroke="#465f52" :stroke-width="river.width+3"/>
+<path :d="river.d" stroke="#63877c" :stroke-width="river.width"/>
+<path :d="river.d" stroke="#97b6a1" :stroke-width="river.width*.3" opacity=".4"/>
+<path :d="river.d" stroke="#c0cfad" stroke-width="1" stroke-dasharray="18 43 7 68" opacity=".5"/>
+</g></g>
 <path class="terrain-boundary" d="M 1650 216 L 3184.5 975 L 1650 1734 L 115.5 975 Z"/>
 </svg>
 <svg class="world-routes" viewBox="0 0 3300 1950" aria-hidden="true"><line v-for="m in active" :key="m.id" x1="1650" y1="975" :x2="point(m.targetX,m.targetY).x" :y2="point(m.targetX,m.targetY).y" :class="['march-route',{returning:m.status==='RETURNING'}]"/></svg>
@@ -54,6 +77,7 @@ function art(node:MapNode){if(node.worldBoss)return {src:'/art/official/map_citi
 .terrain-sheet{position:absolute;inset:0;width:3300px;height:1950px;pointer-events:none;filter:saturate(.78) brightness(.88);isolation:isolate}
 .terrain-foundation{fill:#8d955b;stroke:#8d955b;stroke-width:1.5}
 .terrain-boundary{fill:none;stroke:#b5b481;stroke-opacity:.45;stroke-width:1;pointer-events:none}
+.map-rivers path{fill:none;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 .classic-map{background:radial-gradient(ellipse at 50% 45%,#444b35 0,#262e22 55%,#141b16 100%)}
 .classic-site,.home-site{isolation:auto;filter:saturate(.8);background:none;mix-blend-mode:normal}
 .world-boss .classic-site{mix-blend-mode:normal;filter:sepia(.25) saturate(1.5)}
