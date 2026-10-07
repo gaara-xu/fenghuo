@@ -1,4 +1,5 @@
-// 实际过桥路线距离：每单位至少2秒路程，另计按部队速度缩放的行军耗时。
+// 实际过桥路线按统一距离系数换算，全部耗时受速度影响。
+// 距离50、速度5000约100秒；速度翻倍时耗时减半（最低1秒）。
 export function travelSeconds(distance:number,speed:number):number{
-  return Math.max(1,Math.max(0,distance)*2+(15+Math.max(0,distance)*8)*100/Math.max(1,speed))
+  return Math.max(1,(1500+Math.max(0,distance)*10000)/Math.max(1,speed))
 }

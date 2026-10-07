@@ -15,8 +15,11 @@ it('全图刷新坐标均可达，跨河路段只走三座桥，返程沿原路�
   }
   expect(used.size).toBe(3)
 })
-it('远距离增加基础耗时，同时保留速度差别',()=>{
+it('长距离耗时增加，全部路程耗时与速度成反比',()=>{
   expect(travelSeconds(50,5000)).toBeGreaterThan(100)
   expect(travelSeconds(50,5000)).toBeLessThan(travelSeconds(50,4900))
   expect(travelSeconds(70,5000)).toBeGreaterThan(travelSeconds(30,5000))
+  for(const speed of [100,1000,5000,10000])expect(travelSeconds(50,speed)).toBeCloseTo(travelSeconds(50,speed*2)*2)
+  expect(travelSeconds(50,5000)).toBeCloseTo(100.3)
+  expect(travelSeconds(50,10000)).toBeCloseTo(50.15)
 })
