@@ -3,6 +3,9 @@
 -- JSON 字段约定（类型设计，不含业务数据）：
 -- game_settings.tavern_recording: {enabled:boolean,afterRefreshId:number}；三类酒馆共用开关。
 -- 0023_zhengtu_equipment_preview：纯数据更新，无新增库表字段。item_definitions新增27种征途主题装备，
+-- 0024_zhengtu_expansion：无DDL；追加三套肩铠/MOUNT坐骑/两种TREASURE共12定义及一次性赠送。
+-- 卓越ZT_EXCELLENT_TIANZUN降至quality_tier=3、rarity=3，固定属性及套装效果降低；已有装备实例不改动。
+-- 27原定义icon改为SVG原图包装；schema_migrations防重复，admin_audit_logs记录修改前后与赠送明细。
 -- effect_config沿用slot/icon/flatBonuses/setCode/setBonuses/requiredStrength/refineStep/initialSockets/sourceStatus/sourceUrl；
 -- 三套均支持3/5/8/10/11件最高档攻防百分比加成，左右护腕与戒指各计一件；绿色4、紫色5、红色7品质。
 -- player_inventory向配置玩家一次性增发33件；schema_migrations记录版本防重复，admin_audit_logs记录GRANT明细。

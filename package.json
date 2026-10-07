@@ -19,6 +19,7 @@
     "db:update:world-boss": "node --import tsx scripts/update-world-boss.ts",
     "db:update:equipment-sets": "node --import tsx scripts/update-equipment-sets.ts",
     "db:update:zhengtu": "node --import tsx scripts/update-zhengtu-equipment.ts",
+    "db:update:zhengtu-expansion": "node --import tsx scripts/update-zhengtu-expansion.ts",
     "db:update:equipment-calibration": "node --import tsx scripts/update-equipment-calibration.ts",
     "db:update:wild-gems": "node --import tsx scripts/update-wild-gems.ts",
     "db:cleanup:obsolete": "node --import tsx scripts/cleanup-obsolete-items.ts",

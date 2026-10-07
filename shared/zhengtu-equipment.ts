@@ -2,7 +2,7 @@ import type {ItemDefinition,EquipmentSlot} from './items.js'
 import type {HeroStats} from './hero-growth.js'
 export const zhengtuSets=[
   {key:'tianmo',code:'ZT_PERFECT_TIANMO',name:'完美的天魔',prefix:'完美的',quality:4,rarity:4,power:1000,tiers:[6,10,16,25,30]},
-  {key:'tianzun',code:'ZT_EXCELLENT_TIANZUN',name:'卓越的天尊',prefix:'卓越的',quality:5,rarity:5,power:2500,tiers:[9,15,24,35,45]},
+  {key:'tianzun',code:'ZT_EXCELLENT_TIANZUN',name:'卓越的天尊',prefix:'卓越的',quality:3,rarity:3,power:1600,tiers:[8,12,20,28,35]},
   {key:'yingxiong',code:'ZT_SUPREME_HERO',name:'至尊的英雄',prefix:'至尊的',quality:7,rarity:6,power:5000,tiers:[12,20,32,45,60]},
 ] as const
 const pieces:Array<{key:string;slot:EquipmentSlot;suffix:string;stats:Partial<HeroStats>;page:string}>=[
@@ -21,8 +21,16 @@ export const zhengtuEquipment:Omit<ItemDefinition,'id'>[]=zhengtuSets.flatMap(se
   const name=set.prefix+family+(piece.key==='armor'?(set.key==='tianmo'?'圣铠':'帝铠'):piece.suffix)
   return {code:`zt_${set.key}_${piece.key}`,name,itemType:'EQUIPMENT',rarity:set.rarity,qualityTier:set.quality,enabled:true,
     description:`${name}。${set.name}套装的一部分，左右护腕与戒指分别计件。集齐3、5、8、10、11件，近攻、远攻、近防、远防分别提高${set.tiers.join('%、')}%，仅取最高档。${piece.key==='belt'?'腰带穿戴于护腿位。':''}可精炼至+9，最多镶嵌三颗相容宝石。`,
-    effectConfig:{slot:piece.slot,icon:`/art/zhengtu/${set.key}-${piece.key}.jpg`,setCode:set.code,flatBonuses:Object.fromEntries(Object.entries(piece.stats).map(([key,value])=>[key,Math.round(value*set.power)])),
+    effectConfig:{slot:piece.slot,icon:`/art/zhengtu/${set.key}-${piece.key}.svg`,setCode:set.code,flatBonuses:Object.fromEntries(Object.entries(piece.stats).map(([key,value])=>[key,Math.round(value*set.power)])),
       setBonuses:[3,5,8,10,11].map((count,i)=>({count,bonuses:{meleeAttack:set.tiers[i],rangedAttack:set.tiers[i],meleeDefense:set.tiers[i],rangedDefense:set.tiers[i]}})),
       requiredStrength:0,refineStep:.2,initialSockets:0,sourceStatus:'DIY',sourceUrl:`https://zt.ztgame.com/game/${piece.page}.shtml`}}
 }))
 export const zhengtuGrantQuantity=(item:Pick<ItemDefinition,'effectConfig'>)=>['BRACELET','RING'].includes(item.effectConfig.slot??'')?2:1
+export const zhengtuExtras:Omit<ItemDefinition,'id'>[]=zhengtuSets.flatMap(set=>[
+  {key:'shoulder',name:set.name+'肩铠',slot:'SHOULDER' as const,type:'EQUIPMENT' as const,stats:{meleeDefense:1.2,rangedDefense:1.2}},
+  {key:'mount',name:set.prefix+({tianmo:'赤兔马',tianzun:'天马',yingxiong:'圣马'})[set.key],slot:'MOUNT' as const,type:'EQUIPMENT' as const,stats:{speed:.6,loadCapacity:12}},
+  {key:'war_charm',name:set.name+'战魂坠',slot:undefined,type:'TREASURE' as const,stats:{meleeAttack:1.5,rangedAttack:1.5}},
+  {key:'ward_mirror',name:set.name+'护心镜',slot:undefined,type:'TREASURE' as const,stats:{meleeDefense:1.8,rangedDefense:1.8}},
+].map(p=>({code:`zt_${set.key}_${p.key}`,name:p.name,itemType:p.type,rarity:set.rarity,qualityTier:set.quality,enabled:true,
+ description:p.type==='TREASURE'?`${p.name}。${p.key==='war_charm'?'凝聚战意，提高近攻和远攻。':'护佑将身，提高近防和远防。'}可放入任一宝物位，可精炼至+9。`:`${p.name}。${p.key==='mount'?'提升行军速度和负重。':'提升近防和远防。'}计入${set.name}套装，沿用3、5、8、10、11件加成，取最高档。可精炼、打孔和镶嵌。`,
+ effectConfig:{slot:p.slot,icon:`/art/zhengtu/${set.key}-${p.key}.svg`,flatBonuses:Object.fromEntries(Object.entries(p.stats).map(([k,v])=>[k,Math.round(v*set.power)])),setCode:p.type==='EQUIPMENT'?set.code:undefined,setBonuses:p.type==='EQUIPMENT'?zhengtuEquipment.find(i=>i.effectConfig.setCode===set.code)!.effectConfig.setBonuses:undefined,requiredStrength:0,refineStep:.2,initialSockets:0,sourceStatus:'DIY'}})))
