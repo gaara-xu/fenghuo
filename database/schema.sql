@@ -2,6 +2,10 @@
 -- 兼容 MySQL 5.7+ / 8.0+。每次结构变更必须同步修改本文件和 migrations/。
 -- JSON 字段约定（类型设计，不含业务数据）：
 -- game_settings.tavern_recording: {enabled:boolean,afterRefreshId:number}；三类酒馆共用开关。
+-- 0023_zhengtu_equipment_preview：纯数据更新，无新增库表字段。item_definitions新增27种征途主题装备，
+-- effect_config沿用slot/icon/flatBonuses/setCode/setBonuses/requiredStrength/refineStep/initialSockets/sourceStatus/sourceUrl；
+-- 三套均支持3/5/8/10/11件最高档攻防百分比加成，左右护腕与戒指各计一件；绿色4、紫色5、红色7品质。
+-- player_inventory向配置玩家一次性增发33件；schema_migrations记录版本防重复，admin_audit_logs记录GRANT明细。
 -- 关闭后刷新结果/候选/随机种子/请求编号仅在进程内存，不新增或更新 tavern_refreshes/tavern_candidates。
 -- afterRefreshId 为最后切换时旧历史边界，防止旧候选复活；原表和历史不删，余额与实际领取正常持久化。
 -- 单进程部署；内存候选在浏览器刷新后仍保留，游戏服务重启丢失；不支持跨进程共享与重启后幂等。

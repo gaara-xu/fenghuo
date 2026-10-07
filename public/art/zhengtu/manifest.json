@@ -1,0 +1,218 @@
+[
+  {
+    "key": "tianmo",
+    "slot": "weapon",
+    "name": "天魔刀",
+    "file": "tianmo-weapon.jpg",
+    "source": "https://zt.ztgame.com/game/00c-1329-00200-112476.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/wuqi/dao/tianmodao-100.jpg"
+  },
+  {
+    "key": "tianzun",
+    "slot": "weapon",
+    "name": "天尊刀",
+    "file": "tianzun-weapon.jpg",
+    "source": "https://zt.ztgame.com/game/00c-1329-00200-112476.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/180-190%20dao.jpg"
+  },
+  {
+    "key": "yingxiong",
+    "slot": "weapon",
+    "name": "英雄刀",
+    "file": "yingxiong-weapon.jpg",
+    "source": "https://zt.ztgame.com/game/00c-1329-00200-112476.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/wuqi/197/197dao.jpg"
+  },
+  {
+    "key": "tianmo",
+    "slot": "shield",
+    "name": "天魔盾",
+    "file": "tianmo-shield.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-00205-112526.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/wuqi/dun/xuemodun-100.jpg"
+  },
+  {
+    "key": "tianzun",
+    "slot": "shield",
+    "name": "天尊盾",
+    "file": "tianzun-shield.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-00205-112526.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/wuqi/dun/180-190%20dun.jpg"
+  },
+  {
+    "key": "yingxiong",
+    "slot": "shield",
+    "name": "英雄盾",
+    "file": "yingxiong-shield.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-00205-112526.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/wuqi/197/197dun.jpg"
+  },
+  {
+    "key": "tianmo",
+    "slot": "armor",
+    "name": "天魔圣铠",
+    "file": "tianmo-armor.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-0020c-112610.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/yifu-100/zhuqueshengkai-m.jpg"
+  },
+  {
+    "key": "tianzun",
+    "slot": "armor",
+    "name": "天尊帝铠",
+    "file": "tianzun-armor.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-0020c-112610.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/yifu/180-190%20dikai.jpg"
+  },
+  {
+    "key": "yingxiong",
+    "slot": "armor",
+    "name": "英雄帝铠",
+    "file": "yingxiong-armor.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-0020c-112610.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/wuqi/197/197nankai.jpg"
+  },
+  {
+    "key": "tianmo",
+    "slot": "helmet",
+    "name": "天魔盔（物）",
+    "file": "tianmo-helmet.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-0020d-112620.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/kui/tanlangkui.jpg"
+  },
+  {
+    "key": "tianzun",
+    "slot": "helmet",
+    "name": "天尊盔（物）",
+    "file": "tianzun-helmet.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-0020d-112620.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/180toukuiwu.jpg"
+  },
+  {
+    "key": "yingxiong",
+    "slot": "helmet",
+    "name": "英雄盔（物）",
+    "file": "yingxiong-helmet.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-0020d-112620.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/wuqi/197/197touwu.jpg"
+  },
+  {
+    "key": "tianmo",
+    "slot": "belt",
+    "name": "天魔腰带（物）",
+    "file": "tianmo-belt.jpg",
+    "source": "https://zt.ztgame.com/game/006-1329-0020e-112630.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/yaodai/yemoyaodai.jpg"
+  },
+  {
+    "key": "tianzun",
+    "slot": "belt",
+    "name": "天尊腰带（物）",
+    "file": "tianzun-belt.jpg",
+    "source": "https://zt.ztgame.com/game/006-1329-0020e-112630.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/180yaodaimo.jpg"
+  },
+  {
+    "key": "yingxiong",
+    "slot": "belt",
+    "name": "英雄腰带（物）",
+    "file": "yingxiong-belt.jpg",
+    "source": "https://zt.ztgame.com/game/006-1329-0020e-112630.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/wuqi/197/197yaowu.jpg"
+  },
+  {
+    "key": "tianmo",
+    "slot": "bracelet",
+    "name": "天魔护腕（物）",
+    "file": "tianmo-bracelet.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-0020f-112638.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/huwan/yemohuwan.jpg"
+  },
+  {
+    "key": "tianzun",
+    "slot": "bracelet",
+    "name": "天尊护腕（物）",
+    "file": "tianzun-bracelet.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-0020f-112638.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/180huwanwu.jpg"
+  },
+  {
+    "key": "yingxiong",
+    "slot": "bracelet",
+    "name": "英雄护腕（物）",
+    "file": "yingxiong-bracelet.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-0020f-112638.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/wuqi/197/197shouwu.jpg"
+  },
+  {
+    "key": "tianmo",
+    "slot": "boots",
+    "name": "天魔靴（物）",
+    "file": "tianmo-boots.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-00210-112649.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/xiezi/shuishenxue.jpg"
+  },
+  {
+    "key": "tianzun",
+    "slot": "boots",
+    "name": "天尊靴（物）",
+    "file": "tianzun-boots.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-00210-112649.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/180xieziwu.jpg"
+  },
+  {
+    "key": "yingxiong",
+    "slot": "boots",
+    "name": "英雄靴（物）",
+    "file": "yingxiong-boots.jpg",
+    "source": "https://zt.ztgame.com/game/000-1329-00210-112649.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/wuqi/197/197xiewu.jpg"
+  },
+  {
+    "key": "tianmo",
+    "slot": "necklace",
+    "name": "天魔项链（物）",
+    "file": "tianmo-necklace.jpg",
+    "source": "https://zt.ztgame.com/game/006-1329-00211-112658.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/xianglian/huoshenxianglian.jpg"
+  },
+  {
+    "key": "tianzun",
+    "slot": "necklace",
+    "name": "天尊项链（物）",
+    "file": "tianzun-necklace.jpg",
+    "source": "https://zt.ztgame.com/game/006-1329-00211-112658.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/180xianlianwu.jpg"
+  },
+  {
+    "key": "yingxiong",
+    "slot": "necklace",
+    "name": "英雄项链（物）",
+    "file": "yingxiong-necklace.jpg",
+    "source": "https://zt.ztgame.com/game/006-1329-00211-112658.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/wuqi/197/197xianglianwu.jpg"
+  },
+  {
+    "key": "tianmo",
+    "slot": "ring",
+    "name": "天魔戒指（物）",
+    "file": "tianmo-ring.jpg",
+    "source": "https://zt.ztgame.com/game/002-1329-00212-112667.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/jiezhi/huoshenjiezhi.jpg"
+  },
+  {
+    "key": "tianzun",
+    "slot": "ring",
+    "name": "天尊戒指（物）",
+    "file": "tianzun-ring.jpg",
+    "source": "https://zt.ztgame.com/game/002-1329-00212-112667.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/fangju/175jiezhiwu.jpg"
+  },
+  {
+    "key": "yingxiong",
+    "slot": "ring",
+    "name": "英雄戒指（物）",
+    "file": "yingxiong-ring.jpg",
+    "source": "https://zt.ztgame.com/game/002-1329-00212-112667.shtml",
+    "imageUrl": "https://zt.ztgame.com/upload/zt/images/yxzl/zbxt/zbshow/wuqi/197/197JZwu.jpg"
+  }
+]

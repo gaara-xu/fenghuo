@@ -24,7 +24,8 @@ export function equipmentSetStates(items:EquippedItem[]){
     const members=items.filter(e=>e.item.effectConfig.setCode===code),count=new Set(members.map(e=>e.slot)).size
     const tiers=itemSetBonuses(members[0].item)
     const activeCount=Math.max(0,...tiers.filter(t=>t.count<=count).map(t=>t.count))
-    const name=code==='BRONZE'?'青铜':members[0].item.name.replace(/(头盔|肩铠|胸铠|护腿|战靴|项链|手镯|戒指)$/,'')
+    const importedNames:Record<string,string>={ZT_PERFECT_TIANMO:'完美的天魔',ZT_EXCELLENT_TIANZUN:'卓越的天尊',ZT_SUPREME_HERO:'至尊的英雄'}
+    const name=importedNames[code]??(code==='BRONZE'?'青铜':members[0].item.name.replace(/(头盔|肩铠|胸铠|护腿|战靴|项链|手镯|戒指)$/,''))
     return {code,name,count,tiers:tiers.map(t=>({...t,active:t.count===activeCount,unlocked:t.count<=count}))}
   })
 }
