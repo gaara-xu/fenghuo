@@ -3,12 +3,11 @@ import { computed,onMounted,onUnmounted,ref } from 'vue'
 import type { BootstrapPayload,HeroDefinition,MapNode,SkillDefinition,TavernRefreshResult,WorldStatus } from '../shared/contracts'
 import { api,actionId } from './api'
 import {useTimedNotice} from './timed-notice'
-import { label,attackLabels,talentLabels,nodeLabels,statusLabels,effectLabels,modeLabels } from '../shared/labels'
+import { label,attackLabels,talentLabels,nodeLabels,statusLabels } from '../shared/labels'
 import HeroRoster from './HeroRoster.vue'
 import GameModal from './GameModal.vue'
 import GameWorkshop from './GameWorkshop.vue'
 import type {ItemDefinition} from '../shared/items'
-import AssetIcon from './AssetIcon.vue'
 import QuietReports from './QuietReports.vue'
 import WorldMap from './WorldMap.vue'
 import {worldBossCountdown} from '../shared/world-boss'
@@ -25,7 +24,7 @@ import TavernCandidates from './TavernCandidates.vue'
 import {currencyNames} from '../shared/tavern'
 import type {MilitaryState,MilitarySpeedupResult} from '../shared/military'
 
-type Tab='workshop'|'tavern'|'map'|'barracks'|'defense'|'roster'|'catalog'|'bag'|'treasury'
+type Tab='workshop'|'tavern'|'map'|'barracks'|'defense'|'roster'|'bag'|'treasury'
 const tab=ref<Tab>('tavern'), data=ref<BootstrapPayload|null>(null), heroes=ref<HeroDefinition[]>([]), skills=ref<SkillDefinition[]>([])
 const gems=ref<ItemDefinition[]>([]),bagItemId=ref<number|null>(null),bagHeroId=ref<number>()
 const workshopInitialTab=ref<'equipment'|'gems'>('equipment'),forgeFocus=ref(0)
@@ -50,7 +49,6 @@ async function workshopForge(body:object){await act(async()=>{const result=await
 async function act(fn:()=>Promise<void>){busy.value=true;error.value='';message.value='';try{await fn()}catch(e){error.value=e instanceof Error?e.message:String(e)}finally{busy.value=false}}
 async function refresh(){await act(async()=>{const result=await api<TavernRefreshResult>('/api/tavern/refresh',{method:'POST',body:JSON.stringify({poolId:selectedPool.value,clientActionId:actionId()})});if(data.value){data.value.latestRefresh=result;data.value.latestRefreshes=[...(data.value.latestRefreshes??[]).filter(r=>r.pool.id!==result.pool.id),result];data.value.player.wallet[result.pool.currencyCode]=result.remainingCurrency}})}
 async function recruit(id:number){await act(async()=>{const r=await api<{name:string;rewardType:string}>('/api/tavern/candidates/'+id+'/recruit',{method:'POST'});message.value=`${r.name} ${r.rewardType==='HERO'?'已收入麾下':'已收入包裹'}`;await load()})}
-function stars(n:number){return '★'.repeat(n)}
 async function march(){if(!selectedNode.value)return;await act(async()=>{const r=await api<{arriveGameAt:string}>('/api/world/marches',{method:'POST',body:JSON.stringify({heroId:selectedHero.value||null,nodeId:selectedNode.value!.id,troops:selectedTroops.value,clientActionId:actionId()})});troopSelection.value={};message.value=`行军已出发，预计游戏时间 ${new Date(r.arriveGameAt).toLocaleTimeString()} 抵达`;selectedNode.value=null;await load()})}
 async function autoFarm(){if(!selectedNode.value||selectedNode.value.worldBoss)return;await act(async()=>{await api('/api/world/auto-farm',{method:'POST',body:JSON.stringify({heroId:selectedHero.value||null,troops:selectedTroops.value,nodeId:selectedNode.value!.id,nodeType:selectedNode.value!.nodeType,minLevel:selectedNode.value!.level,maxLevel:selectedNode.value!.level,runs:10})});troopSelection.value={};message.value='自动出征已锁定当前目标：每次返城完成一轮，再次出发；最多 10 轮，目标耗尽或兵力耗尽时停止';selectedNode.value=null;await load()})}
 async function pauseFarm(id:number){await act(async()=>{await api(`/api/world/auto-farm/${id}/pause`,{method:'POST'});message.value='自动刷野已暂停';await load()})}
@@ -73,7 +71,7 @@ onUnmounted(()=>{clearInterval(timer);clearInterval(poll)})
       </div>
       <div class="clock">×{{data?.clock.multiplier??1}} · {{liveGameTime}}</div>
     </header>
-    <nav><button v-for="item in ([['tavern','酒馆'],['roster','我的英雄'],['map','天下'],['barracks','军营'],['defense','城防'],['bag','我的物品'],['workshop','工坊'],['treasury','藏宝阁'],['catalog','英雄技能']] as const)" :key="item[0]" :class="{active:tab===item[0]}" @click="tab=item[0];if(item[0]==='workshop')workshopInitialTab='equipment'">{{item[1]}}</button><a class="context-link" href="/admin">管理后台 ↗</a></nav>
+    <nav><button v-for="item in ([['tavern','酒馆'],['roster','我的英雄'],['map','天下'],['barracks','军营'],['defense','城防'],['bag','我的物品'],['workshop','工坊'],['treasury','藏宝阁']] as const)" :key="item[0]" :class="{active:tab===item[0]}" @click="tab=item[0];if(item[0]==='workshop')workshopInitialTab='equipment'">{{item[1]}}</button><a class="context-link" href="/admin">管理后台 ↗</a></nav>
     <div v-if="error" class="toast error">{{error}}</div><div v-if="message" class="toast">{{message}}</div>
     <FoodStatus :upkeep="military.upkeep"/>
     <IncomingArmies :armies="world?.incomingArmies??[]" :game-time="gameTimeMs"/>
@@ -105,11 +103,6 @@ onUnmounted(()=>{clearInterval(timer);clearInterval(poll)})
       <section v-if="tab==='treasury'&&world" class="catalog"><Treasury :world="world"/></section>
       <section v-if="tab==='barracks'||tab==='defense'" class="defense-panel"><MilitaryPanel :key="tab" :state="military" :kind="tab==='barracks'?'TROOP':'DEFENSE'" :wallet="data.player.wallet" :game-time="gameTimeMs" :busy="busy" @order="orderMilitary" @speedup="speedupMilitary"/></section>
 
-      <section v-if="tab==='catalog'" class="catalog">
-        <div class="section-title"><div><small>完整数据目录</small><h1>英雄与技能</h1></div></div>
-        <h3>英雄图鉴 · {{heroes.length}} 位</h3><div class="grid-table"><div v-for="h in heroes" :key="h.id" class="record"><AssetIcon :name="h.name" :icon-key="h.portraitKey" hero :rarity="h.star" :quality="h.qualityTier"/><div class="record-copy"><b>{{h.name}}</b><span>{{stars(h.star)}} · {{label(attackLabels,h.attackType)}}</span><small>近攻 {{h.meleeAttack}}　远攻 {{h.rangedAttack}}<br>近防 {{h.meleeDefense}}　远防 {{h.rangedDefense}}<br>速度 {{h.speed}}　负重 {{h.loadCapacity}}</small><p class="skill-description">{{h.description}}</p></div></div></div>
-        <h3>技能书 · {{skills.length}} 种</h3><div class="grid-table"><div v-for="s in skills" :key="s.id" class="record skill"><AssetIcon :name="s.name" :icon-key="s.iconKey" :rarity="s.rarity" :quality="s.qualityTier"/><div class="record-copy"><b>{{s.name}}</b><span>{{label(effectLabels,s.effectType)}} · {{label(modeLabels,s.effectConfig?.mode??'BOTH')}}</span><small>初学触发 {{Math.round(s.triggerRate*100)}}%　最高 {{s.maxLevel}} 级 · 库存 {{world?.skillBooks.find(b=>b.skillDefinitionId===s.id)?.quantity??0}}</small><p class="skill-description">{{s.description}}</p></div></div></div>
-      </section>
 
     </main>
     <HeroItemUse v-if="bagEntry&&world" :key="bagEntry.item.id" :entry="bagEntry" :heroes="world.ownedHeroes" :initial-hero-id="bagHeroId" :busy="busy" :error="error" @close="!busy&&(bagItemId=null)" @use="useBagItem"/>
