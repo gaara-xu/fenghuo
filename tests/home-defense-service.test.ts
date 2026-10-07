@@ -30,10 +30,10 @@ describe('驻城武将读取',()=>{
   const helmet:EquippedItem={heroId:1,slot:'HELMET',item:{id:1,code:'bronze',name:'青铜头盔',itemType:'EQUIPMENT',rarity:1,description:'测试',enabled:true,effectConfig:{setCode:'BRONZE',flatBonuses:{meleeDefense:100,rangedDefense:100},bonuses:{meleeDefense:10}}},gear:{instanceId:1,refineLevel:1,sockets:1,gems:[{itemId:3,name:'防御宝石',stat:'meleeDefense',amount:50,bonuses:{meleeDefense:50,rangedDefense:50}}]}}
   fixtures.equipment=[helmet,{heroId:1,slot:'ARMOR',item:{...helmet.item,id:2,effectConfig:{setCode:'BRONZE'}}}]
   const result=await homeHeroArmy()
-  // Grown defense 133/266; +120 refinement, +50 gem; +11.5% item and +4% two-piece set.
-  expect(result.army[0]).toMatchObject({code:'hero_1',name:'守城大将',quantity:1,stats:{meleeDefense:350,rangedDefense:453}})
+  // Grown defense 133/266; +130 refinement, +50 gem; +12.5% item and +4% two-piece set.
+  expect(result.army[0]).toMatchObject({code:'hero_1',name:'守城大将',quantity:1,stats:{meleeDefense:365,rangedDefense:464}})
   expect(result.army[1].stats).toMatchObject({meleeDefense:100,rangedDefense:200})
-  expect(result.heroes).toEqual([{heroId:1,name:'守城大将',meleeDefense:700,rangedDefense:906},{heroId:2,name:'武将2',meleeDefense:200,rangedDefense:400}])
+  expect(result.heroes).toEqual([{heroId:1,name:'守城大将',meleeDefense:730,rangedDefense:928},{heroId:2,name:'武将2',meleeDefense:200,rangedDefense:400}])
  })
  it('只加载留城英雄已解锁的上架技能，沿用数据库等级效果和逐级触发率',async()=>{
   fixtures.heroes=[hero(1),hero(2,{star:3,level:5})]

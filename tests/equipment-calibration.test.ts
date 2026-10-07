@@ -10,6 +10,15 @@ import {salvageSchema} from '../server/salvage-service'
 import {refineOutcome,defaultForgeRules} from '../shared/forge'
 import {randomUUID} from 'node:crypto'
 describe('装备校准、套装与分解规则',()=>{
+  it('默认精炼逐级增强，满级十倍本体，宝石各级固定相加',()=>{
+    const item={...officialItems[0],id:1,effectConfig:{flatBonuses:{meleeDefense:100},refineStep:.2}}
+    const expected=[100,130,170,220,290,380,500,650,810,1000]
+    for(let level=0;level<=9;level++){
+      const gear={instanceId:1,refineLevel:level,sockets:1,gems:[{itemId:9,name:'宝石',stat:'meleeDefense' as const,amount:500}]}
+      expect(itemStatBonuses(item,gear).meleeDefense).toBe(expected[level])
+      expect(equipmentFlatBonuses([{heroId:1,slot:'HELMET',item,gear}]).meleeDefense).toBe(expected[level]+500)
+    }
+  })
   it('165件按部位校准；旗双防3000，轮回等远攻武器不再算近攻',()=>{
     expect(equipmentCalibration).toHaveLength(165)
     expect(equipmentCalibration.find(i=>i.name==='巡天曜日旗')!.flatBonuses).toEqual({meleeDefense:3000,rangedDefense:3000})
@@ -21,10 +30,10 @@ describe('装备校准、套装与分解规则',()=>{
   it('单件逐级表统一用于面板和说明，宝石不跟着精炼放大',()=>{
     const item={...officialItems[0],id:1,effectConfig:{...officialItems[0].effectConfig,flatBonuses:{meleeDefense:100},bonuses:{speed:2},refineMultipliers:[1,2,3,4,5,6,7,8,9,10]}}
     const gear={instanceId:1,refineLevel:9,sockets:1,gems:[{itemId:9,name:'金刚宝石',stat:'meleeDefense' as const,amount:500}]}
-    expect(itemStatBonuses(item,gear).meleeDefense).toBe(1000)
-    expect(equipmentFlatBonuses([{heroId:1,slot:'HELMET',item,gear}]).meleeDefense).toBe(1500)
-    expect(inventoryChoice({item,gear,quantity:1}).lines).toContain('近防 +1000')
-    expect(inventoryChoice({item,gear,quantity:1}).lines).toContain('速度 +20%')
+    expect(itemStatBonuses(item,gear).meleeDefense).toBe(1720)
+    expect(equipmentFlatBonuses([{heroId:1,slot:'HELMET',item,gear}]).meleeDefense).toBe(2220)
+    expect(inventoryChoice({item,gear,quantity:1}).lines).toContain('近防 +1720')
+    expect(inventoryChoice({item,gear,quantity:1}).lines).toContain('速度 +34.4%')
     expect(itemSchema.parse(item).effectConfig.refineMultipliers).toEqual(item.effectConfig.refineMultipliers)
     expect(itemSchema.safeParse({...item,effectConfig:{...item.effectConfig,refineMultipliers:[1,2]}}).success).toBe(false)
   })

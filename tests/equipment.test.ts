@@ -17,7 +17,7 @@ describe('官方图鉴与装备机制',()=>{
  })
  it('固定属性受精炼影响，宝石不重复受精炼；重复同一槽位不会额外计件',()=>{
   const e:EquippedItem={heroId:1,slot:'HELMET',item:{...officialItems[0],id:1},gear:{instanceId:1,refineLevel:2,sockets:1,gems:[{itemId:1,name:'近防宝石',stat:'meleeDefense',amount:300}]}}
-  expect(equipmentFlatBonuses([e]).meleeDefense).toBe(Math.round(e.item.effectConfig.flatBonuses!.meleeDefense!*1.4)+300)
+  expect(equipmentFlatBonuses([e]).meleeDefense).toBe(Math.round(e.item.effectConfig.flatBonuses!.meleeDefense!*1.7)+300)
   expect(equipmentBonuses([e,e,e]).meleeDefense??0).toBe(0)
   const pieces=officialItems.slice(0,3).map((i,n)=>({heroId:1,slot:i.effectConfig.slot!,item:{...i,id:n+1}}));expect(equipmentBonuses(pieces).meleeDefense).toBe(5)
  })

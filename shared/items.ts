@@ -11,9 +11,10 @@ export interface EquippedItem {heroId:number;slot:EquipmentSlot;item:ItemDefinit
 export interface Loot {itemId:number;name:string;quantity:number}
 export interface DropPool {id:number;name:string;nodeType:string;minLevel:number;maxLevel:number;chance:number;rolls:number;enabled:boolean;entries:Array<{itemId:number;weight:number;minQuantity:number;maxQuantity:number;enabled:boolean}>}
 export function itemStatBonuses(item:ItemDefinition,gear?:GearState,percentage=false):Partial<HeroStats>{
-  // Optional per-item +0…+9 curve; legacy items retain configured linear growth.
+  // 本体精炼追加递增收益；宝石在汇总时独立相加，不随精炼放大。
   const cfg=item.effectConfig,level=gear?.refineLevel??0,curve=cfg.refineMultipliers
-  const factor=curve?.[level]??(1+level*(cfg.refineStep??(percentage ? .15 : .2)))
+  const extra=(item.itemType==='EQUIPMENT'||item.itemType==='TREASURE')?([0,.1,.3,.6,1.1,1.8,2.8,4.1,5.5,7.2][level]??0):0
+  const factor=(curve?.[level]??(1+level*(cfg.refineStep??(percentage ? .15 : .2))))+extra
   return Object.fromEntries(Object.entries((percentage?cfg.bonuses:cfg.flatBonuses)??{}).map(([key,value])=>[key,percentage?Number((value*factor).toFixed(2)):Math.round(value*factor)]))
 }
 export function itemSetBonuses(item:Pick<ItemDefinition,'effectConfig'>):Array<{count:number;bonuses:Partial<HeroStats>}>{
