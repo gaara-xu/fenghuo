@@ -27,8 +27,8 @@ const tiles=Array.from({length:1089},(_,i)=>{
   return {x:(col-1)*10/3,y:(row-1)*10/3,variant,flip:terrainRandom(col,row,731)>.5?-1:1}
 })
 const rivers=[
-  {width:25,d:'M 1030 430 C 1220 500 1050 610 1270 650 S 1500 735 1310 820 S 1150 1010 1360 1050 S 1610 1170 1450 1240 S 1500 1480 1780 1570'},
-  {width:13,d:'M 2390 690 C 2220 730 2360 825 2150 850 S 1940 975 1740 975 S 1510 930 1360 1050'},
+  {width:18,d:'M 910 320 C 1090 490 1170 550 1260 650 S 1460 780 1330 870 S 1240 1000 1360 1050 S 1560 1160 1530 1280 S 1700 1520 1940 1830'},
+  {width:8,d:'M 2680 540 C 2480 730 2320 805 2150 850 S 1910 975 1740 975 S 1490 980 1360 1050'},
 ]
 function position(m:NonNullable<typeof props.world>['marches'][number]){const returning=m.status==='RETURNING',start=new Date(returning?m.arriveGameAt:m.departGameAt).getTime(),end=new Date(returning?m.returnGameAt??m.arriveGameAt:m.arriveGameAt).getTime(),p=Math.max(0,Math.min(1,(props.gameTime-start)/Math.max(1,end-start)));return {...location(returning?m.targetX+(50-m.targetX)*p:50+(m.targetX-50)*p,returning?m.targetY+(50-m.targetY)*p:50+(m.targetY-50)*p),seconds:Math.max(0,Math.ceil((end-props.gameTime)/1000))}}
 function start(e:PointerEvent){moved.value=false;if(e.button!==0||(e.target as HTMLElement).closest('button'))return;hovered.value=undefined;drag.value={x:e.clientX,y:e.clientY,ox:offset.value.x,oy:offset.value.y};(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)}
@@ -44,19 +44,18 @@ function art(node:MapNode){if(node.worldBoss)return {src:'/art/official/map_citi
 <svg class="terrain-sheet" viewBox="0 0 3300 1950" aria-hidden="true">
 <defs><clipPath :id="terrainClip"><path d="M 0 -23 L 46.5 0 L 0 23 L -46.5 0 Z"/></clipPath>
 <clipPath :id="terrainClip+'-land'"><path d="M 1650 216 L 3184.5 975 L 1650 1734 L 115.5 975 Z"/></clipPath>
+<filter :id="terrainClip+'-river-edge'" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".035 .065" numOctaves="2" seed="19" result="grain"/><feDisplacementMap in="SourceGraphic" in2="grain" scale="4" xChannelSelector="R" yChannelSelector="G"/></filter>
 </defs>
 <path class="terrain-foundation" d="M 1650 216 L 3184.5 975 L 1650 1734 L 115.5 975 Z"/>
 <g v-for="t in tiles" :key="t.x+'-'+t.y" :transform="'translate('+point(t.x,t.y).x+' '+point(t.x,t.y).y+')'">
 <g :clip-path="'url(#'+terrainClip+')'" :transform="'scale('+t.flip+' 1)'"><svg x="-47" y="-23.5" width="94" height="47" :viewBox="(t.variant*100+6)+' 8 88 43'" preserveAspectRatio="none"><image href="/art/official/map_outposts.jpg" width="500" height="57"/></svg></g>
 </g>
 <g :clip-path="'url(#'+terrainClip+'-land)'" class="map-rivers">
-<g v-for="(river,index) in rivers" :key="index">
-<path :d="river.d" stroke="#788452" :stroke-width="river.width+22" opacity=".65"/>
-<path :d="river.d" stroke="#b3ab76" :stroke-width="river.width+10"/>
-<path :d="river.d" stroke="#465f52" :stroke-width="river.width+3"/>
-<path :d="river.d" stroke="#63877c" :stroke-width="river.width"/>
-<path :d="river.d" stroke="#97b6a1" :stroke-width="river.width*.3" opacity=".4"/>
-<path :d="river.d" stroke="#c0cfad" stroke-width="1" stroke-dasharray="18 43 7 68" opacity=".5"/>
+<g :filter="'url(#'+terrainClip+'-river-edge)'">
+<path v-for="(river,index) in rivers" :key="'bank-'+index" :d="river.d" stroke="#697649" :stroke-width="river.width+12" opacity=".38"/>
+<path v-for="(river,index) in rivers" :key="'shore-'+index" :d="river.d" stroke="#85866a" :stroke-width="river.width+4" opacity=".7"/>
+<path v-for="(river,index) in rivers" :key="'water-'+index" :d="river.d" stroke="#637b6f" :stroke-width="river.width"/>
+<path v-for="(river,index) in rivers" :key="'depth-'+index" :d="river.d" stroke="#536d63" :stroke-width="river.width*.45" opacity=".3"/>
 </g></g>
 <path class="terrain-boundary" d="M 1650 216 L 3184.5 975 L 1650 1734 L 115.5 975 Z"/>
 </svg>
