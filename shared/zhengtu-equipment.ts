@@ -5,6 +5,7 @@ export const zhengtuSets=[
   {key:'tianzun',code:'ZT_EXCELLENT_TIANZUN',name:'卓越的天尊',prefix:'卓越的',quality:3,rarity:3,power:1600,tiers:[8,12,20,28,35]},
   {key:'yingxiong',code:'ZT_SUPREME_HERO',name:'至尊的英雄',prefix:'至尊的',quality:7,rarity:6,power:5000,tiers:[12,20,32,45,60]},
 ] as const
+const supremeText='至尊宝物计入套装；13件近远攻防提高100%；15件近远攻防提高200%、速度提高50%、负重提高100%，仅取最高档。'
 const pieces:Array<{key:string;slot:EquipmentSlot;suffix:string;stats:Partial<HeroStats>;page:string}>=[
   {key:'weapon',slot:'WEAPON',suffix:'刀',stats:{meleeAttack:2.4,rangedAttack:.8},page:'00c-1329-00200-112476'},
   {key:'shield',slot:'SHIELD',suffix:'盾',stats:{meleeDefense:1.8,rangedDefense:1.8},page:'000-1329-00205-112526'},
@@ -34,3 +35,14 @@ export const zhengtuExtras:Omit<ItemDefinition,'id'>[]=zhengtuSets.flatMap(set=>
 ].map(p=>({code:`zt_${set.key}_${p.key}`,name:p.name,itemType:p.type,rarity:set.rarity,qualityTier:set.quality,enabled:true,
  description:p.type==='TREASURE'?`${p.name}。${p.key==='war_charm'?'凝聚战意，提高近攻和远攻。':'护佑将身，提高近防和远防。'}可放入任一宝物位，可精炼至+9。`:`${p.name}。${p.key==='mount'?'提升行军速度和负重。':'提升近防和远防。'}计入${set.name}套装，沿用3、5、8、10、11件加成，取最高档。可精炼、打孔和镶嵌。`,
  effectConfig:{slot:p.slot,icon:`/art/zhengtu/${set.key}-${p.key}.svg`,flatBonuses:Object.fromEntries(Object.entries(p.stats).map(([k,v])=>[k,Math.round(v*set.power)])),setCode:p.type==='EQUIPMENT'?set.code:undefined,setBonuses:p.type==='EQUIPMENT'?zhengtuEquipment.find(i=>i.effectConfig.setCode===set.code)!.effectConfig.setBonuses:undefined,requiredStrength:0,refineStep:.2,initialSockets:0,sourceStatus:'DIY'}})))
+
+// 全部至尊部件共享完整阶梯，包含两个宝物位；低品质套装保持原规则。
+for(const item of [...zhengtuEquipment,...zhengtuExtras].filter(i=>i.code.startsWith('zt_yingxiong_'))){
+ item.effectConfig.setCode='ZT_SUPREME_HERO'
+ item.effectConfig.setBonuses=[
+  ...[3,5,8,10,11].map((count,i)=>({count,bonuses:{meleeAttack:zhengtuSets[2].tiers[i],rangedAttack:zhengtuSets[2].tiers[i],meleeDefense:zhengtuSets[2].tiers[i],rangedDefense:zhengtuSets[2].tiers[i]}})),
+  {count:13,bonuses:{meleeAttack:100,rangedAttack:100,meleeDefense:100,rangedDefense:100}},
+  {count:15,bonuses:{meleeAttack:200,rangedAttack:200,meleeDefense:200,rangedDefense:200,speed:50,loadCapacity:100}},
+ ]
+ item.description+=' '+supremeText
+}

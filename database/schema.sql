@@ -628,3 +628,4 @@ CREATE TABLE IF NOT EXISTS `incoming_raids` (
  KEY `idx_raid_due` (`player_id`,`arrive_game_at`,`id`),
  CONSTRAINT `fk_raid_player` FOREIGN KEY (`player_id`) REFERENCES `player_profile` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin;
+-- 0025_supreme_fifteen：至尊13/15件阶梯与双宝物计件，更新item_definitions.effect_config及description，无新增字段；独立维护脚本同步。

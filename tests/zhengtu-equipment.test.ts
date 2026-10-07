@@ -3,6 +3,20 @@ import {existsSync,readFileSync} from 'node:fs'
 import {zhengtuEquipment,zhengtuExtras,zhengtuSets,zhengtuGrantQuantity} from '../shared/zhengtu-equipment'
 import {equipmentBonuses,equipmentSetStates,slotMatches,type EquippedItem} from '../shared/items'
 import {itemSchema} from '../server/routes/item-schema'
+it('至尊15件激活终极加成，卸下宝物降档，绿色金色宝物不计件',()=>{
+ const equipped:EquippedItem[]=[]
+ for(const [id,raw] of [...zhengtuEquipment,...zhengtuExtras].filter(i=>i.code.startsWith('zt_yingxiong_')).entries()){
+  const item={...raw,id},slot=item.effectConfig.slot??(item.code.endsWith('war_charm')?'TREASURE_1':'TREASURE_2')
+  equipped.push({heroId:1,slot,item})
+  if(['RING','BRACELET'].includes(slot))equipped.push({heroId:1,slot:slot==='RING'?'RING_2':'BRACELET_2',item})
+ }
+ expect(equipmentSetStates(equipped)[0].count).toBe(15)
+ expect(equipmentBonuses(equipped)).toMatchObject({meleeAttack:200,rangedAttack:200,meleeDefense:200,rangedDefense:200,speed:50,loadCapacity:100})
+ expect(equipmentBonuses(equipped.slice(0,-1)).meleeAttack).toBe(100)
+ expect(equipmentBonuses(equipped.slice(0,-2)).meleeAttack).toBe(100)
+ expect(equipmentBonuses(equipped.slice(0,-3)).meleeAttack).toBe(60)
+ expect(zhengtuExtras.filter(i=>i.itemType==='TREASURE'&&!i.code.startsWith('zt_yingxiong_')).every(i=>!i.effectConfig.setCode)).toBe(true)
+})
 it('三套共27定义33件，所有名称、官方图源和品质齐全',()=>{
  expect(zhengtuEquipment).toHaveLength(27)
  expect(zhengtuEquipment.reduce((n,i)=>n+zhengtuGrantQuantity(i),0)).toBe(33)
