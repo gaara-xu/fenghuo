@@ -11,6 +11,7 @@ import { learnHeroSkill,upgradeHeroSkill,trainHero } from '../server/hero-servic
 import { getWorldStatus,startMarch,processMarch,startAutoFarm,processFarm,pauseAutoFarm,settleDueWorldEvents,processDueWorldWork } from '../server/world-service'
 import {readFarmConfig} from '../shared/auto-farm'
 import {travelSeconds} from '../server/domain/travel'
+import {marchRoute,routeDistance} from '../shared/map-routes'
 import {getMilitaryState,enqueueMilitary,settleMilitary,forceDelta,readArmy,saveMilitary,listMilitary} from '../server/military-service'
 import {militaryDefaults,type MilitaryDefinition} from '../shared/military'
 import {registerMilitary} from '../server/routes/military'
@@ -1047,7 +1048,7 @@ describe.skipIf(process.env.RUN_DB_TESTS!=='1')('fenghuo 实库事务回滚联�
     // Slow this test hero to distinguish computed travel from the legacy fixed timer.
     await db.c.execute('UPDATE hero_definitions h JOIN owned_heroes o ON o.hero_definition_id=h.id SET h.speed=100 WHERE o.id=?',[heroId])
     const hero=(await getWorldStatus()).ownedHeroes.find(h=>h.id===heroId)!,target=(await targetRows(node))[0]
-    const oneWay=Math.ceil(travelSeconds(Math.hypot(Number(target.x)-50,Number(target.y)-50),hero.stats.speed))*1000
+    const oneWay=Math.ceil(travelSeconds(routeDistance(marchRoute({x:Number(target.x),y:Number(target.y)})),hero.stats.speed))*1000
     const job=await startAutoFarm(heroId,'OUTPOST',20,20,10,[],node);let depart=start
     for(let i=0;i<10;i++){
       await processFarm(job.id,depart);const m=await farmMarch(job.id),arrive=new Date(m.arrive_game_at),back=new Date(m.return_game_at)
@@ -1142,7 +1143,7 @@ describe.skipIf(process.env.RUN_DB_TESTS!=='1')('fenghuo 实库事务回滚联�
     const d=await testUnit();await forceDelta(db.c,d.code,1)
     const node=await makeOutpost(20),job=await startAutoFarm(heroId,'OUTPOST',20,20,2,[{code:d.code,quantity:1}],node)
     await processFarm(job.id,start);const first=await farmMarch(job.id)
-    const target=(await targetRows(node))[0],distance=Math.hypot(Number(target.x)-50,Number(target.y)-50)
+    const target=(await targetRows(node))[0],distance=routeDistance(marchRoute({x:Number(target.x),y:Number(target.y)}))
     expect(new Date(first.return_game_at).getTime()-start.getTime()).toBe(2*Math.ceil(travelSeconds(distance,d.speed))*1000)
     await processMarch(Number(first.id),new Date(first.return_game_at));expect(readFarmConfig((await farmRow(job.id)).troop_config).units.every(s=>s.quantity===0)).toBe(true)
     await processFarm(job.id,new Date(first.return_game_at));const second=await farmMarch(job.id)

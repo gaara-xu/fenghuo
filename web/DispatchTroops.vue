@@ -3,12 +3,13 @@ import {computed} from 'vue'
 import {armyStats,stackFromDefinition,durationText,type MilitaryState,type ArmyStack} from '../shared/military'
 import type {OwnedHero,MapNode} from '../shared/contracts'
 import {travelSeconds} from '../server/domain/travel'
+import {marchRoute,routeDistance} from '../shared/map-routes'
 import UnitBadge from './UnitBadge.vue'
 const props=defineProps<{state:MilitaryState;selection:Record<string,number>;hero?:OwnedHero;node:MapNode;busy:boolean}>()
 const emit=defineEmits<{'update:selection':[Record<string,number>]}>()
 const troops=computed(()=>props.state.definitions.filter(d=>d.kind==='TROOP'&&d.enabled))
 const stats=computed(()=>{const army:ArmyStack[]=troops.value.map(d=>stackFromDefinition(d,props.selection[d.code]??0));if(props.hero)army.push({code:'hero',name:props.hero.name,kind:'HERO',quantity:1,stats:props.hero.stats});return armyStats(army)})
-const travel=computed(()=>stats.value.speed?Math.ceil(travelSeconds(Math.hypot(props.node.x-50,props.node.y-50),stats.value.speed)):0)
+const travel=computed(()=>stats.value.speed?Math.ceil(travelSeconds(routeDistance(marchRoute(props.node)),stats.value.speed)):0)
 const roundTrip=computed(()=>travel.value?durationText(travel.value*2):'未选择部队')
 function set(code:string,n:number){emit('update:selection',{...props.selection,[code]:Math.max(0,Math.min(props.state.stock[code]??0,1000000,Math.floor(n)||0))})}
 </script>

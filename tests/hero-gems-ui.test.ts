@@ -4,6 +4,7 @@ import {renderToString} from '@vue/server-renderer'
 import {readFileSync} from 'node:fs'
 import {clientComponent} from './vue-client'
 import * as bossRules from '../shared/world-boss'
+import * as mapRoutes from '../shared/map-routes'
 import {content,renderClient} from './ui-renderer'
 import * as gems from '../shared/gems'
 import * as labels from '../shared/labels'
@@ -16,7 +17,7 @@ import GameModal from '../web/GameModal.vue'
 const confirm=vi.fn(),actionId=()=> '00000000-0000-4000-8000-000000000001'
 const Picker={props:['options','modelValue'],emits:['update:modelValue'],setup(p:any,{emit}:any){return()=>h('div',p.options.map((o:any)=>h('button',{onClick:()=>emit('update:modelValue',o.id)},o.name)))}}
 const Workshop=clientComponent('web/GemWorkshop.vue',{'../shared/gems':gems,'./item-choices':choices,'./IconInventoryPicker.vue':Picker,'./game-dialog':{gameConfirm:confirm},'./api':{actionId}})
-const Map=clientComponent('web/WorldMap.vue',{'../shared/world-boss':bossRules,'../shared/labels':labels,'./AssetIcon.vue':{setup:()=>()=>h('span')},'./MapSprite.vue':{setup:()=>()=>h('canvas')},'./tooltip-position':positioning})
+const Map=clientComponent('web/WorldMap.vue',{'../shared/map-routes':mapRoutes,'../shared/world-boss':bossRules,'../shared/labels':labels,'./AssetIcon.vue':{setup:()=>()=>h('span')},'./MapSprite.vue':{setup:()=>()=>h('canvas')},'./tooltip-position':positioning})
 const flush=async()=>{await nextTick();await Promise.resolve();await nextTick()}
 afterEach(()=>{while(activeDialog.value)finishDialog(activeDialog.value.id,null);vi.unstubAllGlobals();confirm.mockReset()})
 describe('原版宝石目录与属性',()=>{

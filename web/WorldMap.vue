@@ -5,6 +5,7 @@ import type {MapNode,WorldStatus} from '../shared/contracts'
 import {nodeLabels,label} from '../shared/labels'
 import AssetIcon from './AssetIcon.vue'
 import MapSprite from './MapSprite.vue'
+import {mapRivers,mapBridges,marchRoute,routePosition,projectMap} from '../shared/map-routes'
 import {tooltipPosition} from './tooltip-position'
 const props=defineProps<{nodes:MapNode[];world:WorldStatus|null;gameTime:number;selectedId?:number}>(),emit=defineEmits<{select:[MapNode]}>()
 const zoom=ref(1),offset=ref({x:0,y:0}),drag=ref<{x:number;y:number;ox:number;oy:number}|null>(null),moved=ref(false),filter=ref('ALL')
@@ -26,11 +27,10 @@ const tiles=Array.from({length:1089},(_,i)=>{
   const variant=r<(grove>.2?.43:.07)?4:r>.94&&ridge>.05?1:r>.8?0:r<.2?3:2
   return {x:(col-1)*10/3,y:(row-1)*10/3,variant,flip:terrainRandom(col,row,731)>.5?-1:1}
 })
-const rivers=[
-  {width:18,d:'M 910 320 C 1090 490 1170 550 1260 650 S 1460 780 1330 870 S 1240 1000 1360 1050 S 1560 1160 1530 1280 S 1700 1520 1940 1830'},
-  {width:8,d:'M 2680 540 C 2480 730 2320 805 2150 850 S 1910 975 1740 975 S 1490 980 1360 1050'},
-]
-function position(m:NonNullable<typeof props.world>['marches'][number]){const returning=m.status==='RETURNING',start=new Date(returning?m.arriveGameAt:m.departGameAt).getTime(),end=new Date(returning?m.returnGameAt??m.arriveGameAt:m.arriveGameAt).getTime(),p=Math.max(0,Math.min(1,(props.gameTime-start)/Math.max(1,end-start)));return {...location(returning?m.targetX+(50-m.targetX)*p:50+(m.targetX-50)*p,returning?m.targetY+(50-m.targetY)*p:50+(m.targetY-50)*p),seconds:Math.max(0,Math.ceil((end-props.gameTime)/1000))}}
+const rivers=mapRivers
+function route(m:NonNullable<typeof props.world>['marches'][number]){return marchRoute({x:m.targetX,y:m.targetY})}
+function routePath(m:NonNullable<typeof props.world>['marches'][number]){return route(m).map(p=>{const q=projectMap(p);return q.x+','+q.y}).join(' ')}
+function position(m:NonNullable<typeof props.world>['marches'][number]){const returning=m.status==='RETURNING',start=new Date(returning?m.arriveGameAt:m.departGameAt).getTime(),end=new Date(returning?m.returnGameAt??m.arriveGameAt:m.arriveGameAt).getTime(),p=Math.max(0,Math.min(1,(props.gameTime-start)/Math.max(1,end-start))),at=routePosition(route(m),returning?1-p:p);return {...location(at.x,at.y),seconds:Math.max(0,Math.ceil((end-props.gameTime)/1000))}}
 function start(e:PointerEvent){moved.value=false;if(e.button!==0||(e.target as HTMLElement).closest('button'))return;hovered.value=undefined;drag.value={x:e.clientX,y:e.clientY,ox:offset.value.x,oy:offset.value.y};(e.currentTarget as HTMLElement).setPointerCapture(e.pointerId)}
 function move(e:PointerEvent){if(!drag.value)return;const dx=e.clientX-drag.value.x,dy=e.clientY-drag.value.y;if(Math.abs(dx)+Math.abs(dy)>5)moved.value=true;offset.value={x:Math.max(-1650*zoom.value,Math.min(1650*zoom.value,drag.value.ox+dx)),y:Math.max(-975*zoom.value,Math.min(975*zoom.value,drag.value.oy+dy))}}
 function choose(node:MapNode,e?:MouseEvent){if(!expired(node)&&(!e?.detail||!moved.value)){hovered.value=undefined;emit('select',node)}}
@@ -57,9 +57,10 @@ function art(node:MapNode){if(node.worldBoss)return {src:'/art/official/map_citi
 <path v-for="(river,index) in rivers" :key="'water-'+index" :d="river.d" stroke="#637b6f" :stroke-width="river.width"/>
 <path v-for="(river,index) in rivers" :key="'depth-'+index" :d="river.d" stroke="#536d63" :stroke-width="river.width*.45" opacity=".3"/>
 </g></g>
+<g v-for="bridge in mapBridges" :key="bridge.id" :transform="'translate('+bridge.x+' '+bridge.y+') rotate('+bridge.angle+')'" class="map-bridge"><rect x="-34" y="-9" width="68" height="18" rx="2" fill="#3d3928"/><rect x="-32" y="-7" width="64" height="14" fill="#a18a59"/><path d="M -28 -7 V 7 M -20 -7 V 7 M -12 -7 V 7 M -4 -7 V 7 M 4 -7 V 7 M 12 -7 V 7 M 20 -7 V 7 M 28 -7 V 7" stroke="#655637" stroke-width="1"/><path d="M -34 -9 H 34 M -34 9 H 34" stroke="#c3b17a" stroke-width="3"/></g>
 <path class="terrain-boundary" d="M 1650 216 L 3184.5 975 L 1650 1734 L 115.5 975 Z"/>
 </svg>
-<svg class="world-routes" viewBox="0 0 3300 1950" aria-hidden="true"><line v-for="m in active" :key="m.id" x1="1650" y1="975" :x2="point(m.targetX,m.targetY).x" :y2="point(m.targetX,m.targetY).y" :class="['march-route',{returning:m.status==='RETURNING'}]"/></svg>
+<svg class="world-routes" viewBox="0 0 3300 1950" aria-hidden="true"><polyline v-for="m in active" :key="m.id" :points="routePath(m)" fill="none" :class="['march-route',{returning:m.status==='RETURNING'}]"/></svg>
 <div class="original-home" :style="location(50,50)"><MapSprite class="classic-site home-site" src="/art/official/map_elements.jpg" :columns="6" :frame="5"/><b>烽火城</b><small>（50，50）</small></div>
 <button v-for="n in visibleNodes" :key="n.id" type="button" class="original-node" :class="{chosen:selectedId===n.id,'world-boss':n.worldBoss}" :style="location(n.x,n.y)" :aria-label="n.name+'，'+n.level+'级，点击出征'" @click="choose(n,$event)" @contextmenu.prevent="choose(n)" @mouseenter="show($event,n)" @mouseleave="hovered=undefined" @focus="show($event,n)" @blur="hovered=undefined"><MapSprite class="classic-site" v-bind="art(n)"/><span>{{n.name}} <b>{{n.level}}级</b></span><em v-if="n.worldBoss" class="boss-countdown">消失 {{worldBossCountdown(n.expiresGameAt,gameTime)}}</em><small>（{{n.x}}，{{n.y}}）</small></button>
 <div v-for="m in active" :key="'army'+m.id" class="army-marker" :class="{returning:m.status==='RETURNING'}" :style="{left:position(m).left,top:position(m).top}"><span v-if="!m.heroId" class="army-flag" aria-label="士兵部队">⚑</span><AssetIcon v-else :name="m.heroName" :icon-key="m.portraitKey" hero size="tiny"/><span>{{m.heroName}} · {{m.status==='RETURNING'?'返城':'出征'}}<small v-if="m.troops?.some(t=>t.quantity>0)">兵力 {{m.troops.reduce((n,t)=>n+t.quantity,0)}}</small><small>{{position(m).seconds}} 秒{{m.status==='RETURNING'?'返城':'抵达'}}</small></span></div>

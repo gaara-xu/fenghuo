@@ -6,6 +6,7 @@ import {targetAfterAttack,outpostDefense} from '../shared/world-rules'
 import * as military from '../shared/military'
 import * as labels from '../shared/labels'
 import {travelSeconds} from '../server/domain/travel'
+import {marchRoute,routeDistance} from '../shared/map-routes'
 import DispatchTroops from '../web/DispatchTroops.vue'
 import {clientComponent} from './vue-client'
 import {renderClient,content} from './ui-renderer'
@@ -50,7 +51,7 @@ describe('自动出征进度界面',()=>{
     }finally{v.app.unmount()}
   })
   it('调兵预览与服务端共用距离移速公式，往返为单程两倍',async()=>{
-    const d=military.militaryDefaults.find(d=>d.code==='pikeman')!,node={x:0,y:0},oneWay=Math.ceil(travelSeconds(Math.hypot(50,50),d.speed))
+    const d=military.militaryDefaults.find(d=>d.code==='pikeman')!,node={x:0,y:0},oneWay=Math.ceil(travelSeconds(routeDistance(marchRoute(node)),d.speed))
     const html=await renderToString(createSSRApp(DispatchTroops,{state:{ready:true,definitions:[d],stock:{pikeman:10},orders:[],defense:{melee:0,ranged:0}},selection:{pikeman:10},node,busy:false}))
     expect(html).toContain('单程');expect(html).toContain(military.durationText(oneWay));expect(html).toContain('往返一轮');expect(html).toContain(military.durationText(oneWay*2));expect(html).not.toContain('<select')
   })

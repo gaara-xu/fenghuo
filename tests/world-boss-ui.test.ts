@@ -3,6 +3,7 @@ import {h,nextTick} from 'vue'
 import {readFileSync} from 'node:fs'
 import {clientComponent} from './vue-client'
 import * as bossRules from '../shared/world-boss'
+import * as mapRoutes from '../shared/map-routes'
 import {content,nodes,renderClient} from './ui-renderer'
 import * as rules from '../shared/world-boss'
 import * as labels from '../shared/labels'
@@ -10,7 +11,7 @@ import * as positioning from '../web/tooltip-position'
 import {useTimedNotice} from '../web/timed-notice'
 const api=vi.fn()
 const Settings=clientComponent('web/WorldBossSettings.vue',{'./api':{api},'./timed-notice':{useTimedNotice},'../shared/world-boss':rules})
-const Map=clientComponent('web/WorldMap.vue',{'../shared/world-boss':bossRules,'../shared/labels':labels,'./AssetIcon.vue':{setup:()=>()=>h('span')},'./MapSprite.vue':{setup:()=>()=>h('canvas')},'./tooltip-position':positioning})
+const Map=clientComponent('web/WorldMap.vue',{'../shared/map-routes':mapRoutes,'../shared/world-boss':bossRules,'../shared/labels':labels,'./AssetIcon.vue':{setup:()=>()=>h('span')},'./MapSprite.vue':{setup:()=>()=>h('canvas')},'./tooltip-position':positioning})
 const flush=async()=>{await Promise.resolve();await nextTick();await Promise.resolve();await nextTick()}
 beforeEach(()=>api.mockReset().mockResolvedValue(structuredClone(rules.defaultWorldBossRules)))
 afterEach(()=>{vi.useRealTimers();vi.unstubAllGlobals()})

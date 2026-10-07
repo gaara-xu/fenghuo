@@ -14,6 +14,7 @@ import {equipmentBonuses,equipmentFlatBonuses} from '../shared/items.js'
 import {lockReportWriter,pruneReports,maintainReports,mapReport,incomingReports,pruneFinishedMarches} from './report-service.js'
 import {carriedRewards} from './domain/rewards.js'
 import { travelSeconds } from './domain/travel.js'
+import {marchRoute,routeDistance} from '../shared/map-routes.js'
 import {MAX_OUTPOST_LEVEL,outpostDefense,targetAfterAttack} from '../shared/world-rules.js'
 
 import {armyStats,npcArmy,type ArmyStack,type TroopSelection} from '../shared/military.js'
@@ -83,7 +84,7 @@ async function launchArmy(c:PoolConnection,heroId:number|null,nodeId:number,troo
   if(isWorldBoss(node.garrison_config)&&worldBossExpired(node.garrison_config,now))throw Error('世界首领已消失')
   const hero=await heroArmy(c,heroId),stats=armyStats([...hero.army,...troops])
   if(stats.speed<=0||!heroId&&!troops.some(s=>s.quantity>0))throw Error('请选择英雄或至少一种士兵')
-  const distance=Math.hypot(Number(node.x)-50,Number(node.y)-50),arrive=new Date(now.getTime()+Math.ceil(travelSeconds(distance,stats.speed))*1000),back=new Date(now.getTime()+2*(arrive.getTime()-now.getTime()))
+  const distance=routeDistance(marchRoute({x:Number(node.x),y:Number(node.y)})),arrive=new Date(now.getTime()+Math.ceil(travelSeconds(distance,stats.speed))*1000),back=new Date(now.getTime()+2*(arrive.getTime()-now.getTime()))
   const [r]=await c.execute<ResultSetHeader>(`INSERT INTO march_orders (player_id,map_node_id,owned_hero_id,order_type,status,depart_game_at,arrive_game_at,return_game_at,troop_config,client_action_id,auto_farm_job_id) VALUES (?,?,?,?,'MARCHING',?,?,?,?,?,?)`,[PLAYER_ID,nodeId,heroId,jobId?'AUTO_FARM':'ATTACK',now,arrive,back,JSON.stringify({units:troops,requested,...(jobId?{autoFarmCycleVersion:2}:{})}),requestId??null,jobId??null])
   return {id:r.insertId,arriveGameAt:arrive.toISOString(),returnGameAt:back.toISOString()}
 }
